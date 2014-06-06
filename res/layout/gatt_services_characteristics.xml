@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="vertical"
+        android:background="@android:color/holo_blue_bright"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp">
+    
+     <TableRow
+      		      android:layout_height="wrap_content"
+                  android:layout_width="fill_parent"
+                  android:gravity="center_horizontal">
+    
+        <TextView android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:text="@string/label_device_address"
+                  android:textSize="24sp"/>
+        
+        <TextView android:id="@+id/device_address"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="18sp"/>
+    </TableRow>
+    
+     <Space android:layout_width="wrap_content"
+               android:layout_height="15dp"/>
+     
+    <TableRow
+      		      android:layout_height="wrap_content"
+                  android:layout_width="fill_parent"
+                  android:gravity="center_horizontal">
+        <TextView android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:text="@string/label_state"
+                  android:textSize="24sp"/>
+        
+        <TextView android:id="@+id/connection_state"
+                  android:layout_width="match_parent"
+                  android:layout_height="wrap_content"
+                  android:text="@string/disconnected"
+                  android:textSize="18sp"/>
+    </TableRow>
+    
+    <Space android:layout_width="wrap_content"
+               android:layout_height="15dp"/>
+    
+   <TableRow
+      		      android:layout_height="wrap_content"
+                  android:layout_width="fill_parent"
+                  android:gravity="center_horizontal">
+        <TextView android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:text="Temperature : "
+                  android:textSize="24sp"/>
+       
+        <TextView android:id="@+id/curr_temp"
+                  android:layout_width="match_parent"
+                  android:layout_height="wrap_content"
+                  android:text="°C"
+                  android:textSize="18sp"/>
+    </TableRow>
+   
+   <Space android:layout_width="wrap_content"
+               android:layout_height="15dp"/>
+   
+    <TableRow
+      		      android:layout_height="wrap_content"
+                  android:layout_width="fill_parent"
+                  android:gravity="center_horizontal">
+        <TextView android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:text="Humidity : "
+                  android:textSize="24sp"/>
+        
+        <TextView android:id="@+id/curr_hum"
+                  android:layout_width="match_parent"
+                  android:layout_height="wrap_content"
+                  android:text="RH"
+                  android:textSize="18sp"/>
+    </TableRow>
+    
+    <Space android:layout_width="wrap_content"
+               android:layout_height="15dp"/>
+    
+     <TableRow
+      		      android:layout_height="wrap_content"
+                  android:layout_width="fill_parent"
+                  android:gravity="center_horizontal">
+        <TextView android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:text="Light : "
+                  android:textSize="24sp"/>
+        
+        <TextView android:id="@+id/curr_lig"
+                  android:layout_width="match_parent"
+                  android:layout_height="wrap_content"
+                  android:text="LUX"
+                  android:textSize="18sp"/>
+    </TableRow>
+    
+     <Space android:layout_width="wrap_content"
+               android:layout_height="15dp"/>
+     
+    <TableRow
+      		      android:layout_height="wrap_content"
+                  android:layout_width="wrap_content"
+                  android:gravity="center_horizontal">
+        <Button   android:id="@+id/btn_tmp"
+            	  android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:layout_weight="1"
+                  android:text="Temperature"
+                  android:textSize="18sp"/>
+        <Button   android:id="@+id/btn_hum"
+                  android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:text="Humidity"
+                  android:layout_weight="1"
+                  android:textSize="18sp"/>
+        <Button   android:id="@+id/btn_lig"
+                  android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:text="   Light   "
+                  android:layout_weight="1"
+                  android:textSize="18sp"/>
+        
+    </TableRow>
+    
+    </TableLayout>
+ 
