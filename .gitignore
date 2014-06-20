@@ -1,4 +1,5 @@
 .svn*
+.metadata
 
 code/Wimoto/bin
 code/Wimoto/gen
