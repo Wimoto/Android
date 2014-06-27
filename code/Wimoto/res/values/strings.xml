@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Wimoto</string>
+    <string name="action_settings">Settings</string>
+    
+    <string-array name="left_menu_items">
+        <item >Add New Sensor</item>
+        <item >Settings</item>
+        <item >Help</item>
+    </string-array>
+    
+    <!-- Sensor screens values -->
+     <string name="sensor_update">Update</string> 
+     <string name="sensor_rrsi">RRSI</string>
+     <string name="sensor_rrsi2">RRSI:</string>
+     <string name="sensor_two_hyphens">--</string>  
+     <string name="sensor_just_now">Just now</string>  
+     <string name="sensor_cm">cm</string>
+     <string name="sensor_celsius">˚C</string>
+     <string name="sensor_lux">lux</string> 
+     <string name="sensor_percent">%</string> 
+     <string name="sensor_hi">Hi</string> 
+     <string name="sensor_lo">Lo</string> 
+     
+     <string name="sensor_zero">No sensors added yet.</string> 
+     <string name="sensor_add">Tap here to add sensor&#8230;</string> 
+     
+     <!-- Sensor Names -->
+     <string name="sensor_climate">Wimoto_Climate</string>
+     <string name="sensor_grow">Wimoto_Grow</string> 
+     <string name="sensor_sentry">Wimoto_Sentry</string> 
+     <string name="sensor_thermo">Wimoto_Thermo</string> 
+     <string name="sensor_water">Wimoto_Water</string> 
+     
+     <!-- Found sensor screen -->
+     <string name="sensors_found">Sensors Found</string>
+     
+     <!-- Settings screen -->
+     <string name="settings_title">Settings</string>
+     <string name="settings_temperature_units">Temperature units</string>
+     
+     <!-- Help screen -->
+     <string name="help_title">Help</string>
+     <string name="help_url">www.wimoto.com/support</string> 
+
+</resources>
