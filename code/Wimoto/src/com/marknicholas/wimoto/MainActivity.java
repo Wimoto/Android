@@ -1,23 +1,48 @@
 package com.marknicholas.wimoto;
 
+import android.content.Context;
 import android.os.Bundle;
-import android.app.Activity;
-import android.view.Menu;
 
-public class MainActivity extends Activity {
+import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
+import com.jeremyfeinstein.slidingmenu.lib.app.SlidingFragmentActivity;
+import com.marknicholas.wimoto.database.DBManager;
+import com.marknicholas.wimoto.menu.left.LeftMenuFragment;
+import com.marknicholas.wimoto.menu.right.RightMenuFragment;
 
+public class MainActivity extends SlidingFragmentActivity {
+	
+	private static Context sContext;
+	
+	private LeftMenuFragment mLeftMenuFragment;
+	
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-    }
-
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
+        
+        MainActivity.sContext = this;
+        
+        setMenuMode(SlidingMenu.LEFT_RIGHT);
+        
+        mLeftMenuFragment = new LeftMenuFragment();
+        setLeftMenuFragment(mLeftMenuFragment);
+        setRightMenuFragment(new RightMenuFragment());
+        
+        setBehindOffsetRes(R.dimen.menu_offset);
+        setFadeDegree(0.35f);
+        setTouchModeAbove(SlidingMenu.TOUCHMODE_FULLSCREEN);
+        
+        setShadowWidthRes(R.dimen.menu_shadow_width);
+        setShadowDrawable(R.drawable.shadow);
+        setSecondaryShadowDrawable(R.drawable.shadow_secondary);
+        
+        DBManager.initDB();
     }
     
+    public static Context getAppContext() {
+        return MainActivity.sContext;
+    }
+    
+    public LeftMenuFragment getLeftMenuFragment() {
+    	return mLeftMenuFragment;
+    }
 }

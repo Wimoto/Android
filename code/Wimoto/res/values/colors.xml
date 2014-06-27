@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="color_white">#FFFFFF</color>
+    <color name="color_black">#000000</color>
+    <color name="color_transparent">#00000000</color>
+    <color name="color_blue">#007AFF</color>
+    <color name="color_rssi">#29ABE1</color>
+    <color name="color_header">#F8F8F8</color>
+    <color name="color_pink">#F17E7F</color>
+    
+    <!--  Sensor Screens Background -->
+	<color name="color_sensor_climate">#66CCFF</color>
+	<color name="color_sensor_grow">#99E97C</color>
+	<color name="color_sensor_sentry">#B8B8B8</color>
+	<color name="color_sensor_thermo">#FF9F13</color>
+	<color name="color_sensor_water">#66CCFF</color>
+	
+	<color name="color_sensor_background">#E6E6E6</color>
+
+</resources>
