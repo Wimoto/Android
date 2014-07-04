@@ -1,4 +1,4 @@
-package com.marknicholas.wimoto.screens.foundsensor;
+package com.marknicholas.wimoto.screens.searchsensor;
 
 import java.util.ArrayList;
 
@@ -12,11 +12,11 @@ import com.marknicholas.wimoto.models.sensor.GrowSensor;
 import com.marknicholas.wimoto.models.sensor.Sensor;
 import com.marknicholas.wimoto.models.sensor.ThermoSensor;
 
-public class FoundSensorAdapter extends BaseAdapter {
+public class SearchSensorAdapter extends BaseAdapter {
 	
 	private ArrayList<Sensor> mSensors;
 	
-	public FoundSensorAdapter() {
+	public SearchSensorAdapter() {
 		initSensors();
 	}
 	

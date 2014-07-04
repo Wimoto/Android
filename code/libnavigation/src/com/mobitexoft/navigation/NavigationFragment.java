@@ -5,6 +5,7 @@ import java.util.Stack;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -30,7 +31,7 @@ public class NavigationFragment extends Fragment {
 	@Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		getChildFragmentManager().beginTransaction().add(R.id.contentLayout, mFragmentStack.lastElement()).commit();
-		
+				
         return inflater.inflate(R.layout.fragment_navigation, container, false);
     }
 
@@ -51,7 +52,7 @@ public class NavigationFragment extends Fragment {
 		FragmentManager fragmentManager = getChildFragmentManager();
 		
 		FragmentTransaction addTransaction = fragmentManager.beginTransaction();
-		addTransaction.setCustomAnimations(R.anim.slide_left_in, R.anim.slide_left_out, R.anim.slide_right_in, R.anim.slide_right_out);
+		addTransaction.setCustomAnimations(R.anim.slide_left_in, R.anim.slide_left_out);
 		addTransaction.add(R.id.contentLayout, pushedFragment);
 		addTransaction.commit();
 		
@@ -62,15 +63,27 @@ public class NavigationFragment extends Fragment {
 		visibilityTransaction.addToBackStack(null);
 		visibilityTransaction.commit();
 		
-		mFragmentStack.push(pushedFragment);
+		mFragmentStack.push(pushedFragment);		
 	}
 			
 	public boolean popFragment() {
 		hideKeyboard();
 		
-		mFragmentStack.pop();
-		if (getChildFragmentManager().getBackStackEntryCount()>0) {
+		if (getChildFragmentManager().getBackStackEntryCount()>0) {			
 			getChildFragmentManager().popBackStack();
+			
+			final Handler handler = new Handler();
+			handler.postDelayed(new Runnable() {
+			  @Override
+			  public void run() {
+					FragmentTransaction removeTransaction = getChildFragmentManager().beginTransaction();
+					removeTransaction.remove(mFragmentStack.lastElement());
+					removeTransaction.commit();
+
+					mFragmentStack.pop();
+			  }
+			}, /*2 * */getResources().getInteger(android.R.integer.config_mediumAnimTime));
+			
 			return true;
 		}
 		return false;

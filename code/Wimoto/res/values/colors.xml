@@ -4,6 +4,8 @@
     <color name="color_black">#000000</color>
     <color name="color_transparent">#00000000</color>
     <color name="color_blue">#007AFF</color>
+    <color name="color_red">#FF0000</color>
+    
     <color name="color_rssi">#29ABE1</color>
     <color name="color_header">#F8F8F8</color>
     <color name="color_pink">#F17E7F</color>

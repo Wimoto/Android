@@ -8,7 +8,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.marknicholas.wimoto.R;
-import com.marknicholas.wimoto.database.DBManager;
 import com.marknicholas.wimoto.models.sensor.Sensor;
 import com.mobitexoft.navigation.PageFragment;
 
@@ -31,10 +30,7 @@ public class SensorFragment extends PageFragment {
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		initViews();
-		
-		DBManager.addSensor(mSensor);
-		
+		initViews();	
 		return mView;
 	}
 	

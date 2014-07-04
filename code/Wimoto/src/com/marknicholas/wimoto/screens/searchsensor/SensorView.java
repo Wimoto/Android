@@ -1,7 +1,6 @@
-package com.marknicholas.wimoto.screens.foundsensor;
+package com.marknicholas.wimoto.screens.searchsensor;
 
 import android.content.Context;
-import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -15,20 +14,6 @@ public class SensorView extends LinearLayout {
 
 	public SensorView(Context context) {
 		super(context);
-		
-		LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        inflater.inflate(R.layout.sensor_view, this);
-	}
-	
-	public SensorView(Context context, AttributeSet attrs) {
-		super(context, attrs);
-		
-		LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        inflater.inflate(R.layout.sensor_view, this);
-	}
-	
-	public SensorView(Context context, AttributeSet attrs, int defStyle) {
-		super(context, attrs, defStyle);
 		
 		LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         inflater.inflate(R.layout.sensor_view, this);

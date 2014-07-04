@@ -3,10 +3,12 @@ package com.marknicholas.wimoto.menu.right;
 import java.util.ArrayList;
 
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 
 import com.marknicholas.wimoto.MainActivity;
+import com.marknicholas.wimoto.R;
 import com.marknicholas.wimoto.models.sensor.ClimateSensor;
 import com.marknicholas.wimoto.models.sensor.GrowSensor;
 import com.marknicholas.wimoto.models.sensor.Sensor;
@@ -60,7 +62,7 @@ private ArrayList<Sensor> mSensors;
 	}
 
 	@Override
-	public View getView(int position, View convertView, ViewGroup parent) {
+	public View getView(final int position, View convertView, ViewGroup parent) {
 		RightMenuView rightMenuView = null;
 		if (convertView == null) {
 			rightMenuView = new RightMenuView(MainActivity.getAppContext());
@@ -70,23 +72,21 @@ private ArrayList<Sensor> mSensors;
 		
 		rightMenuView.setSensor(mSensors.get(position));
 		
-//		rightMenuView.setTag(position);
-//		
-//		rightMenuView.setOnTouchListener(new OnTouchListener() {
-//			@Override
-//			public boolean onTouch(View v, MotionEvent event) {
-//				
-//				int action = event.getAction();
-//				
-//				switch(action) {
-//					
-//				}
-//				
-//				return true;
-//			}
-//		});
+		View deleteButton = rightMenuView.findViewById(R.id.delete_button);
+		deleteButton.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				deleteSensor(mSensors.get(position));
+			}
+		});
 		
 		return rightMenuView;
 	}
-
+	
+	
+	
+	private void deleteSensor(Sensor sensor) {
+		mSensors.remove(sensor);
+		notifyDataSetChanged();	
+	}
 }

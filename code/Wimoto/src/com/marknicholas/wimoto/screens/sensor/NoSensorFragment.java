@@ -28,15 +28,15 @@ public class NoSensorFragment extends PageFragment {
 
 			@Override
 			public void onClick(View v) {
-				foundSensorsAction();
+				searchSensorsAction();
 			}
 			
 		});
 		
 		return view;
 	}
-	private void foundSensorsAction() {
+	private void searchSensorsAction() {
 		MainActivity activity = (MainActivity)getActivity();
-		activity.getLeftMenuFragment().foundSensorAction();
+		activity.searchSensorAction();
 	}
 }

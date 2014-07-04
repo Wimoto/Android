@@ -5,6 +5,8 @@ public class Sensor {
 	protected String title;
 	protected String id;
 	protected String rrsi;
+	
+	protected boolean registered;
 
 	public Sensor() {
 		super();
@@ -28,6 +30,14 @@ public class Sensor {
 
 	public void setRrsi(String rrsi) {
 		this.rrsi = rrsi;
+	}
+
+	public boolean isRegistered() {
+		return registered;
+	}
+
+	public void setRegistered(boolean registered) {
+		this.registered = registered;
 	}
 	
 	

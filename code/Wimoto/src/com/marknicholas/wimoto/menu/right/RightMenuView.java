@@ -1,8 +1,9 @@
 package com.marknicholas.wimoto.menu.right;
 
 import android.content.Context;
-import android.util.AttributeSet;
 import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -12,37 +13,41 @@ import com.marknicholas.wimoto.models.sensor.Sensor;
 public class RightMenuView extends RelativeLayout {
 	
 	private Sensor mSensor;
+	
+	private TextView mTitleView;
+	private ImageView mLogoView;
+	private View mDeleteView;
 
 	public RightMenuView(Context context) {
 		super(context);
 		
 		LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         inflater.inflate(R.layout.menu_right_cell, this);
-	}
-	
-	public RightMenuView(Context context, AttributeSet attrs) {
-		super(context, attrs);
-		
-		LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        inflater.inflate(R.layout.menu_right_cell, this);
-	}
-	
-	public RightMenuView(Context context, AttributeSet attrs, int defStyle) {
-		super(context, attrs, defStyle);
-		
-		LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        inflater.inflate(R.layout.menu_right_cell, this);
+        
+        mTitleView = (TextView)findViewById(R.id.sensor_title);
+        mLogoView = (ImageView)findViewById(R.id.wimoto_logo);
+        mDeleteView = findViewById(R.id.delete_button);
 	}
 	
 	public void setSensor(Sensor sensor) {
-		if (mSensor != null) {
+		if (mSensor == sensor) {
 			return;
 		}
 		
 		this.mSensor = sensor;
+		setNormalMode();
 		
-		TextView titleView = (TextView)findViewById(R.id.sensor_title);
-		titleView.setText(mSensor.getTitle());
+		mTitleView.setText(mSensor.getTitle());
+	}
+	
+	public void setNormalMode() {
+		mLogoView.setVisibility(View.VISIBLE);
+		mDeleteView.setVisibility(View.GONE);
+	}
+	
+	public void setDeleteMode() {
+		mLogoView.setVisibility(View.GONE);
+		mDeleteView.setVisibility(View.VISIBLE);
 	}
 
 }

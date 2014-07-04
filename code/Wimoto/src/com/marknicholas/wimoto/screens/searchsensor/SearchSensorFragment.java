@@ -1,4 +1,4 @@
-package com.marknicholas.wimoto.screens.foundsensor;
+package com.marknicholas.wimoto.screens.searchsensor;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -13,9 +13,9 @@ import com.marknicholas.wimoto.R;
 import com.marknicholas.wimoto.models.sensor.Sensor;
 import com.mobitexoft.leftmenu.PageFragment;
 
-public class FoundSensorFragment extends PageFragment {
+public class SearchSensorFragment extends PageFragment {
 
-	private FoundSensorAdapter mAdapter;
+	private SearchSensorAdapter mAdapter;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -28,7 +28,7 @@ public class FoundSensorFragment extends PageFragment {
 		super.onCreateView(inflater, container, savedInstanceState);
 		View view = inflater.inflate(R.layout.found_sensor_fragment, null);
 	
-		mAdapter = new FoundSensorAdapter();
+		mAdapter = new SearchSensorAdapter();
 		
 		ListView listView = (ListView)view.findViewById(R.id.found_sensor_listview);
 		listView.setAdapter(mAdapter);
@@ -42,10 +42,11 @@ public class FoundSensorFragment extends PageFragment {
 		
 		return view;
 	}
+	
 
 	protected void showSensorDetails(Sensor sensor) {
 		MainActivity activity = (MainActivity)getActivity();
-		activity.getLeftMenuFragment().showSensorDetails(sensor);
+		activity.showSensorDetails(sensor);
 	}
 	
 }

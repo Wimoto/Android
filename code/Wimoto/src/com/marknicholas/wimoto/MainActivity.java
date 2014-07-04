@@ -5,15 +5,21 @@ import android.os.Bundle;
 
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 import com.jeremyfeinstein.slidingmenu.lib.app.SlidingFragmentActivity;
-import com.marknicholas.wimoto.database.DBManager;
+import com.marknicholas.wimoto.managers.SensorsManager;
 import com.marknicholas.wimoto.menu.left.LeftMenuFragment;
+import com.marknicholas.wimoto.menu.left.MenuItem;
 import com.marknicholas.wimoto.menu.right.RightMenuFragment;
+import com.marknicholas.wimoto.models.sensor.Sensor;
 
 public class MainActivity extends SlidingFragmentActivity {
+	private LeftMenuFragment mLeftMenuFragment;
+	private RightMenuFragment mRightMenuFragment;
 	
 	private static Context sContext;
 	
-	private LeftMenuFragment mLeftMenuFragment;
+	public static Context getAppContext() {
+        return MainActivity.sContext;
+    }
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -25,7 +31,9 @@ public class MainActivity extends SlidingFragmentActivity {
         
         mLeftMenuFragment = new LeftMenuFragment();
         setLeftMenuFragment(mLeftMenuFragment);
-        setRightMenuFragment(new RightMenuFragment());
+        
+        mRightMenuFragment = new RightMenuFragment();
+        setRightMenuFragment(mRightMenuFragment);
         
         setBehindOffsetRes(R.dimen.menu_offset);
         setFadeDegree(0.35f);
@@ -34,15 +42,13 @@ public class MainActivity extends SlidingFragmentActivity {
         setShadowWidthRes(R.dimen.menu_shadow_width);
         setShadowDrawable(R.drawable.shadow);
         setSecondaryShadowDrawable(R.drawable.shadow_secondary);
-        
-        DBManager.initDB();
     }
-    
-    public static Context getAppContext() {
-        return MainActivity.sContext;
-    }
-    
-    public LeftMenuFragment getLeftMenuFragment() {
-    	return mLeftMenuFragment;
-    }
+
+	public void searchSensorAction() {
+		mLeftMenuFragment.onMenuItemSelected(MenuItem.SEARCH);
+	}
+
+	public void showSensorDetails(Sensor sensor) {
+		mRightMenuFragment.showSensorDetails(sensor);
+	}
 }
