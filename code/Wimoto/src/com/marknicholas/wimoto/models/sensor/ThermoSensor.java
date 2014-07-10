@@ -7,5 +7,6 @@ public class ThermoSensor extends Sensor {
 
 	public ThermoSensor() {
 		title = MainActivity.getAppContext().getResources().getString(R.string.sensor_thermo);
+		type = Sensor.TYPE_THERMO;
 	}
 }

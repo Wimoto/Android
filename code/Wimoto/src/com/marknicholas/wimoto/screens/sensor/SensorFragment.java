@@ -41,7 +41,7 @@ public class SensorFragment extends PageFragment {
 		mLastUpdateText = (TextView)mView.findViewById(R.id.last_updated_text);
 		
 		mSensorNameText.setText(mSensor.getTitle());
-		mRssiText.setText(mSensor.getRrsi());
+		mRssiText.setText(mSensor.getRssi());
 	}
 	
 	public void setSensor(Sensor sensor) {

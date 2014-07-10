@@ -7,5 +7,6 @@ public class SentrySensor extends Sensor {
 	
 	public SentrySensor() {
 		title = MainActivity.getAppContext().getResources().getString(R.string.sensor_sentry);
+		type = Sensor.TYPE_SENTRY;
 	}
 }

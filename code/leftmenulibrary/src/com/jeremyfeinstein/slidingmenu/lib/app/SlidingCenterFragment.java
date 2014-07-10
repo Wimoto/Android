@@ -38,7 +38,7 @@ public class SlidingCenterFragment extends Fragment {
 		mCurrentFragment = fragmentManager.findFragmentByTag(tag);
 		if ((mCurrentFragment == null) || (!cache)) {
 			mCurrentFragment = fragment;
-			fragmentTransaction.add(R.id.centerFragmentContainer, mCurrentFragment, tag);
+			fragmentTransaction.replace(R.id.centerFragmentContainer, mCurrentFragment, tag);
 		} else {
 			List<Fragment> fragments = fragmentManager.getFragments();
 			

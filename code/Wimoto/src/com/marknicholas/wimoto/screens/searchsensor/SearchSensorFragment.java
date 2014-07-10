@@ -27,7 +27,7 @@ public class SearchSensorFragment extends PageFragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		super.onCreateView(inflater, container, savedInstanceState);
 		View view = inflater.inflate(R.layout.found_sensor_fragment, null);
-	
+
 		mAdapter = new SearchSensorAdapter();
 		
 		ListView listView = (ListView)view.findViewById(R.id.found_sensor_listview);

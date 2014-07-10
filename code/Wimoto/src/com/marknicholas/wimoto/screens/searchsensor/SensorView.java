@@ -33,7 +33,7 @@ public class SensorView extends LinearLayout {
 		idView.setText(mSensor.getId());
 		
 		TextView rssiView = (TextView)findViewById(R.id.sensor_rssi);
-		rssiView.setText(mSensor.getRrsi());
+		rssiView.setText(mSensor.getRssi());
 	}
 	
 }

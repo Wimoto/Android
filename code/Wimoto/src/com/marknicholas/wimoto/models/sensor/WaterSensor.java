@@ -7,5 +7,6 @@ public class WaterSensor extends Sensor {
 	
 	public WaterSensor() {
 		title = MainActivity.getAppContext().getResources().getString(R.string.sensor_water);
+		type = Sensor.TYPE_WATER;
 	}
 }

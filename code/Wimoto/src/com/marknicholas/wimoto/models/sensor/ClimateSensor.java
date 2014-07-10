@@ -7,5 +7,6 @@ public class ClimateSensor extends Sensor {
 
 	public ClimateSensor() {
 		title = MainActivity.getAppContext().getResources().getString(R.string.sensor_climate);
+		type = Sensor.TYPE_CLIMATE;
 	}
 }

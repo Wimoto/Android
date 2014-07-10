@@ -15,6 +15,7 @@ import com.couchbase.lite.Emitter;
 import com.couchbase.lite.Manager;
 import com.couchbase.lite.Mapper;
 import com.couchbase.lite.Query;
+import com.couchbase.lite.QueryEnumerator;
 import com.couchbase.lite.View;
 import com.couchbase.lite.util.Log;
 import com.marknicholas.wimoto.MainActivity;
@@ -24,9 +25,6 @@ public class SensorsManager {
 
 	private final static String WIMOTO_DB 		= "wimoto";
 	private final static String WIMOTO_SENSORS 	= "wimoto_sensors";
-	private final static String WIMOTO_ID 		= "wimoto_id";
-	private final static String WIMOTO_NAME 	= "wimoto_name";
-	private final static String WIMOTO_RSSI 	= "wimoto_rssi";
 	
 	private final static String DOC_TYPE		= "sensor";
 	
@@ -63,6 +61,24 @@ public class SensorsManager {
             Log.e(TAG, "Cannot get Database", e);
             return;
         }
+	   	
+	   	try {
+			QueryEnumerator enumerator = getQuery().run();
+			
+			if (enumerator == null) {
+				return;
+			}
+			
+			while(enumerator.hasNext()) {
+				Document doc = enumerator.next().getDocument();
+				mSensors.add(Sensor.getSensorFromDocument(doc));
+			}
+			
+			Log.e("Loaded Sensors Count", Integer.toString(mSensors.size()));	
+			
+		} catch (CouchbaseLiteException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public Query getQuery() {
@@ -84,7 +100,13 @@ public class SensorsManager {
 		return query;
 	}
 	
-	public void registerSensor(Sensor sensor) {
+	public void registerSensor(Sensor newSensor) {
+		for (Sensor sensor:getSensors()) {
+			if (sensor.getId().equals(newSensor.getId())) {
+				return;
+			}
+		}
+		
 		SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 	    Calendar calendar = GregorianCalendar.getInstance();
 	    String currentTimeString = dateFormatter.format(calendar.getTime());
@@ -92,23 +114,54 @@ public class SensorsManager {
 		Map<String, Object> properties = new HashMap<String, Object>();
 		
 		properties.put("type", DOC_TYPE);
-		properties.put("title", sensor.getTitle());
-		properties.put("id", sensor.getId());
+		properties.put("title", newSensor.getTitle());
+		properties.put("id", newSensor.getId());
+		properties.put("rssi", newSensor.getRssi());
+		properties.put("sensor_type", newSensor.getType());
 		properties.put("created_at", currentTimeString);
 		
 		try {
 			Document document = mDatabase.createDocument();
 			document.putProperties(properties);
 			
-			Log.e("DOC", document.getId());
+			Log.e("ADDED NEW", document.getId());
+			newSensor.setRegistered(true);
+			
+			mSensors.add(newSensor);
+			
+			MainActivity activity = (MainActivity)MainActivity.getAppContext();
+			activity.updateRegisteredSensors();
 		} catch (CouchbaseLiteException e) {
 			e.printStackTrace();
 		} 
 	}
 	
+	public void unregisterSensor(Sensor sensor) {
+		try {
+			QueryEnumerator enumerator = getQuery().run();
+			
+			if (enumerator == null) {
+				return;
+			}
+			
+			while(enumerator.hasNext()) {
+				Document document = enumerator.next().getDocument();
+				String sensorId = (String)document.getProperty("id");
+				if (sensor.getId().equals(sensorId)) {
+					document.delete();
+					mSensors.remove(sensor);
+					
+					MainActivity activity = (MainActivity)MainActivity.getAppContext();
+					activity.updateRegisteredSensors();
+				}
+			}
+			
+		} catch (CouchbaseLiteException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	public ArrayList<Sensor> getSensors() {
-		ArrayList<Sensor> resultList = new ArrayList<Sensor> ();
-		
-		return resultList;
+		return mSensors;
 	}
 }

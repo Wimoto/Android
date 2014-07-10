@@ -107,4 +107,8 @@ public class RightMenuFragment extends Fragment {
 		mSlidingFragmentActivity.pushFragmentToCenterSlide(NavigationFragment.newInstance(fragment), TAG_SENSOR + sensor.getId());
 		SensorsManager.getManager().registerSensor(sensor);
 	}
+	
+	public void updateRegisteredSensors() {
+		mAdapter.updateRegisteredSensors();
+	}
 }

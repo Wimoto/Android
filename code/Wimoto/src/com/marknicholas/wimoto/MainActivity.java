@@ -5,7 +5,6 @@ import android.os.Bundle;
 
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 import com.jeremyfeinstein.slidingmenu.lib.app.SlidingFragmentActivity;
-import com.marknicholas.wimoto.managers.SensorsManager;
 import com.marknicholas.wimoto.menu.left.LeftMenuFragment;
 import com.marknicholas.wimoto.menu.left.MenuItem;
 import com.marknicholas.wimoto.menu.right.RightMenuFragment;
@@ -50,5 +49,9 @@ public class MainActivity extends SlidingFragmentActivity {
 
 	public void showSensorDetails(Sensor sensor) {
 		mRightMenuFragment.showSensorDetails(sensor);
+	}
+	
+	public void updateRegisteredSensors() {
+		mRightMenuFragment.updateRegisteredSensors();
 	}
 }

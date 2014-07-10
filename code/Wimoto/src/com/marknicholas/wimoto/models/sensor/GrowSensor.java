@@ -7,5 +7,6 @@ public class GrowSensor extends Sensor {
 	
 	public GrowSensor() {
 		title = MainActivity.getAppContext().getResources().getString(R.string.sensor_grow);
+		type = Sensor.TYPE_GROW;
 	}
 }
