@@ -42,6 +42,10 @@ public class SensorFragment extends PageFragment {
 		
 		mSensorNameText.setText(mSensor.getTitle());
 		mRssiText.setText(mSensor.getRssi());
+		
+		if (!mSensor.isConnected()) {
+			mView.setBackgroundColor(getResources().getColor(R.color.color_black));
+		}
 	}
 	
 	public void setSensor(Sensor sensor) {

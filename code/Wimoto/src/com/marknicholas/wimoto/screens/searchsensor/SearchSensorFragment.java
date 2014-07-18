@@ -1,5 +1,7 @@
 package com.marknicholas.wimoto.screens.searchsensor;
 
+import java.util.ArrayList;
+
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,25 +12,35 @@ import android.widget.ListView;
 
 import com.marknicholas.wimoto.MainActivity;
 import com.marknicholas.wimoto.R;
+import com.marknicholas.wimoto.managers.SensorsManager;
+import com.marknicholas.wimoto.managers.SensorsManager.SensorObserver;
 import com.marknicholas.wimoto.models.sensor.Sensor;
 import com.mobitexoft.leftmenu.PageFragment;
 
-public class SearchSensorFragment extends PageFragment {
+public class SearchSensorFragment extends PageFragment implements SensorObserver {
 
 	private SearchSensorAdapter mAdapter;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-		setHeaderVisibility(View.GONE);
 		super.onCreate(savedInstanceState);
+		
+		setHeaderVisibility(View.GONE);
+		
+		mAdapter = new SearchSensorAdapter();
+		SensorsManager.getInstance().addObserverForUnregisteredSensors(this);
 	}
 	
+	@Override
+	public void onDestroy() {
+		SensorsManager.getInstance().removeObserverForUnregisteredSensors(this);
+		super.onDestroy();
+	}
+
 	@Override	
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		super.onCreateView(inflater, container, savedInstanceState);
 		View view = inflater.inflate(R.layout.found_sensor_fragment, null);
-
-		mAdapter = new SearchSensorAdapter();
 		
 		ListView listView = (ListView)view.findViewById(R.id.found_sensor_listview);
 		listView.setAdapter(mAdapter);
@@ -47,6 +59,11 @@ public class SearchSensorFragment extends PageFragment {
 	protected void showSensorDetails(Sensor sensor) {
 		MainActivity activity = (MainActivity)getActivity();
 		activity.showSensorDetails(sensor);
+	}
+
+	@Override
+	public void didUpdateSensors(ArrayList<Sensor> sensors) {
+		mAdapter.updateSensors(sensors);
 	}
 	
 }

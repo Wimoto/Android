@@ -4,6 +4,9 @@
     <string name="app_name">Wimoto</string>
     <string name="action_settings">Settings</string>
     
+    <!-- Alerts -->
+    <string name="alert_ble_not_supported">Bluetooth low energy is not supported on this device.</string>
+    
     <!-- Left Menu Items -->
     <string name="left_menu_add_sensor">Add New Sensor</string>
     <string name="left_menu_settings">Settings</string>

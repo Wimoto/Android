@@ -1,5 +1,7 @@
 package com.marknicholas.wimoto.menu.right;
 
+import java.util.ArrayList;
+
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -13,6 +15,7 @@ import android.widget.ListView;
 import com.jeremyfeinstein.slidingmenu.lib.app.SlidingFragmentActivity;
 import com.marknicholas.wimoto.R;
 import com.marknicholas.wimoto.managers.SensorsManager;
+import com.marknicholas.wimoto.managers.SensorsManager.SensorObserver;
 import com.marknicholas.wimoto.models.sensor.ClimateSensor;
 import com.marknicholas.wimoto.models.sensor.GrowSensor;
 import com.marknicholas.wimoto.models.sensor.Sensor;
@@ -29,7 +32,7 @@ import com.marknicholas.wimoto.screens.sensor.water.WaterSensorFragment;
 import com.marknicholas.wimoto.utils.SwipeDetector;
 import com.mobitexoft.navigation.NavigationFragment;
 
-public class RightMenuFragment extends Fragment {
+public class RightMenuFragment extends Fragment implements SensorObserver {
 	
 	private static final String TAG_NO_SENSOR = "no_sensor_tag";
 	private static final String TAG_SENSOR = "sensor_tag";
@@ -39,11 +42,27 @@ public class RightMenuFragment extends Fragment {
 	
 	private SlidingFragmentActivity mSlidingFragmentActivity;
 	
+	private Sensor mCenterDetailsSensor;
+	
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		
+		mSlidingFragmentActivity = (SlidingFragmentActivity)getActivity();
+		
+		mAdapter = new RightMenuAdapter();
+		SensorsManager.getInstance().addObserverForRegisteredSensors(this);
+	}
+	
+	@Override
+	public void onDestroy() {
+		SensorsManager.getInstance().removeObserverForRegisteredSensors(this);
+		super.onDestroy();
+	}
+	
 	@Override	
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.menu_right_fragment, null);
-		
-		mAdapter = new RightMenuAdapter();
 		
 		ListView listView = (ListView)view.findViewById(R.id.right_menu_listview);
 		listView.setAdapter(mAdapter);
@@ -76,10 +95,8 @@ public class RightMenuFragment extends Fragment {
 	}
 	
 	private void showDefaultSensor() {
-		mSlidingFragmentActivity = (SlidingFragmentActivity)getActivity();
-		
-		if (SensorsManager.getManager().getSensors().size() > 0) {
-			showSensorDetails(SensorsManager.getManager().getSensors().get(0));
+		if (SensorsManager.getInstance().getRegisteredSensors().size() > 0) {
+			showSensorDetails(SensorsManager.getInstance().getRegisteredSensors().get(0));
 		} else {
 			mSlidingFragmentActivity.pushFragmentToCenterSlide(NavigationFragment.newInstance(new NoSensorFragment()), TAG_NO_SENSOR);
 		}
@@ -88,27 +105,39 @@ public class RightMenuFragment extends Fragment {
 	public void showSensorDetails(Sensor sensor) {
 		SensorFragment fragment = null;
 		
-		if (sensor instanceof ClimateSensor) {
+		this.mCenterDetailsSensor = sensor;
+		
+		if (mCenterDetailsSensor instanceof ClimateSensor) {
 			fragment = new ClimateSensorFragment();
-		} else if (sensor instanceof GrowSensor) {
+		} else if (mCenterDetailsSensor instanceof GrowSensor) {
 			fragment = new GrowSensorFragment();
-		} else if (sensor instanceof SentrySensor) {
+		} else if (mCenterDetailsSensor instanceof SentrySensor) {
 			fragment = new SentrySensorFragment();
-		} else if (sensor instanceof ThermoSensor) {
+		} else if (mCenterDetailsSensor instanceof ThermoSensor) {
 			fragment = new ThermoSensorFragment();
-		} else if (sensor instanceof WaterSensor) {
+		} else if (mCenterDetailsSensor instanceof WaterSensor) {
 			fragment = new WaterSensorFragment();
 		}
 		
-		fragment.setSensor(sensor);
+		fragment.setSensor(mCenterDetailsSensor);
 
 		Log.e("", "sensor id " + sensor.getId());
 		
-		mSlidingFragmentActivity.pushFragmentToCenterSlide(NavigationFragment.newInstance(fragment), TAG_SENSOR + sensor.getId());
-		SensorsManager.getManager().registerSensor(sensor);
+		mSlidingFragmentActivity.pushFragmentToCenterSlide(NavigationFragment.newInstance(fragment), TAG_SENSOR + mCenterDetailsSensor.getId());
+		SensorsManager.getInstance().registerSensor(mCenterDetailsSensor);
 	}
-	
-	public void updateRegisteredSensors() {
-		mAdapter.updateRegisteredSensors();
+
+	@Override
+	public void didUpdateSensors(ArrayList<Sensor> sensors) {
+		mAdapter.updateSensors(sensors);
+		
+		if (mCenterDetailsSensor != null) {
+			Fragment centerFragment = mSlidingFragmentActivity.getCenterFragment().getChildFragmentManager().findFragmentByTag(TAG_SENSOR + mCenterDetailsSensor.getId());
+			if (centerFragment != null) {
+				if (!mCenterDetailsSensor.isRegistered()) {
+					showDefaultSensor();
+				}
+			}
+		}
 	}
 }

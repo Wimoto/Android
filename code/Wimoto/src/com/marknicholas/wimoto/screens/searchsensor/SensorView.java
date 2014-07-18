@@ -1,6 +1,7 @@
 package com.marknicholas.wimoto.screens.searchsensor;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -20,11 +21,13 @@ public class SensorView extends LinearLayout {
 	}
 
 	public void setSensor(Sensor sensor) {
-		if (mSensor != null) {
+		if (mSensor == sensor) {
 			return;
 		}
 		
 		this.mSensor = sensor;
+		
+		Log.e("", "SensorView setSensor " + mSensor.getTitle());
 		
 		TextView titleView = (TextView)findViewById(R.id.sensor_title);
 		titleView.setText(mSensor.getTitle());

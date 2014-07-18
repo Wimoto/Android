@@ -11,18 +11,19 @@ import com.marknicholas.wimoto.MainActivity;
 import com.marknicholas.wimoto.R;
 import com.marknicholas.wimoto.managers.SensorsManager;
 import com.marknicholas.wimoto.models.sensor.Sensor;
+import com.marknicholas.wimoto.utils.AppContext;
 
 public class RightMenuAdapter extends BaseAdapter {
 
 private ArrayList<Sensor> mSensors;
 	
 	public RightMenuAdapter() {
-		updateRegisteredSensors();
+		mSensors = new ArrayList<Sensor>();
 	}
 	
-	public void updateRegisteredSensors() {
-		mSensors = new ArrayList<Sensor>();
-		mSensors.addAll(SensorsManager.getManager().getSensors());
+	public void updateSensors(ArrayList<Sensor> sensors) {
+		mSensors.clear();
+		mSensors.addAll(sensors);
 		
 		notifyDataSetChanged();
 	}
@@ -46,7 +47,7 @@ private ArrayList<Sensor> mSensors;
 	public View getView(final int position, View convertView, ViewGroup parent) {
 		RightMenuView rightMenuView = null;
 		if (convertView == null) {
-			rightMenuView = new RightMenuView(MainActivity.getAppContext());
+			rightMenuView = new RightMenuView(AppContext.getContext());
 		} else {
 			rightMenuView = (RightMenuView)convertView;
 		}
@@ -63,10 +64,8 @@ private ArrayList<Sensor> mSensors;
 		
 		return rightMenuView;
 	}
-	
-	
-	
+
 	private void deleteSensor(Sensor sensor) {
-		SensorsManager.getManager().unregisterSensor(sensor);
+		SensorsManager.getInstance().unregisterSensor(sensor);
 	}
 }

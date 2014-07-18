@@ -9,6 +9,7 @@ import android.widget.BaseAdapter;
 
 import com.marknicholas.wimoto.MainActivity;
 import com.marknicholas.wimoto.R;
+import com.marknicholas.wimoto.utils.AppContext;
 
 public class LeftMenuAdapter extends BaseAdapter {
 
@@ -17,7 +18,7 @@ public class LeftMenuAdapter extends BaseAdapter {
 	private Resources mResources;
 	
 	public LeftMenuAdapter() {
-		mResources = MainActivity.getAppContext().getResources();
+		mResources = AppContext.getContext().getResources();
 		
 		initMenuItems();
 	}
@@ -50,7 +51,7 @@ public class LeftMenuAdapter extends BaseAdapter {
 	public View getView(int position, View convertView, ViewGroup parent) {
 		MenuItem item = getItem(position);
 		if (convertView == null) {
-			convertView = new LeftMenuView(MainActivity.getAppContext());
+			convertView = new LeftMenuView(AppContext.getContext());
 		}
 		((LeftMenuView)convertView).setMenuItem(item);
 		
