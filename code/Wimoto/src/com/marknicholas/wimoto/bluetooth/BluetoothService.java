@@ -3,38 +3,36 @@ package com.marknicholas.wimoto.bluetooth;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
 import android.bluetooth.BluetoothProfile;
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.util.Log;
 
-import com.marknicholas.wimoto.bluetooth.BluetoothConnection.BluetoothDiscoveryListener;
-import com.marknicholas.wimoto.bluetooth.BluetoothConnection.WimotoProfile;
-import com.marknicholas.wimoto.models.sensor.ClimateSensor;
-import com.marknicholas.wimoto.models.sensor.GrowSensor;
+import com.marknicholas.wimoto.bluetooth.BluetoothConnection.BluetoothConnectionStateListener;
 import com.marknicholas.wimoto.utils.AppContext;
 
-public class BluetoothService {
+public class BluetoothService implements BluetoothConnectionStateListener {
 	
+	private BluetoothManager mBluetoothManager;
 	private BluetoothAdapter mBluetoothAdapter;
 	private Map<String, BluetoothConnection> mManagedConnections;
 	
-	private BluetoothDiscoveryListener mDiscoveryListener;
-		
-	public BluetoothService(BluetoothDiscoveryListener discoveryListener) {
-		mDiscoveryListener = discoveryListener;
-		
-		mBluetoothAdapter = ((BluetoothManager)AppContext.getContext().getSystemService(Context.BLUETOOTH_SERVICE)).getAdapter();
-		mManagedConnections = new HashMap<String, BluetoothConnection>();		
+	public interface BluetoothServiceListener {
+		void connectionEstablished(BluetoothConnection connection);
+		void connectionAborted(BluetoothConnection connection);
 	}
 	
-	public static boolean hasBluetoothFeature() {
-		return AppContext.getContext().getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE);
+	private BluetoothServiceListener mBleServiceListener;
+		
+	public BluetoothService(BluetoothServiceListener bleServiceListener) {
+		mBleServiceListener = bleServiceListener;
+		
+		mBluetoothManager = (BluetoothManager)AppContext.getContext().getSystemService(Context.BLUETOOTH_SERVICE);
+		mBluetoothAdapter = mBluetoothManager.getAdapter();
+		mManagedConnections = new HashMap<String, BluetoothConnection>();		
 	}
 	
 	public boolean isBluetoothEnabled() {
@@ -47,9 +45,14 @@ public class BluetoothService {
 	
 	public void disconnectGatts() {
 		Collection<BluetoothConnection> connections = mManagedConnections.values();
+		
 		for (BluetoothConnection connection:connections) {
-			connection.disconnect();
-		}		
+			if (mBleServiceListener != null) {
+				mBleServiceListener.connectionAborted(connection);
+			}
+
+			connection.disconnect();			
+		}
 		mManagedConnections.clear();
 	}
 	
@@ -70,17 +73,36 @@ public class BluetoothService {
 	    	
 	    	BluetoothConnection connection = mManagedConnections.get(device.getAddress());
 	    	if (connection == null) {
-		    	connection = BluetoothConnection.createConnection(mDiscoveryListener, device, scanRecord);
+		    	connection = BluetoothConnection.createConnection(getCurrentService(), device, scanRecord);
 	    		
-	    		Log.e("", "onLeScan conn created " + device.getName());
-	    		if (connection.getWimotoProfile() != WimotoProfile.UNDEFINED) {
-	    			Log.e("", "onLeScan conn added " + device.getName());
-	    			mManagedConnections.put(device.getAddress(), connection);
-	    			connection.connect();
-	    		}
-	    	} else if (connection.getState() != BluetoothProfile.STATE_CONNECTED) {
-	    		connection.connect(); 
+		    	if (connection != null) {
+		    		mManagedConnections.put(device.getAddress(), connection);
+		    	}		    	
 	    	}
 	   }
 	};
+	
+	private BluetoothService getCurrentService() {
+		return this;
+	}
+
+	@Override
+	public void didConnectionStateChanged(BluetoothConnection connection) {
+		int state = mBluetoothManager.getConnectionState(connection.getBluetoothDevice(), BluetoothProfile.GATT);
+		
+		Log.e("", "sensor " + connection.getBluetoothDevice().getName() + " _ " + state);
+		
+		if (state == BluetoothProfile.STATE_CONNECTED) {
+			if (mBleServiceListener != null) {
+				mBleServiceListener.connectionEstablished(connection);
+			}
+		} else if (state == BluetoothProfile.STATE_DISCONNECTED) {
+			if (mBleServiceListener != null) {
+				mBleServiceListener.connectionAborted(connection);
+			}
+			
+			connection.disconnect();
+			mManagedConnections.remove(connection.getAddress());			
+		}
+	}	
 }

@@ -229,9 +229,5 @@ public class SlidingFragmentActivity extends FragmentActivity implements Sliding
 
 	private void setSecondaryMenu(int id) {
 		getSlidingMenu().setSecondaryMenu(id);
-	}
-	
-	public Fragment getCenterFragment() {
-		return mCenterFragment;
-	}
+	}	
 }

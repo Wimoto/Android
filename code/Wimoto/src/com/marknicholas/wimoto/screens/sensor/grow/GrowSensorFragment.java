@@ -1,5 +1,7 @@
 package com.marknicholas.wimoto.screens.sensor.grow;
 
+import java.util.Observable;
+
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -49,5 +51,24 @@ public class GrowSensorFragment extends SensorFragment {
 				
 			}
 		});
+	}
+	
+	@Override
+	public void update(Observable observable, Object data) {
+		super.update(observable, data);
+		
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+            	int colorId = R.color.color_sensor_grow;
+        		if (mSensor == null) {
+        			colorId = R.color.color_light_gray;
+        		} else if (!mSensor.isConnected()){
+        			colorId = R.color.color_light_gray;
+        		}
+        		
+        		mView.setBackgroundColor(getResources().getColor(colorId));
+            }
+        });
 	}
 }

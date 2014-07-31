@@ -30,7 +30,6 @@
         android:layout_alignParentTop="true"
         android:layout_marginRight="40dp"
         android:gravity="right|center"
-        android:text="@string/sensor_rrsi"
         android:textColor="@color/color_white"
         android:textSize="16sp" />
 

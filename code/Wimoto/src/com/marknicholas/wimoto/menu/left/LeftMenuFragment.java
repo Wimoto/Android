@@ -48,11 +48,11 @@ public class LeftMenuFragment extends ListFragment {
 		}
 		
 		if (MenuItem.SEARCH.equals(menuItemTag)) {
-			mSlidingFragmentActivity.pushFragmentToCenterSlide(NavigationFragment.newInstance(new SearchSensorFragment()), menuItemTag);
+			mSlidingFragmentActivity.pushFragmentToCenterSlide(new SearchSensorFragment(), menuItemTag);
 		} else if (MenuItem.SETTINGS.equals(menuItemTag)) {
-			mSlidingFragmentActivity.pushFragmentToCenterSlide(NavigationFragment.newInstance(new SettingsFragment()), menuItemTag);
+			mSlidingFragmentActivity.pushFragmentToCenterSlide(new SettingsFragment(), menuItemTag);
 		} else if (MenuItem.HELP.equals(menuItemTag)) {
-			mSlidingFragmentActivity.pushFragmentToCenterSlide(NavigationFragment.newInstance(new HelpFragment()), menuItemTag);
+			mSlidingFragmentActivity.pushFragmentToCenterSlide(new HelpFragment(), menuItemTag);
 		}
 	}
 

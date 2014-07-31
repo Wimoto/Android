@@ -1,5 +1,8 @@
 package com.marknicholas.wimoto.screens.sensor;
 
+import java.util.Observable;
+import java.util.Observer;
+
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,19 +11,53 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.marknicholas.wimoto.R;
-import com.marknicholas.wimoto.models.sensor.Sensor;
-import com.mobitexoft.navigation.PageFragment;
+import com.marknicholas.wimoto.model.ClimateSensor;
+import com.marknicholas.wimoto.model.GrowSensor;
+import com.marknicholas.wimoto.model.Sensor;
+import com.marknicholas.wimoto.model.SentrySensor;
+import com.marknicholas.wimoto.model.ThermoSensor;
+import com.marknicholas.wimoto.model.WaterSensor;
+import com.marknicholas.wimoto.screens.sensor.climate.ClimateSensorFragment;
+import com.marknicholas.wimoto.screens.sensor.grow.GrowSensorFragment;
+import com.marknicholas.wimoto.screens.sensor.sentry.SentrySensorFragment;
+import com.marknicholas.wimoto.screens.sensor.thermo.ThermoSensorFragment;
+import com.marknicholas.wimoto.screens.sensor.water.WaterSensorFragment;
+import com.mobitexoft.leftmenu.PageFragment;
 
-public class SensorFragment extends PageFragment {
+public class SensorFragment extends PageFragment implements Observer {
+	
+	private static final String TAG_SENSOR = "sensor_tag";
+	private static final String TAG_NO_SENSOR = "no_sensor_tag";
 	
 	protected View mView;
 	
 	protected ImageView mBatteryImageView;
-	protected TextView mRssiText;
+	protected TextView mRssiTextView;
 	protected TextView mSensorNameText;
 	protected TextView mLastUpdateText;
 	
 	protected Sensor mSensor;
+	
+	public static SensorFragment createSensorFragment(Sensor sensor) {
+		SensorFragment fragment = null;
+		
+		if (sensor instanceof ClimateSensor) {
+			fragment = new ClimateSensorFragment();
+		} else if (sensor instanceof GrowSensor) {
+			fragment = new GrowSensorFragment();
+		} else if (sensor instanceof SentrySensor) {
+			fragment = new SentrySensorFragment();
+		} else if (sensor instanceof ThermoSensor) {
+			fragment = new ThermoSensorFragment();
+		} else if (sensor instanceof WaterSensor) {
+			fragment = new WaterSensorFragment();
+		}
+		
+		if (fragment != null) {
+			fragment.setSensor(sensor);
+		}
+		return fragment;
+	}
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -34,25 +71,73 @@ public class SensorFragment extends PageFragment {
 		return mView;
 	}
 	
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+		
+		if (mSensor != null) {
+			mSensor.deleteObserver(this);
+		}
+	}
+
 	protected void initViews() {
 		mBatteryImageView = (ImageView)mView.findViewById(R.id.battery_level);
-		mRssiText = (TextView)mView.findViewById(R.id.rrsi_text);
+		mRssiTextView = (TextView)mView.findViewById(R.id.rrsi_text);
 		mSensorNameText = (TextView)mView.findViewById(R.id.sensor_name_text);
 		mLastUpdateText = (TextView)mView.findViewById(R.id.last_updated_text);
 		
 		mSensorNameText.setText(mSensor.getTitle());
-		mRssiText.setText(mSensor.getRssi());
 		
-		if (!mSensor.isConnected()) {
-			mView.setBackgroundColor(getResources().getColor(R.color.color_black));
+		if (mSensor.isConnected()) {
+			setRssi(mSensor.getRssi());
+		} else {
+			mView.setBackgroundColor(getResources().getColor(R.color.color_light_gray));
 		}
 	}
 	
 	public void setSensor(Sensor sensor) {
-		if (sensor == null) {
+		if (mSensor != null) {
+			mSensor.deleteObserver(this);
+		}
+		
+		mSensor = sensor;
+		if (mSensor != null) {
+			mSensor.addObserver(this);
+		}
+	}
+	
+	public String getFragmentId() {
+		if (mSensor == null) {
+			return TAG_NO_SENSOR;
+		}
+		return TAG_SENSOR + mSensor.getId();
+	}
+
+	private void setRssi(int rssi) {
+		if (mRssiTextView == null) {
 			return;
 		}
 		
-		this.mSensor = sensor;
+		if (rssi == 0) {
+			mRssiTextView.setVisibility(View.INVISIBLE);
+		} else {
+			mRssiTextView.setVisibility(View.VISIBLE);
+			mRssiTextView.setText(rssi + "dB");
+		}            	
+	}
+	
+	@Override
+	public void update(Observable observable, Object data) {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+				int rssiLevel = 0;
+				if (mSensor != null) {
+					rssiLevel = mSensor.getRssi();
+				}
+				
+				setRssi(rssiLevel);
+            }
+        });
 	}
 }

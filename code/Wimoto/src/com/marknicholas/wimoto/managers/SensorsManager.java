@@ -6,11 +6,9 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
-import java.util.Random;
-
-import android.os.Handler;
-import android.os.Message;
+import java.util.Set;
 
 import com.couchbase.lite.CouchbaseLiteException;
 import com.couchbase.lite.Database;
@@ -24,23 +22,17 @@ import com.couchbase.lite.View;
 import com.couchbase.lite.util.Log;
 import com.marknicholas.wimoto.MainActivity;
 import com.marknicholas.wimoto.bluetooth.BluetoothConnection;
-import com.marknicholas.wimoto.bluetooth.BluetoothConnection.BluetoothDiscoveryListener;
 import com.marknicholas.wimoto.bluetooth.BluetoothService;
-import com.marknicholas.wimoto.models.sensor.ClimateSensor;
-import com.marknicholas.wimoto.models.sensor.GrowSensor;
-import com.marknicholas.wimoto.models.sensor.Sensor;
-import com.marknicholas.wimoto.models.sensor.ThermoSensor;
-import com.marknicholas.wimoto.models.sensor.WaterSensor;
+import com.marknicholas.wimoto.bluetooth.BluetoothService.BluetoothServiceListener;
+import com.marknicholas.wimoto.model.Sensor;
 import com.marknicholas.wimoto.utils.AppContext;
 
-public class SensorsManager implements BluetoothDiscoveryListener {
+public class SensorsManager implements BluetoothServiceListener {
 
 	private final static String WIMOTO_DB 		= "wimoto";
 	private final static String WIMOTO_SENSORS 	= "wimoto_sensors";
 	
 	private final static String DOC_TYPE		= "sensor";
-	
-	private final static String TAG = "SensorsManager";
 	
 	private Map<String, Sensor> mSensors;
 	
@@ -48,28 +40,18 @@ public class SensorsManager implements BluetoothDiscoveryListener {
 	
 	private BluetoothService mBluetoothService;
 	
-	public interface SensorObserver {
+	public interface SensorsManagerListener {
 		void didUpdateSensors(ArrayList<Sensor> sensors);
 	}
 	 
-	private ArrayList<SensorObserver> mUnregisteredSensorObservers;
-	private ArrayList<SensorObserver> mRegisteredSensorObservers;
-	
-	private static SensorsManager sManager = null;
-	
-	public static SensorsManager getInstance() {
-		if (sManager == null) {
-			sManager = new SensorsManager();
-		}
+	private Set<SensorsManagerListener> mUnregisteredSensorListeners;
+	private Set<SensorsManagerListener> mRegisteredSensorListeners;
 		
-		return sManager;
-	}
-	
-	private SensorsManager () {
+	public SensorsManager () {
 		mSensors = new HashMap<String, Sensor>();
 		
-		mUnregisteredSensorObservers = new ArrayList<SensorObserver> ();
-		mRegisteredSensorObservers = new ArrayList<SensorObserver> ();
+		mUnregisteredSensorListeners = new HashSet<SensorsManagerListener> ();
+		mRegisteredSensorListeners = new HashSet<SensorsManagerListener> ();
 
 		try {
 			Manager manager = new Manager(AppContext.getContext().getFilesDir(), Manager.DEFAULT_OPTIONS);
@@ -92,20 +74,20 @@ public class SensorsManager implements BluetoothDiscoveryListener {
 		}
 	}
 	
-	public static boolean isBluetoothEnabled() {
-		return SensorsManager.getInstance().mBluetoothService.isBluetoothEnabled();
+	public boolean isBluetoothEnabled() {
+		return mBluetoothService.isBluetoothEnabled();
 	}
 	
-	public static void startScan() {
-		SensorsManager.getInstance().mBluetoothService.scanLeDevices(true);
+	public void startScan() {
+		mBluetoothService.scanLeDevices(true);
 	}
 	
-	public static void stopScan() {
-		SensorsManager.getInstance().mBluetoothService.scanLeDevices(false);
+	public void stopScan() {
+		mBluetoothService.scanLeDevices(false);
 	}
 	
-	public static void disconnectGatts() {
-		SensorsManager.getInstance().mBluetoothService.disconnectGatts();
+	public void disconnectGatts() {
+		mBluetoothService.disconnectGatts();
 	}
 	
 	public Query getQuery() {
@@ -137,14 +119,14 @@ public class SensorsManager implements BluetoothDiscoveryListener {
 		properties.put("type", DOC_TYPE);
 		properties.put("title", newSensor.getTitle());
 		properties.put("id", newSensor.getId());
-		properties.put("sensor_type", newSensor.getType());
+		properties.put("sensor_type", newSensor.getType().getValue());
 		properties.put("created_at", currentTimeString);
 		
 		try {
 			Document document = mDatabase.createDocument();
 			document.putProperties(properties);
 			
-			newSensor.setRegistered(true);
+			newSensor.setDocument(document);
 			
 			notifyRegisteredSensorObservers();
 			notifyUnregisteredSensorObservers();
@@ -156,52 +138,38 @@ public class SensorsManager implements BluetoothDiscoveryListener {
 	
 	public void unregisterSensor(Sensor sensor) {
 		try {
-			QueryEnumerator enumerator = getQuery().run();
+			sensor.getDocument().delete();
+			sensor.setDocument(null);
 			
-			if (enumerator == null) {
-				return;
+			if (!sensor.isConnected()) {
+				mSensors.remove(sensor.getId());
 			}
-			
-			while(enumerator.hasNext()) {
-				Document document = enumerator.next().getDocument();
-				String sensorId = (String)document.getProperty("id");
-				if (sensor.getId().equals(sensorId)) {
-					document.delete();
-					
-					sensor.setRegistered(false);
-					
-					if (!sensor.isConnected()) {
-						mSensors.remove(sensor);
-					}
-					
-					notifyRegisteredSensorObservers();
-					notifyUnregisteredSensorObservers();
-				}
-			}
-			
+
+			notifyRegisteredSensorObservers();
+			notifyUnregisteredSensorObservers();
 		} catch (CouchbaseLiteException e) {
 			e.printStackTrace();
 		}
 	}
 	
-	public void addObserverForUnregisteredSensors(SensorObserver observer) {
-		mUnregisteredSensorObservers.add(observer);
+	public void addListenerForUnregisteredSensors(SensorsManagerListener listener) {
+		mUnregisteredSensorListeners.add(listener);
 		
-		observer.didUpdateSensors(getUnregisteredSensors());
+		listener.didUpdateSensors(getUnregisteredSensors());
 	}
 	
-	public void removeObserverForUnregisteredSensors(SensorObserver observer) {
-		mUnregisteredSensorObservers.remove(observer);
+	public void removeListenerForUnregisteredSensors(SensorsManagerListener observer) {
+		mUnregisteredSensorListeners.remove(observer);
 	}
 	
-	public void addObserverForRegisteredSensors(SensorObserver observer) {
-		mRegisteredSensorObservers.add(observer);
+	public void addListenerForRegisteredSensors(SensorsManagerListener observer) {
+		mRegisteredSensorListeners.add(observer);
 		
 		observer.didUpdateSensors(getRegisteredSensors());
 	}
 	
-	public void removeObserverForRegisteredSensors(SensorObserver observer) {
-		mRegisteredSensorObservers.remove(observer);
+	public void removeListenerForRegisteredSensors(SensorsManagerListener observer) {
+		mRegisteredSensorListeners.remove(observer);
 	}
 	
 	public ArrayList<Sensor> getRegisteredSensors() {
@@ -209,7 +177,7 @@ public class SensorsManager implements BluetoothDiscoveryListener {
 		
 		Collection<Sensor> values = mSensors.values();
 		for (Sensor sensor: values) {
-			if (sensor.isRegistered()) {
+			if (sensor.getDocument() != null) {
 				resultList.add(sensor);
 			}
 		}
@@ -221,7 +189,7 @@ public class SensorsManager implements BluetoothDiscoveryListener {
 		
 		Collection<Sensor> values = mSensors.values();
 		for (Sensor sensor: values) {
-			if (!sensor.isRegistered()) {
+			if (sensor.getDocument() == null) {
 				resultList.add(sensor);
 			}
 		}
@@ -230,141 +198,51 @@ public class SensorsManager implements BluetoothDiscoveryListener {
 	
 	private void notifyRegisteredSensorObservers() {
 		ArrayList<Sensor> sensors = getRegisteredSensors();
-		for (SensorObserver observer: mRegisteredSensorObservers) {
+		for (SensorsManagerListener observer: mRegisteredSensorListeners) {
 			observer.didUpdateSensors(sensors);
 		}
 	}
 	
 	private void notifyUnregisteredSensorObservers() {
 		ArrayList<Sensor> sensors = getUnregisteredSensors();
-		for (SensorObserver observer: mUnregisteredSensorObservers) {
+		for (SensorsManagerListener observer: mUnregisteredSensorListeners) {
 			observer.didUpdateSensors(sensors);
 		}
 	}
-	
-	private Sensor getRandomSensor() {
-		ArrayList<Sensor> randomList = new ArrayList<Sensor>();
-		
-		GrowSensor growSensor = new GrowSensor();
-		growSensor.setId("ABCDEF-GHIJKL-MNOPQR-STUVWX-YZ");
-		growSensor.setRssi("-37dB");
-		randomList.add(growSensor);
-		
-		ThermoSensor thermoSensor = new ThermoSensor();
-		thermoSensor.setId("123456-GHIJKL-765432-STUVWX-42");
-		thermoSensor.setRssi("-42dB");
-		randomList.add(thermoSensor);
-		
-		ClimateSensor climateSensor = new ClimateSensor();
-		climateSensor.setId("xxxxxx-yyyyyy-zzzzzz-STUVWX-00");
-		climateSensor.setRssi("-11dB");
-		randomList.add(climateSensor);
-		
-		GrowSensor growSensor2 = new GrowSensor();
-		growSensor2.setId("ABC123-456JKL-MNO789-STUVWX-00");
-		growSensor2.setRssi("-666dB");
-		randomList.add(growSensor2);
-		
-		WaterSensor waterSensor = new WaterSensor();
-		waterSensor.setId("pppppp-fffffff-zzzzzz-iiiiii-rr");
-		waterSensor.setRssi("-213dB");
-		randomList.add(waterSensor);
-		
-		Random random = new Random();
-		int index = random.nextInt(randomList.size());
-		Sensor randomSensor = randomList.get(index);
-		
-		Log.e("RANDOM", String.format("index = %d, id = %s", index, randomSensor.getId()));
-		
-		return randomSensor;
-	}
-	
-	private void generateRandomSensorBehavior() {
-		Sensor sensor = getRandomSensor();
-		
-		Sensor equalSensor = getEqualSensor(sensor);
-		if (equalSensor == null) {
-			connectSensor(sensor);
-		} else {
-			if (equalSensor.isConnected()) {
-				disconnectSensor(equalSensor);
-			} else {
-				connectSensor(equalSensor);
-			}
-		}
-	}
-	
-	private Sensor getEqualSensor(Sensor newSensor) {
-//		for (Sensor sensor:mSensors) {
-//			if (newSensor.getId().equals(sensor.getId())) {
-//				return sensor;
-//			}
-//		}
-		return null;
-	}
-	
-	private void connectSensor(Sensor sensor) {
-//		Sensor equalSensor = getEqualSensor(sensor);
-//		if (equalSensor == null) {
-//			mSensors.add(sensor);
-//		} else {
-//			sensor = equalSensor;
-//		}
-//		
-//		sensor.setConnected(true);
-//		Log.e("Connected", sensor.getTitle() + " " + sensor.getId());
-//		
-//		mHandler.sendEmptyMessage(0);
-	}
-	
-	private void disconnectSensor(Sensor sensor) {
-		if (sensor.isRegistered()) {
-			sensor.setConnected(false);
-		} else {
-			mSensors.remove(sensor);
-		}
-		
-		Log.e("Disconnected", sensor.getTitle() + " " + sensor.getId());
-		
-		mHandler.sendEmptyMessage(0);
-	}
-	
-	private Handler mHandler = new Handler() {
-		public void handleMessage(Message message) {
-			notifyUnregisteredSensorObservers();
-		}
-	};
-
+					
 	@Override
 	public void connectionEstablished(BluetoothConnection connection) {
 		Sensor sensor = mSensors.get(connection.getId());
 		if (sensor == null) {
 			mSensors.put(connection.getId(), Sensor.getSensorFromConnection(connection));
+			
+			((MainActivity)AppContext.getContext()).runOnUiThread(new Runnable() {
+				@Override
+				public void run() {
+					notifyUnregisteredSensorObservers();
+				}
+			});
 		} else {
 			sensor.setConnection(connection);
-		}
-		
-		((MainActivity)AppContext.getContext()).runOnUiThread(new Runnable() {
-			@Override
-			public void run() {
-				notifyUnregisteredSensorObservers();
-			}
-		});
+		}		
 	}
 
 	@Override
 	public void connectionAborted(BluetoothConnection connection) {
 		Sensor sensor = mSensors.get(connection.getId());
-		if (sensor != null) {
-			if (!sensor.isRegistered()) {
-				mSensors.remove(sensor);
+		if (sensor != null) { 
+			sensor.setConnection(null);
+			
+			if (sensor.getDocument() == null) {
+				mSensors.remove(connection.getId());
+				
+				((MainActivity)AppContext.getContext()).runOnUiThread(new Runnable() {
+					@Override
+					public void run() {
+						notifyUnregisteredSensorObservers();
+					}
+				});
 			}
 		}
-		((MainActivity)AppContext.getContext()).runOnUiThread(new Runnable() {
-			@Override
-			public void run() {
-				notifyUnregisteredSensorObservers();
-			}
-		});
 	}
 }

@@ -2,6 +2,7 @@ package com.marknicholas.wimoto.menu.right;
 
 import java.util.ArrayList;
 
+import android.content.Context;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -9,15 +10,15 @@ import android.widget.BaseAdapter;
 
 import com.marknicholas.wimoto.MainActivity;
 import com.marknicholas.wimoto.R;
-import com.marknicholas.wimoto.managers.SensorsManager;
-import com.marknicholas.wimoto.models.sensor.Sensor;
-import com.marknicholas.wimoto.utils.AppContext;
+import com.marknicholas.wimoto.model.Sensor;
 
 public class RightMenuAdapter extends BaseAdapter {
 
-private ArrayList<Sensor> mSensors;
-	
-	public RightMenuAdapter() {
+	private Context mContext;
+	private ArrayList<Sensor> mSensors;
+
+	public RightMenuAdapter(Context context) {
+		mContext = context;
 		mSensors = new ArrayList<Sensor>();
 	}
 	
@@ -47,7 +48,7 @@ private ArrayList<Sensor> mSensors;
 	public View getView(final int position, View convertView, ViewGroup parent) {
 		RightMenuView rightMenuView = null;
 		if (convertView == null) {
-			rightMenuView = new RightMenuView(AppContext.getContext());
+			rightMenuView = new RightMenuView(mContext);
 		} else {
 			rightMenuView = (RightMenuView)convertView;
 		}
@@ -66,6 +67,6 @@ private ArrayList<Sensor> mSensors;
 	}
 
 	private void deleteSensor(Sensor sensor) {
-		SensorsManager.getInstance().unregisterSensor(sensor);
+		((MainActivity)mContext).getSensorsManager().unregisterSensor(sensor);
 	}
 }

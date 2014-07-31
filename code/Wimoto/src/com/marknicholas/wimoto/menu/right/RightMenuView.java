@@ -8,7 +8,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.marknicholas.wimoto.R;
-import com.marknicholas.wimoto.models.sensor.Sensor;
+import com.marknicholas.wimoto.model.Sensor;
 
 public class RightMenuView extends RelativeLayout {
 	

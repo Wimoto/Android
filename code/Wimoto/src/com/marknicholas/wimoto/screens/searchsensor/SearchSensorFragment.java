@@ -13,11 +13,11 @@ import android.widget.ListView;
 import com.marknicholas.wimoto.MainActivity;
 import com.marknicholas.wimoto.R;
 import com.marknicholas.wimoto.managers.SensorsManager;
-import com.marknicholas.wimoto.managers.SensorsManager.SensorObserver;
-import com.marknicholas.wimoto.models.sensor.Sensor;
+import com.marknicholas.wimoto.managers.SensorsManager.SensorsManagerListener;
+import com.marknicholas.wimoto.model.Sensor;
 import com.mobitexoft.leftmenu.PageFragment;
 
-public class SearchSensorFragment extends PageFragment implements SensorObserver {
+public class SearchSensorFragment extends PageFragment implements SensorsManagerListener {
 
 	private SearchSensorAdapter mAdapter;
 	
@@ -28,12 +28,12 @@ public class SearchSensorFragment extends PageFragment implements SensorObserver
 		setHeaderVisibility(View.GONE);
 		
 		mAdapter = new SearchSensorAdapter();
-		SensorsManager.getInstance().addObserverForUnregisteredSensors(this);
+		((MainActivity)getActivity()).getSensorsManager().addListenerForUnregisteredSensors(this);
 	}
 	
 	@Override
 	public void onDestroy() {
-		SensorsManager.getInstance().removeObserverForUnregisteredSensors(this);
+		((MainActivity)getActivity()).getSensorsManager().removeListenerForUnregisteredSensors(this);
 		super.onDestroy();
 	}
 
@@ -48,22 +48,20 @@ public class SearchSensorFragment extends PageFragment implements SensorObserver
 		listView.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				showSensorDetails(mAdapter.getItem(position));
+				registerSensor(mAdapter.getItem(position));
 			}
 		});
 		
 		return view;
 	}
 	
-
-	protected void showSensorDetails(Sensor sensor) {
-		MainActivity activity = (MainActivity)getActivity();
-		activity.showSensorDetails(sensor);
-	}
-
 	@Override
 	public void didUpdateSensors(ArrayList<Sensor> sensors) {
 		mAdapter.updateSensors(sensors);
+	}
+	
+	private void registerSensor(Sensor sensor) {
+		((MainActivity)getActivity()).getSensorsManager().registerSensor(sensor);
 	}
 	
 }

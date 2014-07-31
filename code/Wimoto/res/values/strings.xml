@@ -16,8 +16,8 @@
     
     <!-- Sensor screens values -->
      <string name="sensor_update">Update</string> 
-     <string name="sensor_rrsi">RRSI</string>
-     <string name="sensor_rrsi2">RRSI:</string>
+     <string name="sensor_rrsi">RSSI</string>
+     <string name="sensor_rrsi2">RSSI:</string>
      <string name="sensor_two_hyphens">--</string>  
      <string name="sensor_just_now">Just now</string>  
      <string name="sensor_cm">cm</string>
