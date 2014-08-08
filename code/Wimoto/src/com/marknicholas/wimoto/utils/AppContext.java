@@ -3,11 +3,6 @@ package com.marknicholas.wimoto.utils;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.graphics.Point;
-import android.graphics.Typeface;
-import android.text.TextUtils;
-import android.view.Display;
-import android.view.WindowManager;
 
 public class AppContext {
 	

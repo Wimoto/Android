@@ -12,7 +12,6 @@ import com.marknicholas.wimoto.R;
 import com.marknicholas.wimoto.screens.help.HelpFragment;
 import com.marknicholas.wimoto.screens.searchsensor.SearchSensorFragment;
 import com.marknicholas.wimoto.screens.settings.SettingsFragment;
-import com.mobitexoft.navigation.NavigationFragment;
 
 public class LeftMenuFragment extends ListFragment {
 	

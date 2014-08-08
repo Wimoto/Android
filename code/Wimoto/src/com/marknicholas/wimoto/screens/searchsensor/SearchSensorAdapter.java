@@ -6,7 +6,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 
-import com.marknicholas.wimoto.MainActivity;
 import com.marknicholas.wimoto.model.Sensor;
 import com.marknicholas.wimoto.utils.AppContext;
 

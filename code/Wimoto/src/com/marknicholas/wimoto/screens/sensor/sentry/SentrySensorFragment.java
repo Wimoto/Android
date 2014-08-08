@@ -1,16 +1,23 @@
 package com.marknicholas.wimoto.screens.sensor.sentry;
 
+import java.util.Observable;
+
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.marknicholas.wimoto.R;
+import com.marknicholas.wimoto.model.SentrySensor;
 import com.marknicholas.wimoto.screens.sensor.SensorFragment;
 import com.marknicholas.wimoto.widgets.AnimationSwitch;
 import com.marknicholas.wimoto.widgets.AnimationSwitch.OnCheckedChangeListener;
 
 public class SentrySensorFragment extends SensorFragment {
+	
+	private TextView mTemperatureTextView;
+	private TextView mHumidityTextView;
 	
 	private AnimationSwitch mTemperatureSwitch;
 	private AnimationSwitch mHumiditySwitch;
@@ -25,6 +32,7 @@ public class SentrySensorFragment extends SensorFragment {
 	protected void initViews() {
 		super.initViews();
 		
+		mTemperatureTextView = (TextView) mView.findViewById(R.id.temperature_text);
 		mTemperatureSwitch = (AnimationSwitch)mView.findViewById(R.id.temperature_switch);
 		mTemperatureSwitch.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 			@Override
@@ -33,6 +41,7 @@ public class SentrySensorFragment extends SensorFragment {
 			}
 		});
 		
+		mHumidityTextView = (TextView) mView.findViewById(R.id.humidity_text);
 		mHumiditySwitch = (AnimationSwitch)mView.findViewById(R.id.humidity_switch);
 		mHumiditySwitch.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 			@Override
@@ -40,5 +49,35 @@ public class SentrySensorFragment extends SensorFragment {
 				
 			}
 		});
+	}
+	
+	@Override
+	public void update(Observable observable, Object data) {
+		super.update(observable, data);
+		
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+            	int colorId = R.color.color_sensor_sentry;
+        		if (mSensor == null) {
+        			colorId = R.color.color_light_gray;
+        			
+        			mTemperatureTextView.setText(getString(R.string.sensor_two_hyphens));
+        			mHumidityTextView.setText(getString(R.string.sensor_two_hyphens));
+        		} else if (!mSensor.isConnected()){
+        			colorId = R.color.color_light_gray;
+      
+        			mTemperatureTextView.setText(getString(R.string.sensor_two_hyphens));
+        			mHumidityTextView.setText(getString(R.string.sensor_two_hyphens));
+        		} else {
+        			SentrySensor sentrySensor = (SentrySensor) mSensor;
+        			
+        			mTemperatureTextView.setText(String.format("%.01f", sentrySensor.getTemperature()));
+        			mHumidityTextView.setText(String.format("%.01f", sentrySensor.getHumidity()));
+        		}
+        		
+        		mView.setBackgroundColor(getResources().getColor(colorId));
+            }
+        });
 	}
 }
