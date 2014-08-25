@@ -111,7 +111,7 @@
             android:layout_toLeftOf="@+id/temperature_switch"
             android:src="@drawable/alarm_clock_white" />
 
-        <com.marknicholas.wimoto.widgets.AnimationSwitch
+        <com.wimoto.app.widgets.AnimationSwitch
             android:id="@+id/temperature_switch"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -200,7 +200,7 @@
             android:layout_toLeftOf="@+id/probe_switch"
             android:src="@drawable/alarm_clock_white" />
 
-        <com.marknicholas.wimoto.widgets.AnimationSwitch
+        <com.wimoto.app.widgets.AnimationSwitch
             android:id="@+id/probe_switch"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

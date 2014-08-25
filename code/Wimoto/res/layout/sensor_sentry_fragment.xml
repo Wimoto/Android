@@ -104,7 +104,7 @@
         android:layout_below="@+id/temperature_layout"
         android:layout_marginTop="2dp" >
 
-        <com.marknicholas.wimoto.widgets.AnimationSwitch
+        <com.wimoto.app.widgets.AnimationSwitch
             android:id="@+id/temperature_switch"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -161,7 +161,7 @@
         android:layout_below="@+id/humidity_layout"
         android:layout_marginTop="2dp" >
 
-        <com.marknicholas.wimoto.widgets.AnimationSwitch
+        <com.wimoto.app.widgets.AnimationSwitch
             android:id="@+id/humidity_switch"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

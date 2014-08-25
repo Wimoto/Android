@@ -92,7 +92,7 @@
         android:layout_below="@+id/contact_layout"
         android:layout_marginTop="2dp" >
 
-        <com.marknicholas.wimoto.widgets.AnimationSwitch
+        <com.wimoto.app.widgets.AnimationSwitch
             android:id="@+id/contact_switch"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -159,7 +159,7 @@
         android:layout_below="@+id/level_layout"
         android:layout_marginTop="2dp" >
 
-        <com.marknicholas.wimoto.widgets.AnimationSwitch
+        <com.wimoto.app.widgets.AnimationSwitch
             android:id="@+id/level_switch"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
