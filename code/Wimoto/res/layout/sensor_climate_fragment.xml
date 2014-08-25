@@ -55,29 +55,34 @@
         android:textColor="@color/color_white"
         android:textSize="16sp" />
 
-    <RelativeLayout
+    <LinearLayout
         android:id="@+id/temperature_layout"
         android:layout_width="match_parent"
         android:layout_height="76dp"
         android:layout_below="@+id/last_updated_text"
-        android:layout_marginTop="4dp" >
+        android:layout_marginTop="4dp" 
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
 
         <ImageView
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:layout_centerVertical="true"
             android:layout_marginLeft="7dp"
             android:src="@drawable/thermometer" />
+
+        <com.wimoto.app.widgets.sparkline.LineSparkView
+            android:id="@+id/temperatureSparkView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" 
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:layout_weight="1"/>
         
         <TextView
-            android:id="@+id/temperature_text"
+            android:id="@+id/temperatureTextView"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
-            android:layout_marginRight="45dp"
             android:layout_marginTop="5dp"
-            android:gravity="right|center_vertical"
             android:text="@string/sensor_two_hyphens"
             android:textColor="@color/color_white"
             android:textSize="50sp" />
@@ -85,15 +90,13 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentTop="true"
             android:layout_marginRight="7dp"
             android:layout_marginTop="15dp"
             android:text="@string/sensor_celsius"
             android:textColor="@color/color_white"
             android:textSize="24sp" />
 
-    </RelativeLayout>
+    </LinearLayout>
     
     <RelativeLayout
         android:id="@+id/tempareture_alarm_layout"
@@ -143,6 +146,7 @@
             android:text="@string/sensor_lo"
             android:textColor="@color/color_black"
             android:textSize="17sp" />
+
     </RelativeLayout>
     
     <RelativeLayout

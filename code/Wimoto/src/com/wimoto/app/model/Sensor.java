@@ -141,10 +141,18 @@ public class Sensor extends Observable implements Observer {
 	public Document getDocument() {
 		return mDocument;
 	}
-
+	
 	@Override
 	public void update(Observable observable, Object data) {
 		setChanged();
 		notifyObservers();
-	}	
+	}
+	
+	protected void addValue() {
+		
+	}
+	
+	protected void getLastValues() {
+		
+	}
 }

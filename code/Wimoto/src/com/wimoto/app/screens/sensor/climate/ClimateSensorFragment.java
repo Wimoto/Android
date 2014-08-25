@@ -1,7 +1,9 @@
 package com.wimoto.app.screens.sensor.climate;
 
+import java.util.ArrayList;
 import java.util.Observable;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,16 +15,20 @@ import com.wimoto.app.model.ClimateSensor;
 import com.wimoto.app.screens.sensor.SensorFragment;
 import com.wimoto.app.widgets.AnimationSwitch;
 import com.wimoto.app.widgets.AnimationSwitch.OnCheckedChangeListener;
+import com.wimoto.app.widgets.sparkline.LineSparkView;
 
 public class ClimateSensorFragment extends SensorFragment {
 	
 	private TextView mTemperatureTextView;
+	private LineSparkView mTemperatureSparkView;
 	private TextView mHumidityTextView;
 	private TextView mLightTextView;
 	
 	private AnimationSwitch mTemperatureSwitch;
 	private AnimationSwitch mHumiditySwitch;
 	private AnimationSwitch mLightSwitch;
+	
+	private ArrayList<Float> mSparklineData;
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -35,7 +41,14 @@ public class ClimateSensorFragment extends SensorFragment {
 	protected void initViews() {
 		super.initViews();
 		
-		mTemperatureTextView = (TextView) mView.findViewById(R.id.temperature_text);
+		mSparklineData = new ArrayList<Float>();
+		
+		mTemperatureSparkView = (LineSparkView) mView.findViewById(R.id.temperatureSparkView);
+		mTemperatureSparkView.setValues(mSparklineData);
+		mTemperatureSparkView.setBackgroundColor(Color.TRANSPARENT);
+		mTemperatureSparkView.setLineColor(Color.BLACK);
+		
+		mTemperatureTextView = (TextView) mView.findViewById(R.id.temperatureTextView);
 		mTemperatureSwitch = (AnimationSwitch) mView.findViewById(R.id.temperature_switch);
 		mTemperatureSwitch.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 			@Override
@@ -89,6 +102,9 @@ public class ClimateSensorFragment extends SensorFragment {
         			mTemperatureTextView.setText(String.format("%.01f", climateSensor.getTemperature()));
         			mHumidityTextView.setText(String.format("%.01f", climateSensor.getHumidity()));
         			mLightTextView.setText(String.format("%.00f", climateSensor.getLight()));
+        			
+        			mSparklineData.add(Float.valueOf(climateSensor.getTemperature()));
+        			mTemperatureSparkView.invalidate();
         		}
         		
         		mView.setBackgroundColor(getResources().getColor(colorId));
