@@ -5,7 +5,7 @@ import java.util.Observable;
 
 import android.bluetooth.BluetoothGattCharacteristic;
 
-import com.marknicholas.wimoto.R;
+import com.wimoto.app.R;
 import com.marknicholas.wimoto.bluetooth.BluetoothConnection;
 import com.marknicholas.wimoto.bluetooth.BluetoothConnection.WimotoProfile;
 import com.marknicholas.wimoto.utils.AppContext;

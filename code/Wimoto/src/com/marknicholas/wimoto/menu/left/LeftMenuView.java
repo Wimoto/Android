@@ -5,7 +5,7 @@ import android.view.LayoutInflater;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.marknicholas.wimoto.R;
+import com.wimoto.app.R;
 
 public class LeftMenuView extends RelativeLayout {
 	

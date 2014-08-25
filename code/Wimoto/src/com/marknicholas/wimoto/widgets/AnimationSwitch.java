@@ -11,7 +11,7 @@ import android.view.SoundEffectConstants;
 import android.widget.Checkable;
 import android.widget.ImageView;
 
-import com.marknicholas.wimoto.R;
+import com.wimoto.app.R;
 
 public class AnimationSwitch extends ImageView implements Checkable {
 	

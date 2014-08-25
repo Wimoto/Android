@@ -10,9 +10,9 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.marknicholas.wimoto.MainActivity;
-import com.marknicholas.wimoto.R;
+import com.wimoto.app.R;
 import com.marknicholas.wimoto.model.Sensor;
+import com.wimoto.app.MainActivity;
 
 public class SensorView extends LinearLayout implements Observer {
 	

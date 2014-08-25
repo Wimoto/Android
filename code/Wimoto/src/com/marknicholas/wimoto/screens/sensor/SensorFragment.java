@@ -10,7 +10,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.marknicholas.wimoto.R;
+import com.wimoto.app.R;
 import com.marknicholas.wimoto.model.ClimateSensor;
 import com.marknicholas.wimoto.model.GrowSensor;
 import com.marknicholas.wimoto.model.Sensor;

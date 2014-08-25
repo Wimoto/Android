@@ -8,9 +8,9 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 
-import com.marknicholas.wimoto.MainActivity;
-import com.marknicholas.wimoto.R;
+import com.wimoto.app.R;
 import com.marknicholas.wimoto.model.Sensor;
+import com.wimoto.app.MainActivity;
 
 public class RightMenuAdapter extends BaseAdapter {
 

@@ -5,7 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.marknicholas.wimoto.R;
+import com.wimoto.app.R;
 import com.mobitexoft.leftmenu.PageFragment;
 
 public class HelpFragment extends PageFragment {

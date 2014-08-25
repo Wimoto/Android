@@ -7,9 +7,9 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.marknicholas.wimoto.MainActivity;
-import com.marknicholas.wimoto.R;
+import com.wimoto.app.R;
 import com.mobitexoft.leftmenu.PageFragment;
+import com.wimoto.app.MainActivity;
 
 public class NoSensorFragment extends PageFragment {
 	

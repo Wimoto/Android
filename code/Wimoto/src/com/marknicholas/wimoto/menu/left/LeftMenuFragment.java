@@ -8,7 +8,7 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 
 import com.jeremyfeinstein.slidingmenu.lib.app.SlidingFragmentActivity;
-import com.marknicholas.wimoto.R;
+import com.wimoto.app.R;
 import com.marknicholas.wimoto.screens.help.HelpFragment;
 import com.marknicholas.wimoto.screens.searchsensor.SearchSensorFragment;
 import com.marknicholas.wimoto.screens.settings.SettingsFragment;

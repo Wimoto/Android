@@ -20,12 +20,12 @@ import com.couchbase.lite.Query;
 import com.couchbase.lite.QueryEnumerator;
 import com.couchbase.lite.View;
 import com.couchbase.lite.util.Log;
-import com.marknicholas.wimoto.MainActivity;
 import com.marknicholas.wimoto.bluetooth.BluetoothConnection;
 import com.marknicholas.wimoto.bluetooth.BluetoothService;
 import com.marknicholas.wimoto.bluetooth.BluetoothService.BluetoothServiceListener;
 import com.marknicholas.wimoto.model.Sensor;
 import com.marknicholas.wimoto.utils.AppContext;
+import com.wimoto.app.MainActivity;
 
 public class SensorsManager implements BluetoothServiceListener {
 

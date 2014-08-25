@@ -8,7 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.marknicholas.wimoto.R;
+import com.wimoto.app.R;
 import com.marknicholas.wimoto.model.ThermoSensor;
 import com.marknicholas.wimoto.screens.sensor.SensorFragment;
 import com.marknicholas.wimoto.widgets.AnimationSwitch;

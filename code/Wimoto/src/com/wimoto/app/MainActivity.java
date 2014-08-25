@@ -1,4 +1,4 @@
-package com.marknicholas.wimoto;
+package com.wimoto.app;
 
 import java.util.ArrayList;
 
@@ -13,6 +13,7 @@ import android.widget.Toast;
 
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
 import com.jeremyfeinstein.slidingmenu.lib.app.SlidingFragmentActivity;
+import com.wimoto.app.R;
 import com.marknicholas.wimoto.managers.SensorsManager;
 import com.marknicholas.wimoto.managers.SensorsManager.SensorsManagerListener;
 import com.marknicholas.wimoto.menu.left.LeftMenuFragment;
