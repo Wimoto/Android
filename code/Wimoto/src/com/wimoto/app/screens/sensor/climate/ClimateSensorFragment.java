@@ -1,6 +1,5 @@
 package com.wimoto.app.screens.sensor.climate;
 
-import java.util.ArrayList;
 import java.util.Observable;
 
 import android.graphics.Color;
@@ -28,8 +27,6 @@ public class ClimateSensorFragment extends SensorFragment {
 	private AnimationSwitch mHumiditySwitch;
 	private AnimationSwitch mLightSwitch;
 	
-	private ArrayList<Float> mSparklineData;
-	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		mView  = inflater.inflate(R.layout.sensor_climate_fragment, null);
@@ -41,10 +38,8 @@ public class ClimateSensorFragment extends SensorFragment {
 	protected void initViews() {
 		super.initViews();
 		
-		mSparklineData = new ArrayList<Float>();
-		
 		mTemperatureSparkView = (LineSparkView) mView.findViewById(R.id.temperatureSparkView);
-		mTemperatureSparkView.setValues(mSparklineData);
+		mTemperatureSparkView.setValues(mSensor.getLastValues(ClimateSensor.CLIMATE_TEMPERATURE));
 		mTemperatureSparkView.setBackgroundColor(Color.TRANSPARENT);
 		mTemperatureSparkView.setLineColor(Color.BLACK);
 		
@@ -103,7 +98,6 @@ public class ClimateSensorFragment extends SensorFragment {
         			mHumidityTextView.setText(String.format("%.01f", climateSensor.getHumidity()));
         			mLightTextView.setText(String.format("%.00f", climateSensor.getLight()));
         			
-        			mSparklineData.add(Float.valueOf(climateSensor.getTemperature()));
         			mTemperatureSparkView.invalidate();
         		}
         		

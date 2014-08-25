@@ -1,5 +1,9 @@
 package com.wimoto.app.model;
 
+import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Timer;
@@ -10,7 +14,9 @@ import com.wimoto.app.bluetooth.BluetoothConnection;
 import com.wimoto.app.bluetooth.BluetoothConnection.WimotoProfile;
 
 public class Sensor extends Observable implements Observer {
-		
+			
+	public static final String CB_DOCUMENT_SENSOR_ID		= "sensorId";
+	
 	protected BluetoothConnection mConnection;
 	protected Document mDocument;
 	
@@ -18,6 +24,8 @@ public class Sensor extends Observable implements Observer {
 	protected String id;
 	
 	private Timer mRssiTimer;
+	
+	protected Map<String, LinkedList<Float>> mSensorValues;
 	
 	public static Sensor getSensorFromDocument(Document document) {
 		Sensor sensor = null;
@@ -60,6 +68,7 @@ public class Sensor extends Observable implements Observer {
 	}
 	
 	public Sensor() {
+		mSensorValues = new HashMap<String, LinkedList<Float>>();
 	}
 	
 	public Sensor(BluetoothConnection connection) {
@@ -134,7 +143,7 @@ public class Sensor extends Observable implements Observer {
 		
 		if (mDocument != null) {
 			id 		= (String) mDocument.getProperty("id");
-			title 	= (String) mDocument.getProperty("title");
+			title 	= (String) mDocument.getProperty("title");				
 		}
 	}
 
@@ -148,11 +157,24 @@ public class Sensor extends Observable implements Observer {
 		notifyObservers();
 	}
 	
-	protected void addValue() {
+	protected void addValue(String type, float value) {
+		SensorValue sensorValue = new SensorValue(mDocument.getDatabase().createDocument());
+		sensorValue.setSensorId(id);
+		sensorValue.setType(type);
+		sensorValue.setValue(value);
+		sensorValue.setCreatedAt(new Date());
 		
+		sensorValue.save();
+		
+		LinkedList<Float> list = (LinkedList<Float>) mSensorValues.get(type);
+		list.addLast(Float.valueOf(value));
+		
+		if (list.size() > 20) {
+			list.removeFirst();
+		}
 	}
 	
-	protected void getLastValues() {
-		
+	public LinkedList<Float> getLastValues(String valueType) {
+		return mSensorValues.get(valueType);
 	}
 }
