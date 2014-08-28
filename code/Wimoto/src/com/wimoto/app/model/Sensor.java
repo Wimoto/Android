@@ -1,6 +1,5 @@
 package com.wimoto.app.model;
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -162,7 +161,6 @@ public class Sensor extends Observable implements Observer {
 		sensorValue.setSensorId(id);
 		sensorValue.setType(type);
 		sensorValue.setValue(value);
-		sensorValue.setCreatedAt(new Date());
 		
 		sensorValue.save();
 		

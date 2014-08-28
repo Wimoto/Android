@@ -1,16 +1,21 @@
 package com.wimoto.app.model;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Observable;
 
 import android.bluetooth.BluetoothGattCharacteristic;
+import android.util.Log;
 
 import com.couchbase.lite.Database;
 import com.couchbase.lite.Document;
 import com.couchbase.lite.Emitter;
 import com.couchbase.lite.Mapper;
+import com.couchbase.lite.Query;
 import com.couchbase.lite.QueryEnumerator;
 import com.couchbase.lite.View;
 import com.wimoto.app.R;
@@ -76,7 +81,10 @@ public class ClimateSensor extends Sensor {
 				public void map(Map<String, Object> document, Emitter emitter) {
 					String type = (String) document.get(SensorValue.CB_DOCUMENT_TYPE);
                     if (CLIMATE_TEMPERATURE.equals(type)) {
-                        emitter.emit(document.get(SensorValue.CB_DOCUMENT_SENSOR_VALUE_SENSOR_ID), document);
+                        List<Object> keys = new ArrayList<Object>();
+                        keys.add(document.get(SensorValue.CB_DOCUMENT_SENSOR_VALUE_SENSOR_ID));
+                        keys.add(document.get(SensorValue.CB_DOCUMENT_SENSOR_VALUE_CREATED_AT));
+                        emitter.emit(keys, document);
                     }
 				}
 			};
@@ -85,15 +93,25 @@ public class ClimateSensor extends Sensor {
 		
 		try {
 			LinkedList<Float> list = mSensorValues.get(CLIMATE_TEMPERATURE);
-			QueryEnumerator enumerator = view.createQuery().run();
+			
+			Query query = view.createQuery();
+			query.setDescending(true);
+			
+	        List<Object> startKeys = new ArrayList<Object>();
+	        startKeys.add(id);
+	        startKeys.add(new HashMap<String, Object>());
+
+	        List<Object> endKeys = new ArrayList<Object>();
+	        endKeys.add(id);
+
+	        query.setStartKey(startKeys);
+	        query.setEndKey(endKeys);
+			
+			QueryEnumerator enumerator = query.run();
 			
 			while (enumerator.hasNext()) {
 				SensorValue sensorValue = new SensorValue(enumerator.next().getDocument());
-				list.add(sensorValue.getValue());
-				
-				if (list.size() > 20) {
-					break;
-				}
+				list.add(sensorValue.getValue());				
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
