@@ -19,9 +19,12 @@ import com.wimoto.app.widgets.sparkline.LineSparkView;
 public class ClimateSensorFragment extends SensorFragment {
 	
 	private TextView mTemperatureTextView;
-	private LineSparkView mTemperatureSparkView;
 	private TextView mHumidityTextView;
 	private TextView mLightTextView;
+	
+	private LineSparkView mTemperatureSparkView;
+	private LineSparkView mHumiditySparkView;
+	private LineSparkView mLightSparkView;
 	
 	private AnimationSwitch mTemperatureSwitch;
 	private AnimationSwitch mHumiditySwitch;
@@ -52,6 +55,11 @@ public class ClimateSensorFragment extends SensorFragment {
 			}
 		});
 		
+		mHumiditySparkView = (LineSparkView) mView.findViewById(R.id.humiditySparkView);
+		mHumiditySparkView.setValues(mSensor.getLastValues(ClimateSensor.CLIMATE_HUMIDITY));
+		mHumiditySparkView.setBackgroundColor(Color.TRANSPARENT);
+		mHumiditySparkView.setLineColor(Color.BLACK);
+		
 		mHumidityTextView = (TextView) mView.findViewById(R.id.humidity_text);
 		mHumiditySwitch = (AnimationSwitch)mView.findViewById(R.id.humidity_switch);
 		mHumiditySwitch.setOnCheckedChangeListener(new OnCheckedChangeListener() {
@@ -60,6 +68,11 @@ public class ClimateSensorFragment extends SensorFragment {
 				
 			}
 		});
+		
+		mLightSparkView = (LineSparkView) mView.findViewById(R.id.lightSparkView);
+		mLightSparkView.setValues(mSensor.getLastValues(ClimateSensor.CLIMATE_LIGHT));
+		mLightSparkView.setBackgroundColor(Color.TRANSPARENT);
+		mLightSparkView.setLineColor(Color.BLACK);
 		
 		mLightTextView = (TextView) mView.findViewById(R.id.light_text);
 		mLightSwitch = (AnimationSwitch)mView.findViewById(R.id.light_switch);

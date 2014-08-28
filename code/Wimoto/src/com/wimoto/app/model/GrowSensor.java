@@ -1,10 +1,12 @@
 package com.wimoto.app.model;
 
 import java.math.BigInteger;
+import java.util.LinkedList;
 import java.util.Observable;
 
 import android.bluetooth.BluetoothGattCharacteristic;
 
+import com.couchbase.lite.Document;
 import com.wimoto.app.R;
 import com.wimoto.app.bluetooth.BluetoothConnection;
 import com.wimoto.app.bluetooth.BluetoothConnection.WimotoProfile;
@@ -21,25 +23,48 @@ public class GrowSensor extends Sensor {
 	private static String BLE_GROW_SERVICE_UUID_TEMPERATURE 		= "DAF44706-BFB0-4DD8-9293-62AF5F545E31";
 	private static String BLE_GROW_CHAR_UUID_TEMPERATURE_CURRENT	= "DAF44707-BFB0-4DD8-9293-62AF5F545E31";
 	
+	public static final String GROW_LIGHT							= "GrowLight";
+	public static final String GROW_MOISTURE						= "GrowMoisture";
+	public static final String GROW_TEMPERATURE						= "GrowTemperature";
+	
 	private float mLight;
 	private float mMoisture;
 	private float mTemperature;
 	
 	public GrowSensor() {
+		super();
+		
 		title = AppContext.getContext().getString(R.string.sensor_grow);
+		
+		mSensorValues.put(GROW_LIGHT, new LinkedList<Float>());
+		mSensorValues.put(GROW_MOISTURE, new LinkedList<Float>());
+		mSensorValues.put(GROW_TEMPERATURE, new LinkedList<Float>());
 	}
 
 	public GrowSensor(BluetoothConnection connection) {
-		super(connection);
+		this();
+		
+		setConnection(connection);
 	}
 	
 	public void setConnection(BluetoothConnection connection) {
 		super.setConnection(connection);
 		
-		if (connection != null) {
-			connection.enableChangesNotification(BLE_GROW_SERVICE_UUID_LIGHT, BLE_GROW_CHAR_UUID_LIGHT_CURRENT);
-			connection.enableChangesNotification(BLE_GROW_SERVICE_UUID_MOISTURE, BLE_GROW_CHAR_UUID_MOISTURE_CURRENT);
-			connection.enableChangesNotification(BLE_GROW_SERVICE_UUID_TEMPERATURE, BLE_GROW_CHAR_UUID_TEMPERATURE_CURRENT);
+		enableChangesNotification();		
+	}
+	
+	@Override
+	public void setDocument(Document document) {
+		super.setDocument(document);
+		
+		enableChangesNotification();		
+	}
+	
+	private void enableChangesNotification() {
+		if ((mConnection != null) && (mDocument != null)) {
+			mConnection.enableChangesNotification(BLE_GROW_SERVICE_UUID_LIGHT, BLE_GROW_CHAR_UUID_LIGHT_CURRENT);
+			mConnection.enableChangesNotification(BLE_GROW_SERVICE_UUID_MOISTURE, BLE_GROW_CHAR_UUID_MOISTURE_CURRENT);
+			mConnection.enableChangesNotification(BLE_GROW_SERVICE_UUID_TEMPERATURE, BLE_GROW_CHAR_UUID_TEMPERATURE_CURRENT);
 		}
 	}
 	
@@ -69,10 +94,16 @@ public class GrowSensor extends Sensor {
 			BigInteger bi = new BigInteger(characteristic.getValue());
 			if (uuid.equals(BLE_GROW_CHAR_UUID_LIGHT_CURRENT)) {
 				mLight = bi.floatValue();		
+				
+				addValue(GROW_LIGHT, mLight);
 			} else if (uuid.equals(BLE_GROW_CHAR_UUID_MOISTURE_CURRENT)) {
-				mMoisture = bi.floatValue();	
+				mMoisture = bi.floatValue();
+				
+				addValue(GROW_MOISTURE, mMoisture);
 			} else if (uuid.equals(BLE_GROW_CHAR_UUID_TEMPERATURE_CURRENT)) {
 				mTemperature = bi.floatValue();	
+				
+				addValue(GROW_TEMPERATURE, mTemperature);				
 			}
 		}
 		

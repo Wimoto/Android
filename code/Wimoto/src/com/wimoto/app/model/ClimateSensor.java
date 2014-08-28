@@ -1,23 +1,12 @@
 package com.wimoto.app.model;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
 import java.util.Observable;
 
 import android.bluetooth.BluetoothGattCharacteristic;
-import android.util.Log;
 
-import com.couchbase.lite.Database;
 import com.couchbase.lite.Document;
-import com.couchbase.lite.Emitter;
-import com.couchbase.lite.Mapper;
-import com.couchbase.lite.Query;
-import com.couchbase.lite.QueryEnumerator;
-import com.couchbase.lite.View;
 import com.wimoto.app.R;
 import com.wimoto.app.bluetooth.BluetoothConnection;
 import com.wimoto.app.bluetooth.BluetoothConnection.WimotoProfile;
@@ -69,53 +58,7 @@ public class ClimateSensor extends Sensor {
 	public void setDocument(Document document) {
 		super.setDocument(document);
 		
-		enableChangesNotification();
-		
-		Database database = mDocument.getDatabase(); 
-		
-		// pull temperature values
-		View view = database.getView(CLIMATE_TEMPERATURE);
-		if (view.getMap() == null) {
-			Mapper mapper = new Mapper() {
-				@Override
-				public void map(Map<String, Object> document, Emitter emitter) {
-					String type = (String) document.get(SensorValue.CB_DOCUMENT_TYPE);
-                    if (CLIMATE_TEMPERATURE.equals(type)) {
-                        List<Object> keys = new ArrayList<Object>();
-                        keys.add(document.get(SensorValue.CB_DOCUMENT_SENSOR_VALUE_SENSOR_ID));
-                        keys.add(document.get(SensorValue.CB_DOCUMENT_SENSOR_VALUE_CREATED_AT));
-                        emitter.emit(keys, document);
-                    }
-				}
-			};
-			view.setMap(mapper, "1.0");
-		}
-		
-		try {
-			LinkedList<Float> list = mSensorValues.get(CLIMATE_TEMPERATURE);
-			
-			Query query = view.createQuery();
-			query.setDescending(true);
-			
-	        List<Object> startKeys = new ArrayList<Object>();
-	        startKeys.add(id);
-	        startKeys.add(new HashMap<String, Object>());
-
-	        List<Object> endKeys = new ArrayList<Object>();
-	        endKeys.add(id);
-
-	        query.setStartKey(startKeys);
-	        query.setEndKey(endKeys);
-			
-			QueryEnumerator enumerator = query.run();
-			
-			while (enumerator.hasNext()) {
-				SensorValue sensorValue = new SensorValue(enumerator.next().getDocument());
-				list.add(sensorValue.getValue());				
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}		
+		enableChangesNotification();		
 	}
 
 	private void enableChangesNotification() {
@@ -155,9 +98,13 @@ public class ClimateSensor extends Sensor {
 				
 				addValue(CLIMATE_TEMPERATURE, mTemperature);
 			} else if (uuid.equals(BLE_CLIMATE_CHAR_UUID_LIGHT_CURRENT)) {
-				mLight = (float)(0.96 * bi.floatValue());	
+				mLight = (float)(0.96 * bi.floatValue());
+				
+				addValue(CLIMATE_LIGHT, mLight);
 			} else if (uuid.equals(BLE_CLIMATE_CHAR_UUID_HUMIDITY_CURRENT)) {
 				mHumidity = (float)(-6.0 + (125.0*bi.floatValue()/65536)) * (-1);	
+				
+				addValue(CLIMATE_HUMIDITY, mHumidity);
 			}
 		}
 		

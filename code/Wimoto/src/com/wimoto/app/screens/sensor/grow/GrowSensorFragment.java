@@ -2,6 +2,7 @@ package com.wimoto.app.screens.sensor.grow;
 
 import java.util.Observable;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,16 +10,22 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.wimoto.app.R;
+import com.wimoto.app.model.ClimateSensor;
 import com.wimoto.app.model.GrowSensor;
 import com.wimoto.app.screens.sensor.SensorFragment;
 import com.wimoto.app.widgets.AnimationSwitch;
 import com.wimoto.app.widgets.AnimationSwitch.OnCheckedChangeListener;
+import com.wimoto.app.widgets.sparkline.LineSparkView;
 
 public class GrowSensorFragment extends SensorFragment {
 	
 	private TextView mLightTextView;
 	private TextView mMoistureTextView;
 	private TextView mTemperatureTextView;
+	
+	private LineSparkView mLightSparkView;
+	private LineSparkView mMoistureSparkView;
+	private LineSparkView mTemperatureSparkView;
 	
 	private AnimationSwitch mLightSwitch;
 	private AnimationSwitch mMoistureSwitch;
@@ -34,6 +41,11 @@ public class GrowSensorFragment extends SensorFragment {
 	protected void initViews() {
 		super.initViews();
 		
+		mLightSparkView = (LineSparkView) mView.findViewById(R.id.lightSparkView);
+		mLightSparkView.setValues(mSensor.getLastValues(GrowSensor.GROW_LIGHT));
+		mLightSparkView.setBackgroundColor(Color.TRANSPARENT);
+		mLightSparkView.setLineColor(Color.BLACK);
+		
 		mLightTextView = (TextView) mView.findViewById(R.id.light_text);
 		mLightSwitch = (AnimationSwitch)mView.findViewById(R.id.light_switch);
 		mLightSwitch.setOnCheckedChangeListener(new OnCheckedChangeListener() {
@@ -43,6 +55,11 @@ public class GrowSensorFragment extends SensorFragment {
 			}
 		});
 		
+		mMoistureSparkView = (LineSparkView) mView.findViewById(R.id.moistureSparkView);
+		mMoistureSparkView.setValues(mSensor.getLastValues(GrowSensor.GROW_MOISTURE));
+		mMoistureSparkView.setBackgroundColor(Color.TRANSPARENT);
+		mMoistureSparkView.setLineColor(Color.BLACK);
+		
 		mMoistureTextView = (TextView) mView.findViewById(R.id.moisture_text);
 		mMoistureSwitch = (AnimationSwitch)mView.findViewById(R.id.moisture_switch);
 		mMoistureSwitch.setOnCheckedChangeListener(new OnCheckedChangeListener() {
@@ -51,6 +68,11 @@ public class GrowSensorFragment extends SensorFragment {
 				
 			}
 		});
+		
+		mTemperatureSparkView = (LineSparkView) mView.findViewById(R.id.temperatureSparkView);
+		mTemperatureSparkView.setValues(mSensor.getLastValues(GrowSensor.GROW_TEMPERATURE));
+		mTemperatureSparkView.setBackgroundColor(Color.TRANSPARENT);
+		mTemperatureSparkView.setLineColor(Color.BLACK);
 		
 		mTemperatureTextView = (TextView) mView.findViewById(R.id.temperature_text);
 		mTemperatureSwitch = (AnimationSwitch)mView.findViewById(R.id.temperature_switch);

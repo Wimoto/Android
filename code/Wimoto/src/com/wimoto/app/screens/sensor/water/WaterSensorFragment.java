@@ -2,6 +2,7 @@ package com.wimoto.app.screens.sensor.water;
 
 import java.util.Observable;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,15 +10,20 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.wimoto.app.R;
+import com.wimoto.app.model.ClimateSensor;
 import com.wimoto.app.model.WaterSensor;
 import com.wimoto.app.screens.sensor.SensorFragment;
 import com.wimoto.app.widgets.AnimationSwitch;
 import com.wimoto.app.widgets.AnimationSwitch.OnCheckedChangeListener;
+import com.wimoto.app.widgets.sparkline.LineSparkView;
 
 public class WaterSensorFragment extends SensorFragment {
 
 	private TextView mContactTextView;
 	private TextView mLevelTextView;
+
+	private LineSparkView mContactSparkView;
+	private LineSparkView mLevelSparkView;
 	
 	private AnimationSwitch mContactSwitch;
 	private AnimationSwitch mLevelSwitch;
@@ -32,6 +38,11 @@ public class WaterSensorFragment extends SensorFragment {
 	protected void initViews() {
 		super.initViews();
 		
+		mContactSparkView = (LineSparkView) mView.findViewById(R.id.contactSparkView);
+		mContactSparkView.setValues(mSensor.getLastValues(WaterSensor.WATER_CONTACT));
+		mContactSparkView.setBackgroundColor(Color.TRANSPARENT);
+		mContactSparkView.setLineColor(Color.BLACK);
+		
 		mContactTextView = (TextView) mView.findViewById(R.id.contact_text);
 		mContactSwitch = (AnimationSwitch)mView.findViewById(R.id.contact_switch);
 		mContactSwitch.setOnCheckedChangeListener(new OnCheckedChangeListener() {
@@ -40,6 +51,11 @@ public class WaterSensorFragment extends SensorFragment {
 				
 			}
 		});
+		
+		mLevelSparkView = (LineSparkView) mView.findViewById(R.id.levelSparkView);
+		mLevelSparkView.setValues(mSensor.getLastValues(WaterSensor.WATER_LEVEL));
+		mLevelSparkView.setBackgroundColor(Color.TRANSPARENT);
+		mLevelSparkView.setLineColor(Color.BLACK);
 		
 		mLevelTextView = (TextView) mView.findViewById(R.id.level_text);
 		mLevelSwitch = (AnimationSwitch)mView.findViewById(R.id.level_switch);

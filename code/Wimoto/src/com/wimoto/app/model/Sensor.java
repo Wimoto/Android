@@ -1,14 +1,23 @@
 package com.wimoto.app.model;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import com.couchbase.lite.Database;
 import com.couchbase.lite.Document;
+import com.couchbase.lite.Emitter;
+import com.couchbase.lite.Mapper;
+import com.couchbase.lite.Query;
+import com.couchbase.lite.QueryEnumerator;
+import com.couchbase.lite.View;
 import com.wimoto.app.bluetooth.BluetoothConnection;
 import com.wimoto.app.bluetooth.BluetoothConnection.WimotoProfile;
 
@@ -142,7 +151,58 @@ public class Sensor extends Observable implements Observer {
 		
 		if (mDocument != null) {
 			id 		= (String) mDocument.getProperty("id");
-			title 	= (String) mDocument.getProperty("title");				
+			title 	= (String) mDocument.getProperty("title");			
+			
+			Database database = mDocument.getDatabase(); 
+			
+			Set<String> keySet = mSensorValues.keySet();
+			
+			for (String key:keySet) {
+				final String finalKey = key; 
+				
+				View view = database.getView(finalKey);
+				if (view.getMap() == null) {
+					Mapper mapper = new Mapper() {
+						@Override
+						public void map(Map<String, Object> document, Emitter emitter) {
+							String type = (String) document.get(SensorValue.CB_DOCUMENT_TYPE);
+		                    if (finalKey.equals(type)) {
+		                        List<Object> keys = new ArrayList<Object>();
+		                        keys.add(document.get(SensorValue.CB_DOCUMENT_SENSOR_VALUE_SENSOR_ID));
+		                        keys.add(document.get(SensorValue.CB_DOCUMENT_SENSOR_VALUE_CREATED_AT));
+		                        emitter.emit(keys, document);
+		                    }
+						}
+					};
+					view.setMap(mapper, "1.0");
+				}
+				
+				try {
+					LinkedList<Float> list = mSensorValues.get(finalKey);
+					
+					Query query = view.createQuery();
+					query.setDescending(true);
+					
+			        List<Object> startKeys = new ArrayList<Object>();
+			        startKeys.add(id);
+			        startKeys.add(new HashMap<String, Object>());
+	
+			        List<Object> endKeys = new ArrayList<Object>();
+			        endKeys.add(id);
+	
+			        query.setStartKey(startKeys);
+			        query.setEndKey(endKeys);
+					
+					QueryEnumerator enumerator = query.run();
+					
+					while (enumerator.hasNext()) {
+						SensorValue sensorValue = new SensorValue(enumerator.next().getDocument());
+						list.add(sensorValue.getValue());				
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
 		}
 	}
 

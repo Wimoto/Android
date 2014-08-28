@@ -2,6 +2,7 @@ package com.wimoto.app.screens.sensor.thermo;
 
 import java.util.Observable;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,15 +10,20 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.wimoto.app.R;
+import com.wimoto.app.model.ClimateSensor;
 import com.wimoto.app.model.ThermoSensor;
 import com.wimoto.app.screens.sensor.SensorFragment;
 import com.wimoto.app.widgets.AnimationSwitch;
 import com.wimoto.app.widgets.AnimationSwitch.OnCheckedChangeListener;
+import com.wimoto.app.widgets.sparkline.LineSparkView;
 
 public class ThermoSensorFragment extends SensorFragment {
 	
 	private TextView mTemperatureTextView;
 	private TextView mProbeTextView;
+	
+	private LineSparkView mTemperatureSparkView;
+	private LineSparkView mProbeSparkView;
 	
 	private AnimationSwitch mTemperatureSwitch;
 	private AnimationSwitch mProbeSwitch;
@@ -32,6 +38,11 @@ public class ThermoSensorFragment extends SensorFragment {
 	protected void initViews() {
 		super.initViews();
 		
+		mTemperatureSparkView = (LineSparkView) mView.findViewById(R.id.temperatureSparkView);
+		mTemperatureSparkView.setValues(mSensor.getLastValues(ThermoSensor.THERMO_TEMPERATURE));
+		mTemperatureSparkView.setBackgroundColor(Color.TRANSPARENT);
+		mTemperatureSparkView.setLineColor(Color.BLACK);
+		
 		mTemperatureTextView = (TextView) mView.findViewById(R.id.temperature_text);
 		mTemperatureSwitch = (AnimationSwitch)mView.findViewById(R.id.temperature_switch);
 		mTemperatureSwitch.setOnCheckedChangeListener(new OnCheckedChangeListener() {
@@ -40,6 +51,11 @@ public class ThermoSensorFragment extends SensorFragment {
 				
 			}
 		});
+		
+		mProbeSparkView = (LineSparkView) mView.findViewById(R.id.probeSparkView);
+		mProbeSparkView.setValues(mSensor.getLastValues(ThermoSensor.THERMO_PROBE));
+		mProbeSparkView.setBackgroundColor(Color.TRANSPARENT);
+		mProbeSparkView.setLineColor(Color.BLACK);
 		
 		mProbeTextView = (TextView) mView.findViewById(R.id.probe_text);
 		mProbeSwitch = (AnimationSwitch)mView.findViewById(R.id.probe_switch);

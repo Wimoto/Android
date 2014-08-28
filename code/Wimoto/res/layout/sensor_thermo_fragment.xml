@@ -69,6 +69,13 @@
             android:layout_marginLeft="14dp"
             android:src="@drawable/infrared_thermometer" />
         
+        <com.wimoto.app.widgets.sparkline.LineSparkView
+            android:id="@+id/probeSparkView"
+            android:layout_width="180dp"
+            android:layout_height="wrap_content" 
+            android:layout_marginLeft="50dp"
+            android:layout_marginRight="5dp"/>
+        
         <TextView
             android:id="@+id/temperature_text"
             android:layout_width="wrap_content"
@@ -157,6 +164,13 @@
             android:layout_centerVertical="true"
             android:layout_marginLeft="14dp"
             android:src="@drawable/thermometer" />
+        
+        <com.wimoto.app.widgets.sparkline.LineSparkView
+            android:id="@+id/temperatureSparkView"
+            android:layout_width="180dp"
+            android:layout_height="wrap_content" 
+            android:layout_marginLeft="50dp"
+            android:layout_marginRight="5dp"/>
         
         <TextView
             android:id="@+id/probe_text"

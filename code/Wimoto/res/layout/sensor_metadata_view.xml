@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingLeft="10dp"
+    android:paddingRight="10dp"
+    android:orientation="vertical" >
+
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+        <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/battery_full" />
+
+        <TextView
+                android:id="@+id/rrsiTextView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginRight="40dp"
+                android:gravity="right|center_vertical"
+                android:textColor="@color/color_white"
+                android:textSize="16sp"
+                android:text="gogo"/>
+
+    </LinearLayout>
+
+    <TextView
+            android:id="@+id/sensor_name_text"
+            android:layout_width="match_parent"
+            android:layout_height="76dp"
+            android:gravity="center"
+            android:text="@string/sensor_two_hyphens"
+            android:textColor="@color/color_white"
+            android:textSize="48sp" />
+
+    <TextView
+            android:id="@+id/last_updated_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:gravity="right|center_vertical"
+            android:layout_marginRight="40dp"
+            android:text="@string/sensor_just_now"
+            android:textColor="@color/color_white"
+            android:textSize="16sp" />
+
+</LinearLayout>

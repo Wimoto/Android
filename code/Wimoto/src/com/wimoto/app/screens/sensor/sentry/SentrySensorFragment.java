@@ -2,6 +2,7 @@ package com.wimoto.app.screens.sensor.sentry;
 
 import java.util.Observable;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,11 +14,15 @@ import com.wimoto.app.model.SentrySensor;
 import com.wimoto.app.screens.sensor.SensorFragment;
 import com.wimoto.app.widgets.AnimationSwitch;
 import com.wimoto.app.widgets.AnimationSwitch.OnCheckedChangeListener;
+import com.wimoto.app.widgets.sparkline.LineSparkView;
 
 public class SentrySensorFragment extends SensorFragment {
 	
-	private TextView mTemperatureTextView;
+	private TextView mAccelerometerTextView;
 	private TextView mHumidityTextView;
+	
+	private LineSparkView mAccelerometerSparkView;
+	private LineSparkView mInfaredSparkView;
 	
 	private AnimationSwitch mTemperatureSwitch;
 	private AnimationSwitch mHumiditySwitch;
@@ -32,7 +37,12 @@ public class SentrySensorFragment extends SensorFragment {
 	protected void initViews() {
 		super.initViews();
 		
-		mTemperatureTextView = (TextView) mView.findViewById(R.id.temperature_text);
+		mAccelerometerSparkView = (LineSparkView) mView.findViewById(R.id.accelerometerSparkView);
+		mAccelerometerSparkView.setValues(mSensor.getLastValues(SentrySensor.SENTRY_ACCELEROMETER));
+		mAccelerometerSparkView.setBackgroundColor(Color.TRANSPARENT);
+		mAccelerometerSparkView.setLineColor(Color.BLACK);
+		
+		mAccelerometerTextView = (TextView) mView.findViewById(R.id.temperature_text);
 		mTemperatureSwitch = (AnimationSwitch)mView.findViewById(R.id.temperature_switch);
 		mTemperatureSwitch.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 			@Override
@@ -40,6 +50,11 @@ public class SentrySensorFragment extends SensorFragment {
 				
 			}
 		});
+		
+		mInfaredSparkView = (LineSparkView) mView.findViewById(R.id.infaredSparkView);
+		mInfaredSparkView.setValues(mSensor.getLastValues(SentrySensor.SENTRY_INFARED));
+		mInfaredSparkView.setBackgroundColor(Color.TRANSPARENT);
+		mInfaredSparkView.setLineColor(Color.BLACK);
 		
 		mHumidityTextView = (TextView) mView.findViewById(R.id.humidity_text);
 		mHumiditySwitch = (AnimationSwitch)mView.findViewById(R.id.humidity_switch);
@@ -62,18 +77,18 @@ public class SentrySensorFragment extends SensorFragment {
         		if (mSensor == null) {
         			colorId = R.color.color_light_gray;
         			
-        			mTemperatureTextView.setText(getString(R.string.sensor_two_hyphens));
+        			mAccelerometerTextView.setText(getString(R.string.sensor_two_hyphens));
         			mHumidityTextView.setText(getString(R.string.sensor_two_hyphens));
         		} else if (!mSensor.isConnected()){
         			colorId = R.color.color_light_gray;
       
-        			mTemperatureTextView.setText(getString(R.string.sensor_two_hyphens));
+        			mAccelerometerTextView.setText(getString(R.string.sensor_two_hyphens));
         			mHumidityTextView.setText(getString(R.string.sensor_two_hyphens));
         		} else {
         			SentrySensor sentrySensor = (SentrySensor) mSensor;
         			
-        			mTemperatureTextView.setText(String.format("%.01f", sentrySensor.getTemperature()));
-        			mHumidityTextView.setText(String.format("%.01f", sentrySensor.getHumidity()));
+        			mAccelerometerTextView.setText(String.format("%.01f", sentrySensor.getAccelerometer()));
+        			mHumidityTextView.setText(String.format("%.01f", sentrySensor.getInfared()));
         		}
         		
         		mView.setBackgroundColor(getResources().getColor(colorId));
