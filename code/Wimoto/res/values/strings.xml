@@ -25,7 +25,8 @@
      <string name="sensor_lux">lux</string> 
      <string name="sensor_percent">%</string> 
      <string name="sensor_hi">Hi</string> 
-     <string name="sensor_lo">Lo</string> 
+     <string name="sensor_lo">Lo</string>
+     <string name="sensor_empty"></string>
      
      <string name="sensor_zero">No sensors added yet.</string> 
      <string name="sensor_add">Tap here to add sensor&#8230;</string> 

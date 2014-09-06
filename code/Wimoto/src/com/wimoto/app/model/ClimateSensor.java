@@ -94,7 +94,8 @@ public class ClimateSensor extends Sensor {
 			
 			BigInteger bi = new BigInteger(characteristic.getValue());
 			if (uuid.equals(BLE_CLIMATE_CHAR_UUID_TEMPERATURE_CURRENT)) {
-				mTemperature = (float)(-46.85 + (175.72*bi.floatValue()/65536));
+				//mTemperature = (float)(-46.85 + (175.72*bi.floatValue()/65536));
+				mTemperature = bi.floatValue();	
 				
 				addValue(CLIMATE_TEMPERATURE, mTemperature);
 			} else if (uuid.equals(BLE_CLIMATE_CHAR_UUID_LIGHT_CURRENT)) {
