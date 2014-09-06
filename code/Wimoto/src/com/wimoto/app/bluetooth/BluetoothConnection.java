@@ -37,8 +37,7 @@ public class BluetoothConnection extends Observable {
 	private BluetoothDevice mBluetoothDevice;
 	private BluetoothGatt mBluetoothGatt;
 	
-	private LinkedList<CharacteristicRequest> mReadRequests;
-	private LinkedList<CharacteristicRequest> mNotificationRequests;
+	private LinkedList<CharacteristicRequest> mRequests;
 		
 	public interface BluetoothConnectionStateListener {
 		void didConnectionStateChanged(BluetoothConnection connection);
@@ -67,8 +66,7 @@ public class BluetoothConnection extends Observable {
 		
 		mBluetoothDevice = device;
 		
-		mReadRequests = new LinkedList<BluetoothConnection.CharacteristicRequest>();	
-		mNotificationRequests = new LinkedList<BluetoothConnection.CharacteristicRequest>();
+		mRequests = new LinkedList<BluetoothConnection.CharacteristicRequest>();
 	}
 	
 	private BluetoothConnection getConnection() {
@@ -104,7 +102,6 @@ public class BluetoothConnection extends Observable {
 
 	public void readRssi() {
 		if (mBluetoothGatt != null) {
-			Log.e("", "My readRssi()");
 			mBluetoothGatt.readRemoteRssi();
 		}
 	}
@@ -157,37 +154,51 @@ public class BluetoothConnection extends Observable {
 		}
 	}
 		
-	public void readCharacteristic(String serviceUuidString, String characteristicUuidString) {
-		CharacteristicRequest request = new CharacteristicRequest(serviceUuidString, characteristicUuidString);
-		mReadRequests.add(request);
-		if (mReadRequests.size() == 1) {
-			performReadRequest(request);
+	private void addRequest(CharacteristicRequest request) {
+		mRequests.add(request);
+		if (mRequests.size() == 1) {
+			performRequest(request);
 		}
 	}
 	
-	private void performReadRequest(CharacteristicRequest request) {
+	private void performRequest(CharacteristicRequest request) {
     	BluetoothGattService service = mBluetoothGatt.getService(UUID.fromString(request.getServiceUuidString()));
-		mBluetoothGatt.readCharacteristic(service.getCharacteristic(UUID.fromString(request.getCharacteristicUuidString())));
+
+		switch (request.getType()) {
+			case CharacteristicRequest.REQUEST_TYPE_READ: {
+				mBluetoothGatt.readCharacteristic(service.getCharacteristic(UUID.fromString(request.getCharacteristicUuidString())));
+				break;
+			}	
+			case CharacteristicRequest.REQUEST_TYPE_WRITE: {
+				mBluetoothGatt.writeCharacteristic(service.getCharacteristic(UUID.fromString(request.getCharacteristicUuidString())));
+				break;
+			}	
+			case CharacteristicRequest.REQUEST_TYPE_UPDATE: {		    	
+		    	BluetoothGattCharacteristic characteristic = service.getCharacteristic(UUID.fromString(request.getCharacteristicUuidString()));
+				mBluetoothGatt.setCharacteristicNotification(characteristic, true);
+				
+				BluetoothGattDescriptor descriptor = characteristic.getDescriptor(
+				        UUID.fromString("00002902-0000-1000-8000-00805f9b34fb"));
+				descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+				mBluetoothGatt.writeDescriptor(descriptor);
+				break;
+			}
+		}
+	}
+	
+	private void performNextRequest() {
+		if (!mRequests.isEmpty()) {
+			mRequests.removeFirst();
+			performRequest(mRequests.getFirst());
+		}
+	}
+	
+	public void readCharacteristic(String serviceUuidString, String characteristicUuidString) {
+		addRequest(new CharacteristicRequest(CharacteristicRequest.REQUEST_TYPE_READ, serviceUuidString, characteristicUuidString));
 	}
 	
 	public void enableChangesNotification(String serviceUuidString, String characteristicUuidString) {
-		CharacteristicRequest request = new CharacteristicRequest(serviceUuidString, characteristicUuidString);
-		mNotificationRequests.add(request);
-		if (mNotificationRequests.size() == 1) {
-			performNotificationRequest(request);
-		}		
-	}
-	
-	private void performNotificationRequest(CharacteristicRequest request) {
-    	BluetoothGattService service = mBluetoothGatt.getService(UUID.fromString(request.getServiceUuidString()));
-    	
-    	BluetoothGattCharacteristic characteristic = service.getCharacteristic(UUID.fromString(request.getCharacteristicUuidString()));
-		mBluetoothGatt.setCharacteristicNotification(characteristic, true);
-		
-		BluetoothGattDescriptor descriptor = characteristic.getDescriptor(
-		        UUID.fromString("00002902-0000-1000-8000-00805f9b34fb"));
-		descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
-		mBluetoothGatt.writeDescriptor(descriptor);
+		addRequest(new CharacteristicRequest(CharacteristicRequest.REQUEST_TYPE_UPDATE, serviceUuidString, characteristicUuidString));
 	}
 	
     private final BluetoothGattCallback mGattCallback =
@@ -238,10 +249,7 @@ public class BluetoothConnection extends Observable {
     			notifyObservers(characteristic);
         	}
         	
-        	mReadRequests.removeFirst();
-    		if (mReadRequests.size() > 0) {
-    			performReadRequest(mReadRequests.getFirst());
-    		}        	
+        	performNextRequest();
         }
 
         
@@ -255,10 +263,7 @@ public class BluetoothConnection extends Observable {
 		@Override
 		public void onDescriptorWrite(BluetoothGatt gatt,
 				BluetoothGattDescriptor descriptor, int status) {
-			mNotificationRequests.removeFirst();
-			if (mNotificationRequests.size() > 0) {
-				performNotificationRequest(mNotificationRequests.getFirst());
-			};
+			performNextRequest();
 		}
 
 		@Override
@@ -288,13 +293,23 @@ public class BluetoothConnection extends Observable {
     
     private class CharacteristicRequest {
     	
+    	public static final int REQUEST_TYPE_READ 			= 8499;
+    	public static final int REQUEST_TYPE_WRITE 			= 8599;
+    	public static final int REQUEST_TYPE_UPDATE 		= 8699;
+    	
+    	private int mType;
     	private String mServiceUuidString;
     	private String mCharacteristicUuidString;
     	
-    	public CharacteristicRequest(String serviceUuidString, String characteristicUuidString) {
+    	public CharacteristicRequest(int type, String serviceUuidString, String characteristicUuidString) {
+    		mType = type;
     		mServiceUuidString = serviceUuidString;
     		mCharacteristicUuidString = characteristicUuidString;
     	}
+
+		public int getType() {
+			return mType;
+		}
 
 		public String getServiceUuidString() {
 			return mServiceUuidString;
