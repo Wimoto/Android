@@ -24,7 +24,7 @@ import com.wimoto.app.screens.sensor.thermo.ThermoSensorFragment;
 import com.wimoto.app.screens.sensor.water.WaterSensorFragment;
 import com.mobitexoft.leftmenu.PageFragment;
 
-public class SensorFragment extends PageFragment implements Observer {
+public abstract class SensorFragment extends PageFragment implements Observer {
 	
 	private static final String TAG_SENSOR = "sensor_tag";
 	private static final String TAG_NO_SENSOR = "no_sensor_tag";
@@ -88,12 +88,12 @@ public class SensorFragment extends PageFragment implements Observer {
 		
 		mSensorNameText.setText(mSensor.getTitle());
 		
-		if (mSensor.isConnected()) {
-			setRssi(mSensor.getRssi());
-		} else {
-			mView.setBackgroundColor(getResources().getColor(R.color.color_light_gray));
-		}
+		updateBackground();
+		updateBateryLevel();
+		updateRssi();		
 	}
+	
+	protected abstract int getBackgroundColorRes();
 	
 	public void setSensor(Sensor sensor) {
 		if (mSensor != null) {
@@ -113,17 +113,39 @@ public class SensorFragment extends PageFragment implements Observer {
 		return TAG_SENSOR + mSensor.getId();
 	}
 
-	private void setRssi(int rssi) {
-		if (mRssiTextView == null) {
-			return;
-		}
-		
-		if (rssi == 0) {
-			mRssiTextView.setVisibility(View.INVISIBLE);
+	private void updateBackground() {
+		if ((mSensor != null) && (mSensor.isConnected())) {
+			mView.setBackgroundColor(getResources().getColor(getBackgroundColorRes()));
 		} else {
+			mView.setBackgroundColor(getResources().getColor(R.color.color_light_gray));
+		}
+	}
+	
+	private void updateRssi() {
+		if ((mSensor != null) && (mSensor.isConnected())) {
 			mRssiTextView.setVisibility(View.VISIBLE);
-			mRssiTextView.setText(rssi + "dB");
-		}            	
+			mRssiTextView.setText(mSensor.getRssi() + "dB");
+		} else {
+			mRssiTextView.setVisibility(View.INVISIBLE);
+		}		
+	}
+	
+	private void updateBateryLevel() {
+		if ((mSensor != null) && (mSensor.isConnected())) {
+			mBatteryImageView.setVisibility(View.VISIBLE);
+			
+			int resId = R.drawable.battery_low;
+            if (mSensor.getBatteryLevel() > 75) {
+            	resId = R.drawable.battery_full;
+            } else if (mSensor.getBatteryLevel() > 50) {
+            	resId = R.drawable.battery_high;
+            } else if (mSensor.getBatteryLevel() > 25) {
+            	resId = R.drawable.battery_medium;
+            }
+			mBatteryImageView.setImageDrawable(getResources().getDrawable(resId));
+		} else {
+			mBatteryImageView.setVisibility(View.INVISIBLE);
+		}		
 	}
 	
 	@Override
@@ -131,12 +153,9 @@ public class SensorFragment extends PageFragment implements Observer {
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-				int rssiLevel = 0;
-				if (mSensor != null) {
-					rssiLevel = mSensor.getRssi();
-				}
-				
-				setRssi(rssiLevel);
+				updateBackground();
+				updateRssi();
+				updateBateryLevel();
             }
         });
 	}

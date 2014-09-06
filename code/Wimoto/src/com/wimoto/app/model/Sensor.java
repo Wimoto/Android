@@ -1,5 +1,6 @@
 package com.wimoto.app.model;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -10,6 +11,8 @@ import java.util.Observer;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import android.bluetooth.BluetoothGattCharacteristic;
 
 import com.couchbase.lite.Database;
 import com.couchbase.lite.Document;
@@ -25,11 +28,15 @@ public class Sensor extends Observable implements Observer {
 			
 	public static final String CB_DOCUMENT_SENSOR_ID		= "sensorId";
 	
+	private static String BLE_GENERIC_SERVICE_UUID_BATTERY		 		= "0000180F-0000-1000-8000-00805F9B34FB";
+	private static String BLE_GENERIC_CHAR_UUID_BATTERY_LEVEL			= "00002A19-0000-1000-8000-00805F9B34FB";
+	
 	protected BluetoothConnection mConnection;
 	protected Document mDocument;
 	
 	protected String title;
 	protected String id;
+	private float mBatteryLevel;
 	
 	private Timer mRssiTimer;
 	
@@ -135,6 +142,10 @@ public class Sensor extends Observable implements Observer {
 		return WimotoProfile.UNDEFINED;
 	}
 
+	public float getBatteryLevel() {
+		return mBatteryLevel;
+	}
+
 	public boolean isConnected() {
 		return (mConnection != null);
 	}
@@ -206,12 +217,29 @@ public class Sensor extends Observable implements Observer {
 		}
 	}
 
+	protected void enableChangesNotification() {
+		if ((mConnection != null) && (mDocument != null)) {
+			mConnection.readCharacteristic(BLE_GENERIC_SERVICE_UUID_BATTERY, BLE_GENERIC_CHAR_UUID_BATTERY_LEVEL);
+		}
+	}
+	
 	public Document getDocument() {
 		return mDocument;
 	}
 	
 	@Override
-	public void update(Observable observable, Object data) {
+	public void update(Observable observable, Object data) {		
+		if (data instanceof BluetoothGattCharacteristic) {
+			BluetoothGattCharacteristic characteristic = (BluetoothGattCharacteristic) data;
+			
+			String uuid = characteristic.getUuid().toString().toUpperCase();
+			
+			BigInteger bi = new BigInteger(characteristic.getValue());
+			if (uuid.equals(BLE_GENERIC_CHAR_UUID_BATTERY_LEVEL)) {
+				mBatteryLevel = bi.floatValue();
+			}
+		}
+		
 		setChanged();
 		notifyObservers();
 	}

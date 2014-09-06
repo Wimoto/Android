@@ -55,7 +55,10 @@ public class SentrySensor extends Sensor {
 		enableChangesNotification();		
 	}
 
-	private void enableChangesNotification() {
+	@Override
+	protected void enableChangesNotification() {
+		super.enableChangesNotification();
+		
 		if ((mConnection != null) && (mDocument != null)) {
 			mConnection.enableChangesNotification(BLE_SENTRY_SERVICE_UUID_ACCELEROMETER, BLE_SENTRY_CHAR_UUID_ACCELEROMETER_CURRENT);
 			mConnection.enableChangesNotification(BLE_SENTRY_SERVICE_UUID_PASSIVE_INFRARED, BLE_SENTRY_CHAR_UUID_PASSIVE_INFRARED_CURRENT);

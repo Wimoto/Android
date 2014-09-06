@@ -67,21 +67,21 @@ public class SentrySensorFragment extends SensorFragment {
 	}
 	
 	@Override
+	protected int getBackgroundColorRes() {
+		return R.color.color_sensor_sentry;
+	}
+	
+	@Override
 	public void update(Observable observable, Object data) {
 		super.update(observable, data);
 		
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-            	int colorId = R.color.color_sensor_sentry;
-        		if (mSensor == null) {
-        			colorId = R.color.color_light_gray;
-        			
+        		if (mSensor == null) {        			
         			mAccelerometerTextView.setText(getString(R.string.sensor_two_hyphens));
         			mHumidityTextView.setText(getString(R.string.sensor_two_hyphens));
-        		} else if (!mSensor.isConnected()){
-        			colorId = R.color.color_light_gray;
-      
+        		} else if (!mSensor.isConnected()){      
         			mAccelerometerTextView.setText(getString(R.string.sensor_two_hyphens));
         			mHumidityTextView.setText(getString(R.string.sensor_two_hyphens));
         		} else {
@@ -89,9 +89,7 @@ public class SentrySensorFragment extends SensorFragment {
         			
         			mAccelerometerTextView.setText(String.format("%.01f", sentrySensor.getAccelerometer()));
         			mHumidityTextView.setText(String.format("%.01f", sentrySensor.getInfared()));
-        		}
-        		
-        		mView.setBackgroundColor(getResources().getColor(colorId));
+        		}        		
             }
         });
 	}

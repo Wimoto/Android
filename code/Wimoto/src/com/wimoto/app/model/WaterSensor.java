@@ -55,7 +55,10 @@ public class WaterSensor extends Sensor {
 		enableChangesNotification();		
 	}
 
-	private void enableChangesNotification() {
+	@Override
+	protected void enableChangesNotification() {
+		super.enableChangesNotification();
+		
 		if ((mConnection != null) && (mDocument != null)) {
 			mConnection.enableChangesNotification(BLE_WATER_SERVICE_UUID_CONTACT, BLE_WATER_CHAR_UUID_CONTACT_CURRENT);
 			mConnection.enableChangesNotification(BLE_WATER_SERVICE_UUID_LEVEL, BLE_WATER_CHAR_UUID_LEVEL_CURRENT);

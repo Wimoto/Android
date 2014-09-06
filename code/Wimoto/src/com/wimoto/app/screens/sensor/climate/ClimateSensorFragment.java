@@ -85,22 +85,22 @@ public class ClimateSensorFragment extends SensorFragment {
 	}
 	
 	@Override
+	protected int getBackgroundColorRes() {
+		return R.color.color_sensor_climate;
+	}
+	
+	@Override
 	public void update(Observable observable, Object data) {
 		super.update(observable, data);
 		
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-            	int colorId = R.color.color_sensor_climate;
         		if (mSensor == null) {
-        			colorId = R.color.color_light_gray;
-        			
         			mTemperatureTextView.setText(getString(R.string.sensor_two_hyphens));
         			mHumidityTextView.setText(getString(R.string.sensor_two_hyphens));
         			mLightTextView.setText(getString(R.string.sensor_two_hyphens));
         		} else if (!mSensor.isConnected()){
-        			colorId = R.color.color_light_gray;
-      
         			mTemperatureTextView.setText(getString(R.string.sensor_two_hyphens));
         			mHumidityTextView.setText(getString(R.string.sensor_two_hyphens));
         			mLightTextView.setText(getString(R.string.sensor_two_hyphens));
@@ -112,9 +112,7 @@ public class ClimateSensorFragment extends SensorFragment {
         			mLightTextView.setText(String.format("%.00f", climateSensor.getLight()));
         			
         			mTemperatureSparkView.invalidate();
-        		}
-        		
-        		mView.setBackgroundColor(getResources().getColor(colorId));
+        		}        		
             }
         });
 	}

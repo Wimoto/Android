@@ -10,7 +10,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.wimoto.app.R;
-import com.wimoto.app.model.ClimateSensor;
 import com.wimoto.app.model.GrowSensor;
 import com.wimoto.app.screens.sensor.SensorFragment;
 import com.wimoto.app.widgets.AnimationSwitch;
@@ -85,22 +84,22 @@ public class GrowSensorFragment extends SensorFragment {
 	}
 	
 	@Override
+	protected int getBackgroundColorRes() {
+		return R.color.color_sensor_grow;
+	}
+	
+	@Override
 	public void update(Observable observable, Object data) {
 		super.update(observable, data);
 		
 		getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-            	int colorId = R.color.color_sensor_grow;
         		if (mSensor == null) {
-        			colorId = R.color.color_light_gray;
-        			
         			mLightTextView.setText(getString(R.string.sensor_two_hyphens));
         			mMoistureTextView.setText(getString(R.string.sensor_two_hyphens));
         			mTemperatureTextView.setText(getString(R.string.sensor_two_hyphens));
         		} else if (!mSensor.isConnected()){
-        			colorId = R.color.color_light_gray;
-      
         			mLightTextView.setText(getString(R.string.sensor_two_hyphens));
         			mMoistureTextView.setText(getString(R.string.sensor_two_hyphens));
         			mTemperatureTextView.setText(getString(R.string.sensor_two_hyphens));
@@ -110,9 +109,7 @@ public class GrowSensorFragment extends SensorFragment {
         			mLightTextView.setText(String.format("%.00f", growSensor.getLight()));
         			mMoistureTextView.setText(String.format("%.01f", growSensor.getMoisture()));
         			mTemperatureTextView.setText(String.format("%.01f", growSensor.getTemperature()));
-        		}
-        		
-        		mView.setBackgroundColor(getResources().getColor(colorId));
+        		}        		
             }
         });
 	}

@@ -233,6 +233,9 @@ public class BluetoothConnection extends Observable {
                 if (mBluetoothConnectionStateListener != null) {
                 	mBluetoothConnectionStateListener.didConnectionStateChanged(getConnection());
                 }
+        	} else {
+    			setChanged();
+    			notifyObservers(characteristic);
         	}
         	
         	mReadRequests.removeFirst();

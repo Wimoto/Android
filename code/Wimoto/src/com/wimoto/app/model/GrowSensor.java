@@ -60,7 +60,10 @@ public class GrowSensor extends Sensor {
 		enableChangesNotification();		
 	}
 	
-	private void enableChangesNotification() {
+	@Override
+	protected void enableChangesNotification() {
+		super.enableChangesNotification();
+		
 		if ((mConnection != null) && (mDocument != null)) {
 			mConnection.enableChangesNotification(BLE_GROW_SERVICE_UUID_LIGHT, BLE_GROW_CHAR_UUID_LIGHT_CURRENT);
 			mConnection.enableChangesNotification(BLE_GROW_SERVICE_UUID_MOISTURE, BLE_GROW_CHAR_UUID_MOISTURE_CURRENT);

@@ -55,7 +55,10 @@ public class ThermoSensor extends Sensor {
 		enableChangesNotification();		
 	}
 
-	private void enableChangesNotification() {
+	@Override
+	protected void enableChangesNotification() {
+		super.enableChangesNotification();
+		
 		if ((mConnection != null) && (mDocument != null)) {
 			mConnection.enableChangesNotification(BLE_THERMO_SERVICE_UUID_TEMPERATURE, BLE_THERMO_CHAR_UUID_TEMPERATURE_CURRENT);
 			mConnection.enableChangesNotification(BLE_THERMO_SERVICE_UUID_PROBE, BLE_THERMO_CHAR_UUID_PROBE_CURRENT);

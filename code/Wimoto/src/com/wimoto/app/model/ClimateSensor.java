@@ -61,7 +61,10 @@ public class ClimateSensor extends Sensor {
 		enableChangesNotification();		
 	}
 
-	private void enableChangesNotification() {
+	@Override
+	protected void enableChangesNotification() {
+		super.enableChangesNotification();
+		
 		if ((mConnection != null) && (mDocument != null)) {
 			mConnection.enableChangesNotification(BLE_CLIMATE_SERVICE_UUID_TEMPERATURE, BLE_CLIMATE_CHAR_UUID_TEMPERATURE_CURRENT);
 			mConnection.enableChangesNotification(BLE_CLIMATE_SERVICE_UUID_LIGHT, BLE_CLIMATE_CHAR_UUID_LIGHT_CURRENT);
@@ -94,8 +97,7 @@ public class ClimateSensor extends Sensor {
 			
 			BigInteger bi = new BigInteger(characteristic.getValue());
 			if (uuid.equals(BLE_CLIMATE_CHAR_UUID_TEMPERATURE_CURRENT)) {
-				//mTemperature = (float)(-46.85 + (175.72*bi.floatValue()/65536));
-				mTemperature = bi.floatValue();	
+				mTemperature = (float)(-46.85 + (175.72*bi.floatValue()/65536));
 				
 				addValue(CLIMATE_TEMPERATURE, mTemperature);
 			} else if (uuid.equals(BLE_CLIMATE_CHAR_UUID_LIGHT_CURRENT)) {

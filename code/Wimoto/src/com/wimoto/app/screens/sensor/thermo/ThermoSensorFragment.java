@@ -10,7 +10,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.wimoto.app.R;
-import com.wimoto.app.model.ClimateSensor;
 import com.wimoto.app.model.ThermoSensor;
 import com.wimoto.app.screens.sensor.SensorFragment;
 import com.wimoto.app.widgets.AnimationSwitch;
@@ -68,21 +67,21 @@ public class ThermoSensorFragment extends SensorFragment {
 	}
 	
 	@Override
+	protected int getBackgroundColorRes() {
+		return R.color.color_sensor_thermo;
+	}
+	
+	@Override
 	public void update(Observable observable, Object data) {
 		super.update(observable, data);
 		
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-            	int colorId = R.color.color_sensor_thermo;
-        		if (mSensor == null) {
-        			colorId = R.color.color_light_gray;
-        			
+        		if (mSensor == null) {        			
         			mTemperatureTextView.setText(getString(R.string.sensor_two_hyphens));
         			mProbeTextView.setText(getString(R.string.sensor_two_hyphens));
-        		} else if (!mSensor.isConnected()){
-        			colorId = R.color.color_light_gray;
-      
+        		} else if (!mSensor.isConnected()){      
         			mTemperatureTextView.setText(getString(R.string.sensor_two_hyphens));
         			mProbeTextView.setText(getString(R.string.sensor_two_hyphens));
         		} else {
@@ -90,9 +89,7 @@ public class ThermoSensorFragment extends SensorFragment {
         			
         			mTemperatureTextView.setText(String.format("%.01f", thermoSensor.getTemperature()));
         			mProbeTextView.setText(String.format("%.01f", thermoSensor.getProbe()));
-        		}
-        		
-        		mView.setBackgroundColor(getResources().getColor(colorId));
+        		}        		
             }
         });
 	}
