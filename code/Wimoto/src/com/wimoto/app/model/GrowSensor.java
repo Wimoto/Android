@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.Observable;
 
 import android.bluetooth.BluetoothGattCharacteristic;
+import android.util.Log;
 
 import com.couchbase.lite.Document;
 import com.wimoto.app.R;
@@ -105,6 +106,8 @@ public class GrowSensor extends Sensor {
 				addValue(GROW_MOISTURE, mMoisture);
 			} else if (uuid.equals(BLE_GROW_CHAR_UUID_TEMPERATURE_CURRENT)) {
 				mTemperature = bi.floatValue();	
+				
+				Log.e("GROW", "Soil Temperature: " + mTemperature);
 				
 				addValue(GROW_TEMPERATURE, mTemperature);				
 			}
