@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical" >
+    android:orientation="vertical">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -29,7 +29,7 @@
 
     </LinearLayout>
 
-    <TextView
+    <com.mobitexoft.widgets.EditText
         android:id="@+id/sensor_name_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -37,9 +37,13 @@
         android:paddingLeft="5dp"
         android:paddingRight="5dp"
         android:gravity="center"
+        android:background="@android:color/transparent"
         android:text="@string/sensor_two_hyphens"
         android:textColor="@color/color_white"
-        android:textSize="48sp" />
+        android:textSize="40sp" 
+        android:singleLine="true"
+        android:imeOptions="actionDone"
+        android:inputType="textNoSuggestions"/>
 
     <TextView
         android:id="@+id/last_updated_text"

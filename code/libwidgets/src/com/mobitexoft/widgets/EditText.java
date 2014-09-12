@@ -20,15 +20,15 @@ public class EditText extends android.widget.EditText {
 		super(context, attrs);
 		mContext = context;
 		
+		setOnEditorActionListener(null);
+		
 		TypedArray attributesArray = context.getTheme().obtainStyledAttributes(
 					attrs,
 					R.styleable.Font,
 					0, 0);
 		try {	
 			mFontFamily = attributesArray.getString(R.styleable.Font_fontFamily);
-			setTypeface(Typeface.createFromAsset(context.getAssets(), mFontFamily + ".ttf"));
-			
-			setOnEditorActionListener(null);
+			setTypeface(Typeface.createFromAsset(context.getAssets(), mFontFamily + ".ttf"));			
 		} catch (Exception e) {
 			// we need catch to just prevent application from crashing
 		} finally {
@@ -45,10 +45,11 @@ public class EditText extends android.widget.EditText {
 	@Override
 	public boolean onKeyPreIme(int keyCode, KeyEvent event) {
 	    if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_UP) {
-	        clearFocus();
-	        return false;
+	        if(isFocused()) {
+	        	clearFocus();
+	        }
 	    }
-	    return false;
+	    return super.onKeyPreIme(keyCode, event);
 	}
 
 	@Override
@@ -58,10 +59,10 @@ public class EditText extends android.widget.EditText {
 		OnEditorActionListener listener = new OnEditorActionListener() {
 			@Override
 			public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-				if (actionId == EditorInfo.IME_ACTION_DONE) {					
+				if (actionId == EditorInfo.IME_ACTION_DONE) {	
 					v.clearFocus();
-					InputMethodManager imm = (InputMethodManager)mContext.getSystemService(Context.INPUT_METHOD_SERVICE);
-	                imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+	                ((InputMethodManager)getContext().getSystemService(Context.INPUT_METHOD_SERVICE)).
+					hideSoftInputFromWindow(v.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
 				}
 				
 				if (externalEditorActionListener != null) {

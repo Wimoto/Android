@@ -13,9 +13,6 @@ import android.widget.ImageView;
 
 public class AnimationSwitchView extends ImageView implements Checkable {
 	
-	public final static int TYPE_GREEN_WHITE = 0;
-	public final static int TYPE_WHITE_TRANSPARENT = 0;
-    
 	public static interface OnCheckedChangeListener {
     	void  onCheckedChanged(AnimationSwitchView view, boolean isChecked);
     }
@@ -23,14 +20,12 @@ public class AnimationSwitchView extends ImageView implements Checkable {
 	public static final boolean CHECKED = true;
 	public static final boolean UNCHECKED = false;
 	
-	private int mAnimationDrawableSrc = R.drawable.ios_switch;
-	private int mAnimationReverseDrawableSrc = R.drawable.ios_switch_reverse;
+	protected int mAnimationDrawableSrc = R.drawable.ios_switch;
+	protected int mAnimationReverseDrawableSrc = R.drawable.ios_switch_reverse;
 	
 	private boolean mChecked;
 	private boolean mSyncMode;
 	private OnCheckedChangeListener mOnCheckedChangeListener;
-	
-	private int mType = 0;
 	
 	public AnimationSwitchView(Context context) {
 		this(context, null);
@@ -54,15 +49,6 @@ public class AnimationSwitchView extends ImageView implements Checkable {
     		((AnimationDrawable) getDrawable()).selectDrawable(((AnimationDrawable) getDrawable()).getNumberOfFrames() - 1);
     	}
 		typedArray.recycle();
-	}
-	
-	public void setType(int type) {
-		mType = type;
-		
-		if (mType == TYPE_WHITE_TRANSPARENT) {
-			mAnimationDrawableSrc = R.drawable.ios_switch_tr;
-			mAnimationReverseDrawableSrc = R.drawable.ios_switch_tr_reverse;
-		}
 	}
 
 	@Override

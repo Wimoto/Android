@@ -28,6 +28,9 @@ public class Sensor extends Observable implements Observer {
 			
 	public static final String CB_DOCUMENT_SENSOR_ID		= "sensorId";
 	
+	private static final String CB_DOCUMENT_FIELD_SENSOR_ID		= "id";
+	private static final String CB_DOCUMENT_FIELD_SENSOR_TITLE	= "title";	
+	
 	private static String BLE_GENERIC_SERVICE_UUID_BATTERY		 		= "0000180F-0000-1000-8000-00805F9B34FB";
 	private static String BLE_GENERIC_CHAR_UUID_BATTERY_LEVEL			= "00002A19-0000-1000-8000-00805F9B34FB";
 	
@@ -130,6 +133,28 @@ public class Sensor extends Observable implements Observer {
 		return title;
 	}
 
+	public void setTitle(String title) {
+		this.title = title;
+	
+		if (mDocument != null) {
+			Map<String, Object> currentProperties = mDocument.getProperties();
+
+			Map<String, Object> newProperties = new HashMap<String, Object>();
+			newProperties.putAll(currentProperties);
+
+			newProperties.put(CB_DOCUMENT_FIELD_SENSOR_TITLE, title);
+			
+			try {
+				mDocument.putProperties(newProperties);
+			} catch (Exception e) {
+				// TODO catch exception
+			}
+		}
+		
+		setChanged();
+		notifyObservers();
+	}
+	
 	public String getId() {
 		if ((mDocument == null) && (mConnection != null)) {
 			return mConnection.getId();
@@ -161,8 +186,8 @@ public class Sensor extends Observable implements Observer {
 		this.mDocument = document;
 		
 		if (mDocument != null) {
-			id 		= (String) mDocument.getProperty("id");
-			title 	= (String) mDocument.getProperty("title");			
+			id 		= (String) mDocument.getProperty(CB_DOCUMENT_FIELD_SENSOR_ID);
+			title 	= (String) mDocument.getProperty(CB_DOCUMENT_FIELD_SENSOR_TITLE);			
 			
 			Database database = mDocument.getDatabase(); 
 			

@@ -4,11 +4,14 @@ import java.util.Observable;
 import java.util.Observer;
 
 import android.os.Bundle;
+import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.TextView.OnEditorActionListener;
 
 import com.wimoto.app.R;
 import com.wimoto.app.model.ClimateSensor;
@@ -87,6 +90,14 @@ public abstract class SensorFragment extends PageFragment implements Observer {
 		mLastUpdateText = (TextView)mView.findViewById(R.id.last_updated_text);
 		
 		mSensorNameText.setText(mSensor.getTitle());
+		mSensorNameText.setOnEditorActionListener(new OnEditorActionListener() {
+			@Override
+			public boolean onEditorAction(TextView v, int actionId,
+					KeyEvent event) {
+				mSensor.setTitle(mSensorNameText.getText().toString());
+				return false;
+			}
+		});
 		
 		updateBackground();
 		updateBateryLevel();
@@ -112,7 +123,7 @@ public abstract class SensorFragment extends PageFragment implements Observer {
 		}
 		return TAG_SENSOR + mSensor.getId();
 	}
-
+	
 	private void updateBackground() {
 		if ((mSensor != null) && (mSensor.isConnected())) {
 			mView.setBackgroundColor(getResources().getColor(getBackgroundColorRes()));

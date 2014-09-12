@@ -1,5 +1,8 @@
 package com.wimoto.app.menu.right;
 
+import java.util.Observable;
+import java.util.Observer;
+
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,7 +13,7 @@ import android.widget.TextView;
 import com.wimoto.app.R;
 import com.wimoto.app.model.Sensor;
 
-public class RightMenuView extends RelativeLayout {
+public class RightMenuView extends RelativeLayout implements Observer {
 	
 	private Sensor mSensor;
 	
@@ -30,11 +33,17 @@ public class RightMenuView extends RelativeLayout {
 	}
 	
 	public void setSensor(Sensor sensor) {
-		if (mSensor == sensor) {
+		if ((mSensor != null) && (mSensor.equals(sensor))) {
 			return;
 		}
 		
+		if (mSensor != null) {
+			mSensor.deleteObserver(this);
+		}
+		
 		this.mSensor = sensor;
+		mSensor.addObserver(this);
+		
 		setNormalMode();
 		
 		mTitleView.setText(mSensor.getTitle());
@@ -48,6 +57,11 @@ public class RightMenuView extends RelativeLayout {
 	public void setDeleteMode() {
 		mLogoView.setVisibility(View.GONE);
 		mDeleteView.setVisibility(View.VISIBLE);
+	}
+
+	@Override
+	public void update(Observable observable, Object data) {
+		mTitleView.setText(mSensor.getTitle());		
 	}
 
 }
