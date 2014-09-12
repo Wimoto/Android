@@ -189,7 +189,9 @@ public class BluetoothConnection extends Observable {
 	private void performNextRequest() {
 		if (!mRequests.isEmpty()) {
 			mRequests.removeFirst();
-			performRequest(mRequests.getFirst());
+			if (!mRequests.isEmpty()) {
+				performRequest(mRequests.getFirst());
+			}
 		}
 	}
 	
