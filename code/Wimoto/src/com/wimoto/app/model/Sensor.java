@@ -13,6 +13,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import android.bluetooth.BluetoothGattCharacteristic;
+import android.util.Log;
 
 import com.couchbase.lite.Database;
 import com.couchbase.lite.Document;
@@ -33,6 +34,9 @@ public class Sensor extends Observable implements Observer {
 	
 	private static String BLE_GENERIC_SERVICE_UUID_BATTERY		 		= "0000180F-0000-1000-8000-00805F9B34FB";
 	private static String BLE_GENERIC_CHAR_UUID_BATTERY_LEVEL			= "00002A19-0000-1000-8000-00805F9B34FB";
+	
+	private static String BLE_GENERIC_SERVICE_ALARM				 		= "E0035608-EC48-4ED0-9F3B-5419C00A94FD";
+	private static String BLE_GENERIC_CHAR_ALARM						= "E003560D-EC48-4ED0-9F3B-5419C00A94FD";
 	
 	protected BluetoothConnection mConnection;
 	protected Document mDocument;
@@ -245,6 +249,15 @@ public class Sensor extends Observable implements Observer {
 	protected void enableChangesNotification() {
 		if ((mConnection != null) && (mDocument != null)) {
 			mConnection.readCharacteristic(BLE_GENERIC_SERVICE_UUID_BATTERY, BLE_GENERIC_CHAR_UUID_BATTERY_LEVEL);
+		}
+	}
+	
+	public void enableAlarms(boolean enable) {
+		if (mConnection != null) {
+			Log.e("", "enableAlarms(boolean enable)");
+			
+			byte[] bytes = {(byte) 0x01};
+			mConnection.writeCharacteristic(BLE_GENERIC_SERVICE_ALARM, BLE_GENERIC_CHAR_ALARM, bytes);
 		}
 	}
 	

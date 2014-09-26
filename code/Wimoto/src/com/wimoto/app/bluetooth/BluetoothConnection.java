@@ -155,6 +155,8 @@ public class BluetoothConnection extends Observable {
 	}
 		
 	private void addRequest(CharacteristicRequest request) {
+		Log.e("", "addRequest(CharacteristicRequest request)");
+		
 		mRequests.add(request);
 		if (mRequests.size() == 1) {
 			performRequest(request);
@@ -170,7 +172,11 @@ public class BluetoothConnection extends Observable {
 				break;
 			}	
 			case CharacteristicRequest.REQUEST_TYPE_WRITE: {
-				mBluetoothGatt.writeCharacteristic(service.getCharacteristic(UUID.fromString(request.getCharacteristicUuidString())));
+				Log.e("", "CharacteristicRequest.REQUEST_TYPE_WRITE");
+				
+		    	BluetoothGattCharacteristic characteristic = service.getCharacteristic(UUID.fromString(request.getCharacteristicUuidString()));
+		    	characteristic.setValue(request.getValue());
+				Log.e("", "WRITTT " + mBluetoothGatt.writeCharacteristic(characteristic));
 				break;
 			}	
 			case CharacteristicRequest.REQUEST_TYPE_UPDATE: {		    	
@@ -201,6 +207,10 @@ public class BluetoothConnection extends Observable {
 	
 	public void enableChangesNotification(String serviceUuidString, String characteristicUuidString) {
 		addRequest(new CharacteristicRequest(CharacteristicRequest.REQUEST_TYPE_UPDATE, serviceUuidString, characteristicUuidString));
+	}
+	
+	public void writeCharacteristic(String serviceUuidString, String characteristicUuidString, byte[] value) {
+		addRequest(new CharacteristicRequest(CharacteristicRequest.REQUEST_TYPE_WRITE, serviceUuidString, characteristicUuidString, value));
 	}
 	
     private final BluetoothGattCallback mGattCallback =
@@ -265,6 +275,14 @@ public class BluetoothConnection extends Observable {
 		@Override
 		public void onDescriptorWrite(BluetoothGatt gatt,
 				BluetoothGattDescriptor descriptor, int status) {
+			Log.e("", "onDescriptorWrite " + status);
+			performNextRequest();
+		}
+
+		@Override
+		public void onCharacteristicWrite(BluetoothGatt gatt,
+				BluetoothGattCharacteristic characteristic, int status) {
+			Log.e("", "onCharacteristicWrite " + status);
 			performNextRequest();
 		}
 
@@ -302,6 +320,7 @@ public class BluetoothConnection extends Observable {
     	private int mType;
     	private String mServiceUuidString;
     	private String mCharacteristicUuidString;
+    	private byte[] mValue;
     	
     	public CharacteristicRequest(int type, String serviceUuidString, String characteristicUuidString) {
     		mType = type;
@@ -309,6 +328,11 @@ public class BluetoothConnection extends Observable {
     		mCharacteristicUuidString = characteristicUuidString;
     	}
 
+    	public CharacteristicRequest(int type, String serviceUuidString, String characteristicUuidString, byte[] value) {
+    		this(type, serviceUuidString, characteristicUuidString);
+    		mValue = value;
+    	}
+    	
 		public int getType() {
 			return mType;
 		}
@@ -319,6 +343,10 @@ public class BluetoothConnection extends Observable {
 
 		public String getCharacteristicUuidString() {
 			return mCharacteristicUuidString;
+		}
+
+		public byte[] getValue() {
+			return mValue;
 		}
     }
 }
