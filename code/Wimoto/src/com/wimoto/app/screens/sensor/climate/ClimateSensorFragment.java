@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.wimoto.app.R;
+import com.wimoto.app.dialogs.AlarmSliderDialog;
 import com.wimoto.app.model.ClimateSensor;
 import com.wimoto.app.screens.sensor.SensorFragment;
 import com.wimoto.app.widgets.AnimationSwitch;
@@ -53,6 +54,9 @@ public class ClimateSensorFragment extends SensorFragment {
 			@Override
 			public void onCheckedChanged(AnimationSwitch view, boolean isChecked) {
 				mSensor.enableAlarms(true);
+				
+				AlarmSliderDialog dialog = new AlarmSliderDialog(getActivity());
+				dialog.create().show();
 			}
 		});
 		

@@ -36,7 +36,7 @@ public class Sensor extends Observable implements Observer {
 	private static String BLE_GENERIC_CHAR_UUID_BATTERY_LEVEL			= "00002A19-0000-1000-8000-00805F9B34FB";
 	
 	private static String BLE_GENERIC_SERVICE_ALARM				 		= "E0035608-EC48-4ED0-9F3B-5419C00A94FD";
-	private static String BLE_GENERIC_CHAR_ALARM						= "E003560D-EC48-4ED0-9F3B-5419C00A94FD";
+	private static String BLE_GENERIC_CHAR_ALARM						= "E003560C-EC48-4ED0-9F3B-5419C00A94FD";
 	
 	protected BluetoothConnection mConnection;
 	protected Document mDocument;
