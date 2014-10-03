@@ -176,7 +176,9 @@ public class BluetoothConnection extends Observable {
 				
 		    	BluetoothGattCharacteristic characteristic = service.getCharacteristic(UUID.fromString(request.getCharacteristicUuidString()));
 		    	characteristic.setValue(request.getValue());
-				Log.e("", "WRITTT " + mBluetoothGatt.writeCharacteristic(characteristic));
+				if (!mBluetoothGatt.writeCharacteristic(characteristic)) {
+					performNextRequest();
+				}
 				break;
 			}	
 			case CharacteristicRequest.REQUEST_TYPE_UPDATE: {		    	

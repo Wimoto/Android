@@ -34,10 +34,7 @@ public class Sensor extends Observable implements Observer {
 	
 	private static String BLE_GENERIC_SERVICE_UUID_BATTERY		 		= "0000180F-0000-1000-8000-00805F9B34FB";
 	private static String BLE_GENERIC_CHAR_UUID_BATTERY_LEVEL			= "00002A19-0000-1000-8000-00805F9B34FB";
-	
-	private static String BLE_GENERIC_SERVICE_ALARM				 		= "E0035608-EC48-4ED0-9F3B-5419C00A94FD";
-	private static String BLE_GENERIC_CHAR_ALARM						= "E003560C-EC48-4ED0-9F3B-5419C00A94FD";
-	
+		
 	protected BluetoothConnection mConnection;
 	protected Document mDocument;
 	
@@ -252,12 +249,22 @@ public class Sensor extends Observable implements Observer {
 		}
 	}
 	
-	public void enableAlarms(boolean enable) {
+	protected void enableAlarm(boolean doEnable, String serviceUuidString, String characteristicUuidString) {
 		if (mConnection != null) {
-			Log.e("", "enableAlarms(boolean enable)");
-			
-			byte[] bytes = {(byte) 0x01};
-			mConnection.writeCharacteristic(BLE_GENERIC_SERVICE_ALARM, BLE_GENERIC_CHAR_ALARM, bytes);
+			if (doEnable) {
+				byte[] bytes = {(byte) 0x01};
+				mConnection.writeCharacteristic(serviceUuidString, characteristicUuidString, bytes);
+			} else {
+				byte[] bytes = {(byte) 0x00};
+				mConnection.writeCharacteristic(serviceUuidString, characteristicUuidString, bytes);
+			}
+		}
+	}
+	
+	public void writeAlarmValue(int alarmValue, String serviceUuidString, String characteristicUuidString) {
+		if (mConnection != null) {
+			BigInteger bigInt = BigInteger.valueOf(alarmValue); 
+			mConnection.writeCharacteristic(serviceUuidString, characteristicUuidString, bigInt.toByteArray());
 		}
 	}
 	

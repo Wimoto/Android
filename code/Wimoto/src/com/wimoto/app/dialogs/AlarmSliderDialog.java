@@ -15,33 +15,44 @@ import com.wimoto.app.R;
 
 public class AlarmSliderDialog extends AlertDialog.Builder {
 
-	public AlarmSliderDialog(Context context) {
+	public interface AlarmSliderDialogListener {
+		void onSave(AlarmSliderDialog dialog);
+	}
+	
+	private AlarmSliderDialogListener mListener;
+	private String mSensorCharacteristic;
+	
+	private float mSelectedMinValue;
+	private float mSelectedMaxValue;
+	
+	private RangeBar<Float> mSeekBar;
+	private TextView mResultTextView;
+	
+	public AlarmSliderDialog(Context context, String sensorCharacteristic, AlarmSliderDialogListener listener, float absoluteMinValue, float absoluteMaxValue) {
 		super(context);
+		
+		mSensorCharacteristic = sensorCharacteristic;
+		mListener = listener;
 		
 		LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		
 		View rangeView = inflater.inflate(R.layout.range_view, null);
-		final TextView resultTextView = (TextView)rangeView.findViewById(R.id.resultTextView);
+		mResultTextView = (TextView)rangeView.findViewById(R.id.resultTextView);
 		
-		RangeBar<Float> seekBar = new RangeBar<Float>(0.0f, 100.0f, context);
-		seekBar.setSelectedMinValue(50.0f);
-		seekBar.setSelectedMaxValue(90.0f);
-		seekBar.setOnRangeBarChangeListener(new OnRangeBarChangeListener<Float>() {
+		mSeekBar = new RangeBar<Float>(absoluteMinValue, absoluteMaxValue, context);
+		mSeekBar.setOnRangeBarChangeListener(new OnRangeBarChangeListener<Float>() {
 		        @Override
 		        public void onRangeBarValuesChanged(RangeBar<?> bar, Float minValue, Float maxValue) {
-		                resultTextView.setText(String.format("%.2f - %.2f", minValue, maxValue));
+		        	mResultTextView.setText(String.format("%.2f - %.2f", minValue, maxValue));
 		        }
 		});
 		
-		resultTextView.setText(String.format("%.2f - %.2f", seekBar.getSelectedMinValue(), seekBar.getSelectedMaxValue()));
-
-		
 		LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
 		params.setMargins(60, 40, 60, 60);
-		seekBar.setLayoutParams(params);
+		mSeekBar.setLayoutParams(params);
 		
 		LinearLayout layout = (LinearLayout)rangeView.findViewById(R.id.rangeView);
-		layout.addView(seekBar);
+		layout.addView(mSeekBar);
 		
 		setCancelable(false);
 		setPositiveButton(context.getString(R.string.sensor_save),
@@ -62,9 +73,36 @@ public class AlarmSliderDialog extends AlertDialog.Builder {
 
 		setView(rangeView);
 	}
-
 	
-	private void save() {
+	public String getSensorCharacteristic() {
+		return mSensorCharacteristic;
+	}
+
+	public float getSelectedMinValue() {
+		return mSelectedMinValue;
+	}
+
+	public void setSelectedMinValue(float selectedMinValue) {
+		mSelectedMinValue = selectedMinValue;
 		
+		mSeekBar.setSelectedMinValue(mSelectedMinValue);
+		mResultTextView.setText(String.format("%.2f - %.2f", mSeekBar.getSelectedMinValue(), mSeekBar.getSelectedMaxValue()));
+	}
+
+	public float getSelectedMaxValue() {
+		return mSelectedMaxValue;
+	}
+
+	public void setSelectedMaxValue(float selectedMaxValue) {
+		mSelectedMaxValue = selectedMaxValue;
+		
+		mSeekBar.setSelectedMaxValue(mSelectedMaxValue);
+		mResultTextView.setText(String.format("%.2f - %.2f", mSeekBar.getSelectedMinValue(), mSeekBar.getSelectedMaxValue()));
+	}
+
+	private void save() {
+		if (mListener != null) {
+			mListener.onSave(this);
+		}
 	}
 }

@@ -4,7 +4,6 @@ import java.util.Observable;
 import java.util.Observer;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
+import com.mobitexoft.leftmenu.PageFragment;
 import com.wimoto.app.R;
 import com.wimoto.app.model.ClimateSensor;
 import com.wimoto.app.model.GrowSensor;
@@ -25,7 +25,6 @@ import com.wimoto.app.screens.sensor.grow.GrowSensorFragment;
 import com.wimoto.app.screens.sensor.sentry.SentrySensorFragment;
 import com.wimoto.app.screens.sensor.thermo.ThermoSensorFragment;
 import com.wimoto.app.screens.sensor.water.WaterSensorFragment;
-import com.mobitexoft.leftmenu.PageFragment;
 
 public abstract class SensorFragment extends PageFragment implements Observer {
 	

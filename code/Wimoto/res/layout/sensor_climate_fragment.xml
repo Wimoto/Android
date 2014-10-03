@@ -85,7 +85,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_marginLeft="5dp"
-                    android:checked="true"
+                    android:checked="false"
                     android:clickable="true" />
                 
                 <TextView
@@ -173,7 +173,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_marginLeft="5dp"
-                    android:checked="true"
+                    android:checked="false"
                     android:clickable="true" />
                 
                 <TextView
@@ -261,7 +261,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_marginLeft="5dp"
-                    android:checked="true"
+                    android:checked="false"
                     android:clickable="true" />
                 
                 <TextView
