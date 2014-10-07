@@ -1,20 +1,17 @@
 package com.wimoto.app.screens.searchsensor;
 
-import java.util.Observable;
-import java.util.Observer;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.wimoto.app.R;
-import com.wimoto.app.MainActivity;
 import com.wimoto.app.model.Sensor;
 
-public class SensorView extends LinearLayout implements Observer {
+public class SensorView extends LinearLayout implements PropertyChangeListener {
 	
 	private Sensor mSensor;
 	private TextView mRssiTextView;
@@ -34,13 +31,11 @@ public class SensorView extends LinearLayout implements Observer {
 				return;
 			}
 			
-			mSensor.deleteObserver(this);
+			mSensor.removeChangeListener(this);
 		}
 		
-		this.mSensor = sensor;
-		mSensor.addObserver(this);
-		
-		Log.e("", "SensorView setSensor " + mSensor.getTitle());
+		mSensor = sensor;
+		mSensor.addChangeListener(this, Sensor.OBSERVER_FIELD_SENSOR_RSSI);
 		
 		TextView titleView = (TextView)findViewById(R.id.sensor_title);
 		titleView.setText(mSensor.getTitle());
@@ -49,23 +44,29 @@ public class SensorView extends LinearLayout implements Observer {
 		idView.setText(mSensor.getId());		
 	}
 
+//	@Override
+//	public void update(Observable observable, Object data) {		
+//		((MainActivity) getContext()).runOnUiThread(new Runnable() {
+//			@Override
+//			public void run() {
+//				int rssiLevel = 0;
+//				if (mSensor != null) {
+//					rssiLevel = mSensor.getRssi();
+//				}
+//				
+//				if (rssiLevel == 0) {
+//					mRssiTextView.setVisibility(View.INVISIBLE);
+//				} else {
+//					mRssiTextView.setVisibility(View.VISIBLE);
+//					mRssiTextView.setText(rssiLevel + "dB");
+//				}				
+//			}
+//		});
+//	}
+
 	@Override
-	public void update(Observable observable, Object data) {		
-		((MainActivity) getContext()).runOnUiThread(new Runnable() {
-			@Override
-			public void run() {
-				int rssiLevel = 0;
-				if (mSensor != null) {
-					rssiLevel = mSensor.getRssi();
-				}
-				
-				if (rssiLevel == 0) {
-					mRssiTextView.setVisibility(View.INVISIBLE);
-				} else {
-					mRssiTextView.setVisibility(View.VISIBLE);
-					mRssiTextView.setText(rssiLevel + "dB");
-				}				
-			}
-		});
+	public void propertyChange(PropertyChangeEvent event) {
+		// TODO Auto-generated method stub
+		
 	}
 }

@@ -94,10 +94,10 @@ public class BluetoothConnection extends Observable {
 	}
 
 	public void setRssi(int rssi) {
-		this.mRssi = rssi;
+		mRssi = rssi;
 		
 		setChanged();
-		notifyObservers();
+		notifyObservers(rssi);
 	}
 
 	public void readRssi() {

@@ -29,7 +29,7 @@ public class WaterSensor extends Sensor {
 	public WaterSensor() {
 		super();
 		
-		title = AppContext.getContext().getString(R.string.sensor_water);
+		mTitle = AppContext.getContext().getString(R.string.sensor_water);
 		
 		mSensorValues.put(WATER_CONTACT, new LinkedList<Float>());
 		mSensorValues.put(WATER_CONTACT, new LinkedList<Float>());
@@ -45,19 +45,19 @@ public class WaterSensor extends Sensor {
 	public void setConnection(BluetoothConnection connection) {
 		super.setConnection(connection);
 		
-		enableChangesNotification();
+		initiateSensorCharacteristics();
 	}
 	
 	@Override
 	public void setDocument(Document document) {
 		super.setDocument(document);
 		
-		enableChangesNotification();		
+		initiateSensorCharacteristics();		
 	}
 
 	@Override
-	protected void enableChangesNotification() {
-		super.enableChangesNotification();
+	protected void initiateSensorCharacteristics() {
+		super.initiateSensorCharacteristics();
 		
 		if ((mConnection != null) && (mDocument != null)) {
 			mConnection.enableChangesNotification(BLE_WATER_SERVICE_UUID_CONTACT, BLE_WATER_CHAR_UUID_CONTACT_CURRENT);

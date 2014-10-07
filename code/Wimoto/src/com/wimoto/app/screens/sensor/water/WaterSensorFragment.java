@@ -71,26 +71,26 @@ public class WaterSensorFragment extends SensorFragment {
 		return R.color.color_sensor_water;
 	}
 	
-	@Override
-	public void update(Observable observable, Object data) {
-		super.update(observable, data);
-		
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-        		if (mSensor == null) {        			
-        			mContactTextView.setText(getString(R.string.sensor_two_hyphens));
-        			mLevelTextView.setText(getString(R.string.sensor_two_hyphens));
-        		} else if (!mSensor.isConnected()){      
-        			mContactTextView.setText(getString(R.string.sensor_two_hyphens));
-        			mLevelTextView.setText(getString(R.string.sensor_two_hyphens));
-        		} else {
-        			WaterSensor waterSensor = (WaterSensor) mSensor;
-        			
-        			mContactTextView.setText(String.format("%.01f", waterSensor.getContact()));
-        			mLevelTextView.setText(String.format("%.01f", waterSensor.getLevel()));
-        		}        		
-            }
-        });
-	}
+//	@Override
+//	public void update(Observable observable, Object data) {
+//		super.update(observable, data);
+//		
+//        getActivity().runOnUiThread(new Runnable() {
+//            @Override
+//            public void run() {
+//        		if (mSensor == null) {        			
+//        			mContactTextView.setText(getString(R.string.sensor_two_hyphens));
+//        			mLevelTextView.setText(getString(R.string.sensor_two_hyphens));
+//        		} else if (!mSensor.isConnected()){      
+//        			mContactTextView.setText(getString(R.string.sensor_two_hyphens));
+//        			mLevelTextView.setText(getString(R.string.sensor_two_hyphens));
+//        		} else {
+//        			WaterSensor waterSensor = (WaterSensor) mSensor;
+//        			
+//        			mContactTextView.setText(String.format("%.01f", waterSensor.getContact()));
+//        			mLevelTextView.setText(String.format("%.01f", waterSensor.getLevel()));
+//        		}        		
+//            }
+//        });
+//	}
 }

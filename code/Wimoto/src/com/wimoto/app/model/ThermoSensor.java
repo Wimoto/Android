@@ -29,7 +29,7 @@ public class ThermoSensor extends Sensor {
 	public ThermoSensor() {
 		super();
 
-		title = AppContext.getContext().getString(R.string.sensor_thermo);
+		mTitle = AppContext.getContext().getString(R.string.sensor_thermo);
 		
 		mSensorValues.put(THERMO_TEMPERATURE, new LinkedList<Float>());
 		mSensorValues.put(THERMO_PROBE, new LinkedList<Float>());
@@ -45,19 +45,19 @@ public class ThermoSensor extends Sensor {
 	public void setConnection(BluetoothConnection connection) {
 		super.setConnection(connection);
 		
-		enableChangesNotification();
+		initiateSensorCharacteristics();
 	}
 	
 	@Override
 	public void setDocument(Document document) {
 		super.setDocument(document);
 		
-		enableChangesNotification();		
+		initiateSensorCharacteristics();		
 	}
 
 	@Override
-	protected void enableChangesNotification() {
-		super.enableChangesNotification();
+	protected void initiateSensorCharacteristics() {
+		super.initiateSensorCharacteristics();
 		
 		if ((mConnection != null) && (mDocument != null)) {
 			mConnection.enableChangesNotification(BLE_THERMO_SERVICE_UUID_TEMPERATURE, BLE_THERMO_CHAR_UUID_TEMPERATURE_CURRENT);

@@ -35,7 +35,7 @@ public class GrowSensor extends Sensor {
 	public GrowSensor() {
 		super();
 		
-		title = AppContext.getContext().getString(R.string.sensor_grow);
+		mTitle = AppContext.getContext().getString(R.string.sensor_grow);
 		
 		mSensorValues.put(GROW_LIGHT, new LinkedList<Float>());
 		mSensorValues.put(GROW_MOISTURE, new LinkedList<Float>());
@@ -51,19 +51,19 @@ public class GrowSensor extends Sensor {
 	public void setConnection(BluetoothConnection connection) {
 		super.setConnection(connection);
 		
-		enableChangesNotification();		
+		initiateSensorCharacteristics();		
 	}
 	
 	@Override
 	public void setDocument(Document document) {
 		super.setDocument(document);
 		
-		enableChangesNotification();		
+		initiateSensorCharacteristics();		
 	}
 	
 	@Override
-	protected void enableChangesNotification() {
-		super.enableChangesNotification();
+	protected void initiateSensorCharacteristics() {
+		super.initiateSensorCharacteristics();
 		
 		if ((mConnection != null) && (mDocument != null)) {
 			mConnection.enableChangesNotification(BLE_GROW_SERVICE_UUID_LIGHT, BLE_GROW_CHAR_UUID_LIGHT_CURRENT);

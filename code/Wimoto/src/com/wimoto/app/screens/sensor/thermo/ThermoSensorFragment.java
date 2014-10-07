@@ -71,26 +71,26 @@ public class ThermoSensorFragment extends SensorFragment {
 		return R.color.color_sensor_thermo;
 	}
 	
-	@Override
-	public void update(Observable observable, Object data) {
-		super.update(observable, data);
-		
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-        		if (mSensor == null) {        			
-        			mTemperatureTextView.setText(getString(R.string.sensor_two_hyphens));
-        			mProbeTextView.setText(getString(R.string.sensor_two_hyphens));
-        		} else if (!mSensor.isConnected()){      
-        			mTemperatureTextView.setText(getString(R.string.sensor_two_hyphens));
-        			mProbeTextView.setText(getString(R.string.sensor_two_hyphens));
-        		} else {
-        			ThermoSensor thermoSensor = (ThermoSensor) mSensor;
-        			
-        			mTemperatureTextView.setText(String.format("%.01f", thermoSensor.getTemperature()));
-        			mProbeTextView.setText(String.format("%.01f", thermoSensor.getProbe()));
-        		}        		
-            }
-        });
-	}
+//	@Override
+//	public void update(Observable observable, Object data) {
+//		super.update(observable, data);
+//		
+//        getActivity().runOnUiThread(new Runnable() {
+//            @Override
+//            public void run() {
+//        		if (mSensor == null) {        			
+//        			mTemperatureTextView.setText(getString(R.string.sensor_two_hyphens));
+//        			mProbeTextView.setText(getString(R.string.sensor_two_hyphens));
+//        		} else if (!mSensor.isConnected()){      
+//        			mTemperatureTextView.setText(getString(R.string.sensor_two_hyphens));
+//        			mProbeTextView.setText(getString(R.string.sensor_two_hyphens));
+//        		} else {
+//        			ThermoSensor thermoSensor = (ThermoSensor) mSensor;
+//        			
+//        			mTemperatureTextView.setText(String.format("%.01f", thermoSensor.getTemperature()));
+//        			mProbeTextView.setText(String.format("%.01f", thermoSensor.getProbe()));
+//        		}        		
+//            }
+//        });
+//	}
 }

@@ -13,6 +13,7 @@ import com.wimoto.app.R;
 import com.wimoto.app.dialogs.AlarmSliderDialog;
 import com.wimoto.app.dialogs.AlarmSliderDialog.AlarmSliderDialogListener;
 import com.wimoto.app.model.ClimateSensor;
+import com.wimoto.app.model.Sensor;
 import com.wimoto.app.screens.sensor.SensorFragment;
 import com.wimoto.app.widgets.AnimationSwitch;
 import com.wimoto.app.widgets.AnimationSwitch.OnCheckedChangeListener;
@@ -31,6 +32,15 @@ public class ClimateSensorFragment extends SensorFragment implements AlarmSlider
 	private AnimationSwitch mTemperatureSwitch;
 	private AnimationSwitch mHumiditySwitch;
 	private AnimationSwitch mLightSwitch;
+	
+	private TextView mTemperatureAlarmLowTextView;
+	private TextView mTemperatureAlarmHighTextView;	
+
+	private TextView mHumidityAlarmLowTextView;
+	private TextView mHumidityAlarmHighTextView;	
+	
+	private TextView mLightAlarmLowTextView;
+	private TextView mLightAlarmHighTextView;
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -64,6 +74,9 @@ public class ClimateSensorFragment extends SensorFragment implements AlarmSlider
 			}
 		});
 		
+		mTemperatureAlarmLowTextView = (TextView) mView.findViewById(R.id.temperatureLowTextView);
+		mTemperatureAlarmHighTextView = (TextView) mView.findViewById(R.id.temperatureHighTextView);
+		
 		mHumiditySparkView = (LineSparkView) mView.findViewById(R.id.humiditySparkView);
 		mHumiditySparkView.setValues(mSensor.getLastValues(ClimateSensor.CLIMATE_HUMIDITY));
 		mHumiditySparkView.setBackgroundColor(Color.TRANSPARENT);
@@ -85,6 +98,9 @@ public class ClimateSensorFragment extends SensorFragment implements AlarmSlider
 			}
 		});
 		
+		mHumidityAlarmLowTextView = (TextView) mView.findViewById(R.id.humidityLowTextView);
+		mHumidityAlarmHighTextView = (TextView) mView.findViewById(R.id.humidityHighTextView);
+		
 		mLightSparkView = (LineSparkView) mView.findViewById(R.id.lightSparkView);
 		mLightSparkView.setValues(mSensor.getLastValues(ClimateSensor.CLIMATE_LIGHT));
 		mLightSparkView.setBackgroundColor(Color.TRANSPARENT);
@@ -105,8 +121,22 @@ public class ClimateSensorFragment extends SensorFragment implements AlarmSlider
 				}
 			}
 		});
+		
+		mLightAlarmLowTextView = (TextView) mView.findViewById(R.id.lightLowTextView);
+		mLightAlarmHighTextView = (TextView) mView.findViewById(R.id.lightHighTextView);
 	}
 	
+	@Override
+	public void setSensor(Sensor sensor) {
+		super.setSensor(sensor);
+		
+		if (mSensor != null) {
+			mSensor.addChangeListener(this, Sensor.OBSERVER_FIELD_SENSOR_CONNECTION);
+			mSensor.addChangeListener(this, Sensor.OBSERVER_FIELD_SENSOR_BATTERY_LEVEL);
+			mSensor.addChangeListener(this, Sensor.OBSERVER_FIELD_SENSOR_RSSI);
+		}
+	}
+
 	protected AlarmSliderDialogListener self() {
 		return this;
 	}
@@ -116,46 +146,49 @@ public class ClimateSensorFragment extends SensorFragment implements AlarmSlider
 		return R.color.color_sensor_climate;
 	}
 	
-	@Override
-	public void update(Observable observable, Object data) {
-		super.update(observable, data);
-		
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-        		if (mSensor == null) {
-        			mTemperatureTextView.setText(getString(R.string.sensor_two_hyphens));
-        			mHumidityTextView.setText(getString(R.string.sensor_two_hyphens));
-        			mLightTextView.setText(getString(R.string.sensor_two_hyphens));
-        		} else if (!mSensor.isConnected()){
-        			mTemperatureTextView.setText(getString(R.string.sensor_two_hyphens));
-        			mHumidityTextView.setText(getString(R.string.sensor_two_hyphens));
-        			mLightTextView.setText(getString(R.string.sensor_two_hyphens));
-        		} else {
-        			ClimateSensor climateSensor = (ClimateSensor) mSensor;
-        			
-        			mTemperatureTextView.setText(String.format("%.01f", climateSensor.getTemperature()));
-        			mHumidityTextView.setText(String.format("%.01f", climateSensor.getHumidity()));
-        			mLightTextView.setText(String.format("%.00f", climateSensor.getLight()));
-        			
-        			mTemperatureSparkView.invalidate();
-        		}        		
-            }
-        });
-	}
+//	@Override
+//	public void update(Observable observable, Object data) {
+//		super.update(observable, data);
+//		
+//        getActivity().runOnUiThread(new Runnable() {
+//            @Override
+//            public void run() {
+//        		if (mSensor == null) {
+//        			mTemperatureTextView.setText(getString(R.string.sensor_two_hyphens));
+//        			mHumidityTextView.setText(getString(R.string.sensor_two_hyphens));
+//        			mLightTextView.setText(getString(R.string.sensor_two_hyphens));
+//        		} else if (!mSensor.isConnected()){
+//        			mTemperatureTextView.setText(getString(R.string.sensor_two_hyphens));
+//        			mHumidityTextView.setText(getString(R.string.sensor_two_hyphens));
+//        			mLightTextView.setText(getString(R.string.sensor_two_hyphens));
+//        		} else {
+//        			ClimateSensor climateSensor = (ClimateSensor) mSensor;
+//        			
+//        			mTemperatureTextView.setText(String.format("%.01f", climateSensor.getTemperature()));
+//        			mHumidityTextView.setText(String.format("%.01f", climateSensor.getHumidity()));
+//        			mLightTextView.setText(String.format("%.00f", climateSensor.getLight()));
+//        			
+//        			mTemperatureAlarmLowTextView.setText(climateSensor.getTemperatureAlarmLow() + "");
+//        			mTemperatureAlarmHighTextView.setText(climateSensor.getTemperatureAlarmHigh() + "");
+//        			
+//        			mTemperatureSparkView.invalidate();
+//        		}        		
+//            }
+//        });
+//	}
 
 	@Override
 	public void onSave(AlarmSliderDialog dialog) {
 		String sensorCharacteristic = dialog.getSensorCharacteristic();
 		if (ClimateSensor.CLIMATE_TEMPERATURE.equals(sensorCharacteristic)) {
-			((ClimateSensor)mSensor).writeAlarmValue((int)dialog.getSelectedMinValue(), ClimateSensor.BLE_CLIMATE_SERVICE_UUID_TEMPERATURE, ClimateSensor.BLE_GENERIC_CHAR_UUID_TEMPERATURE_ALARM_LOW);
-			((ClimateSensor)mSensor).writeAlarmValue((int)dialog.getSelectedMaxValue(), ClimateSensor.BLE_CLIMATE_SERVICE_UUID_TEMPERATURE, ClimateSensor.BLE_GENERIC_CHAR_UUID_TEMPERATURE_ALARM_HIGH);
+			((ClimateSensor)mSensor).writeAlarmValue((int)dialog.getSelectedMinValue(), ClimateSensor.BLE_CLIMATE_SERVICE_UUID_TEMPERATURE, ClimateSensor.BLE_CLIMATE_CHAR_UUID_TEMPERATURE_ALARM_LOW);
+			((ClimateSensor)mSensor).writeAlarmValue((int)dialog.getSelectedMaxValue(), ClimateSensor.BLE_CLIMATE_SERVICE_UUID_TEMPERATURE, ClimateSensor.BLE_CLIMATE_CHAR_UUID_TEMPERATURE_ALARM_HIGH);
 		} else if (ClimateSensor.CLIMATE_HUMIDITY.equals(sensorCharacteristic)) {
-			((ClimateSensor)mSensor).writeAlarmValue((int)dialog.getSelectedMinValue(), ClimateSensor.BLE_CLIMATE_SERVICE_UUID_HUMIDITY, ClimateSensor.BLE_GENERIC_CHAR_UUID_HUMIDITY_ALARM_LOW);
-			((ClimateSensor)mSensor).writeAlarmValue((int)dialog.getSelectedMaxValue(), ClimateSensor.BLE_CLIMATE_SERVICE_UUID_HUMIDITY, ClimateSensor.BLE_GENERIC_CHAR_UUID_HUMIDITY_ALARM_HIGH);
+			((ClimateSensor)mSensor).writeAlarmValue((int)dialog.getSelectedMinValue(), ClimateSensor.BLE_CLIMATE_SERVICE_UUID_HUMIDITY, ClimateSensor.BLE_CLIMATE_CHAR_UUID_HUMIDITY_ALARM_LOW);
+			((ClimateSensor)mSensor).writeAlarmValue((int)dialog.getSelectedMaxValue(), ClimateSensor.BLE_CLIMATE_SERVICE_UUID_HUMIDITY, ClimateSensor.BLE_CLIMATE_CHAR_UUID_HUMIDITY_ALARM_HIGH);
 		} else if (ClimateSensor.CLIMATE_LIGHT.equals(sensorCharacteristic)) {
-			((ClimateSensor)mSensor).writeAlarmValue((int)dialog.getSelectedMinValue(), ClimateSensor.BLE_CLIMATE_SERVICE_UUID_LIGHT, ClimateSensor.BLE_GENERIC_CHAR_UUID_LIGHT_ALARM_LOW);
-			((ClimateSensor)mSensor).writeAlarmValue((int)dialog.getSelectedMaxValue(), ClimateSensor.BLE_CLIMATE_SERVICE_UUID_LIGHT, ClimateSensor.BLE_GENERIC_CHAR_UUID_LIGHT_ALARM_HIGH);
+			((ClimateSensor)mSensor).writeAlarmValue((int)dialog.getSelectedMinValue(), ClimateSensor.BLE_CLIMATE_SERVICE_UUID_LIGHT, ClimateSensor.BLE_CLIMATE_CHAR_UUID_LIGHT_ALARM_LOW);
+			((ClimateSensor)mSensor).writeAlarmValue((int)dialog.getSelectedMaxValue(), ClimateSensor.BLE_CLIMATE_SERVICE_UUID_LIGHT, ClimateSensor.BLE_CLIMATE_CHAR_UUID_LIGHT_ALARM_HIGH);
 		}
 	}
 }

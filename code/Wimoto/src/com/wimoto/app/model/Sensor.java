@@ -13,7 +13,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import android.bluetooth.BluetoothGattCharacteristic;
-import android.util.Log;
 
 import com.couchbase.lite.Database;
 import com.couchbase.lite.Document;
@@ -24,23 +23,30 @@ import com.couchbase.lite.QueryEnumerator;
 import com.couchbase.lite.View;
 import com.wimoto.app.bluetooth.BluetoothConnection;
 import com.wimoto.app.bluetooth.BluetoothConnection.WimotoProfile;
+import com.wimoto.app.observer.PropertyObservable;
 
-public class Sensor extends Observable implements Observer {
+public class Sensor extends PropertyObservable implements Observer {
 			
 	public static final String CB_DOCUMENT_SENSOR_ID		= "sensorId";
+	
+	public static final String OBSERVER_FIELD_SENSOR_CONNECTION			= "mConnection";
+	public static final String OBSERVER_FIELD_SENSOR_TITLE				= "mTitle";
+	public static final String OBSERVER_FIELD_SENSOR_BATTERY_LEVEL		= "mBatteryLevel";
+	public static final String OBSERVER_FIELD_SENSOR_RSSI				= "mRssi";
 	
 	private static final String CB_DOCUMENT_FIELD_SENSOR_ID		= "id";
 	private static final String CB_DOCUMENT_FIELD_SENSOR_TITLE	= "title";	
 	
-	private static String BLE_GENERIC_SERVICE_UUID_BATTERY		 		= "0000180F-0000-1000-8000-00805F9B34FB";
-	private static String BLE_GENERIC_CHAR_UUID_BATTERY_LEVEL			= "00002A19-0000-1000-8000-00805F9B34FB";
+	private static final String BLE_GENERIC_SERVICE_UUID_BATTERY		 		= "0000180F-0000-1000-8000-00805F9B34FB";
+	private static final String BLE_GENERIC_CHAR_UUID_BATTERY_LEVEL			= "00002A19-0000-1000-8000-00805F9B34FB";
 		
 	protected BluetoothConnection mConnection;
 	protected Document mDocument;
 	
-	protected String title;
 	protected String id;
-	private float mBatteryLevel;
+	protected String mTitle;
+	private int mBatteryLevel;
+	private int mRssi;
 	
 	private Timer mRssiTimer;
 	
@@ -99,6 +105,8 @@ public class Sensor extends Observable implements Observer {
 			mConnection.deleteObserver(this);
 		}
 		
+		notifyObservers(OBSERVER_FIELD_SENSOR_CONNECTION, mConnection, connection);
+		
 		mConnection = connection;
 		if (mConnection == null) {
 			if (mRssiTimer != null) {
@@ -120,10 +128,7 @@ public class Sensor extends Observable implements Observer {
 					}
 				}, 0, 1000);
 			}
-		}
-		
-		setChanged();
-		notifyObservers();
+		}		
 	}
 
 	public String getTitle() {
@@ -131,11 +136,21 @@ public class Sensor extends Observable implements Observer {
 			return mConnection.getName();
 		}
 		
-		return title;
+		return mTitle;
 	}
 
+	public String getId() {
+		if ((mDocument == null) && (mConnection != null)) {
+			return mConnection.getId();
+		}
+		
+		return id;
+	}
+	
 	public void setTitle(String title) {
-		this.title = title;
+		notifyObservers(OBSERVER_FIELD_SENSOR_TITLE, mTitle, title);
+		
+		mTitle = title;
 	
 		if (mDocument != null) {
 			Map<String, Object> currentProperties = mDocument.getProperties();
@@ -150,20 +165,9 @@ public class Sensor extends Observable implements Observer {
 			} catch (Exception e) {
 				// TODO catch exception
 			}
-		}
-		
-		setChanged();
-		notifyObservers();
+		}		
 	}
 	
-	public String getId() {
-		if ((mDocument == null) && (mConnection != null)) {
-			return mConnection.getId();
-		}
-		
-		return id;
-	}
-
 	public WimotoProfile getType() {
 		return WimotoProfile.UNDEFINED;
 	}
@@ -177,10 +181,13 @@ public class Sensor extends Observable implements Observer {
 	}
 
 	public int getRssi() {
-		if (mConnection != null) {
-			return mConnection.getRssi();
-		}
-		return 0; 
+		return mRssi; 
+	}
+
+	public void setRssi(int rssi) {
+		notifyObservers(OBSERVER_FIELD_SENSOR_RSSI, mRssi, rssi);
+		
+		mRssi = rssi;
 	}
 	
 	public void setDocument(Document document) {
@@ -188,7 +195,7 @@ public class Sensor extends Observable implements Observer {
 		
 		if (mDocument != null) {
 			id 		= (String) mDocument.getProperty(CB_DOCUMENT_FIELD_SENSOR_ID);
-			title 	= (String) mDocument.getProperty(CB_DOCUMENT_FIELD_SENSOR_TITLE);			
+			mTitle 	= (String) mDocument.getProperty(CB_DOCUMENT_FIELD_SENSOR_TITLE);			
 			
 			Database database = mDocument.getDatabase(); 
 			
@@ -243,7 +250,7 @@ public class Sensor extends Observable implements Observer {
 		}
 	}
 
-	protected void enableChangesNotification() {
+	protected void initiateSensorCharacteristics() {
 		if ((mConnection != null) && (mDocument != null)) {
 			mConnection.readCharacteristic(BLE_GENERIC_SERVICE_UUID_BATTERY, BLE_GENERIC_CHAR_UUID_BATTERY_LEVEL);
 		}
@@ -281,12 +288,13 @@ public class Sensor extends Observable implements Observer {
 			
 			BigInteger bi = new BigInteger(characteristic.getValue());
 			if (uuid.equals(BLE_GENERIC_CHAR_UUID_BATTERY_LEVEL)) {
-				mBatteryLevel = bi.floatValue();
+				int batteryLevel = Float.valueOf(bi.floatValue()).intValue();
+				notifyObservers(OBSERVER_FIELD_SENSOR_BATTERY_LEVEL, mBatteryLevel, batteryLevel);
+				mBatteryLevel = batteryLevel;
 			}
+		} else {
+			setRssi((Integer)data);
 		}
-		
-		setChanged();
-		notifyObservers();
 	}
 	
 	protected void addValue(String type, float value) {
@@ -308,4 +316,5 @@ public class Sensor extends Observable implements Observer {
 	public LinkedList<Float> getLastValues(String valueType) {
 		return mSensorValues.get(valueType);
 	}
+
 }

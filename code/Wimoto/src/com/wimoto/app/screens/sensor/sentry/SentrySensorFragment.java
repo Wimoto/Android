@@ -71,26 +71,26 @@ public class SentrySensorFragment extends SensorFragment {
 		return R.color.color_sensor_sentry;
 	}
 	
-	@Override
-	public void update(Observable observable, Object data) {
-		super.update(observable, data);
-		
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-        		if (mSensor == null) {        			
-        			mAccelerometerTextView.setText(getString(R.string.sensor_two_hyphens));
-        			mHumidityTextView.setText(getString(R.string.sensor_two_hyphens));
-        		} else if (!mSensor.isConnected()){      
-        			mAccelerometerTextView.setText(getString(R.string.sensor_two_hyphens));
-        			mHumidityTextView.setText(getString(R.string.sensor_two_hyphens));
-        		} else {
-        			SentrySensor sentrySensor = (SentrySensor) mSensor;
-        			
-        			mAccelerometerTextView.setText(String.format("%.01f", sentrySensor.getAccelerometer()));
-        			mHumidityTextView.setText(String.format("%.01f", sentrySensor.getInfared()));
-        		}        		
-            }
-        });
-	}
+//	@Override
+//	public void update(Observable observable, Object data) {
+//		super.update(observable, data);
+//		
+//        getActivity().runOnUiThread(new Runnable() {
+//            @Override
+//            public void run() {
+//        		if (mSensor == null) {        			
+//        			mAccelerometerTextView.setText(getString(R.string.sensor_two_hyphens));
+//        			mHumidityTextView.setText(getString(R.string.sensor_two_hyphens));
+//        		} else if (!mSensor.isConnected()){      
+//        			mAccelerometerTextView.setText(getString(R.string.sensor_two_hyphens));
+//        			mHumidityTextView.setText(getString(R.string.sensor_two_hyphens));
+//        		} else {
+//        			SentrySensor sentrySensor = (SentrySensor) mSensor;
+//        			
+//        			mAccelerometerTextView.setText(String.format("%.01f", sentrySensor.getAccelerometer()));
+//        			mHumidityTextView.setText(String.format("%.01f", sentrySensor.getInfared()));
+//        		}        		
+//            }
+//        });
+//	}
 }

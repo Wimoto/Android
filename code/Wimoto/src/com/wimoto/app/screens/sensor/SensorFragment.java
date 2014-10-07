@@ -1,7 +1,7 @@
 package com.wimoto.app.screens.sensor;
 
-import java.util.Observable;
-import java.util.Observer;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 
 import android.os.Bundle;
 import android.view.KeyEvent;
@@ -26,7 +26,7 @@ import com.wimoto.app.screens.sensor.sentry.SentrySensorFragment;
 import com.wimoto.app.screens.sensor.thermo.ThermoSensorFragment;
 import com.wimoto.app.screens.sensor.water.WaterSensorFragment;
 
-public abstract class SensorFragment extends PageFragment implements Observer {
+public abstract class SensorFragment extends PageFragment implements PropertyChangeListener {
 	
 	private static final String TAG_SENSOR = "sensor_tag";
 	private static final String TAG_NO_SENSOR = "no_sensor_tag";
@@ -78,7 +78,7 @@ public abstract class SensorFragment extends PageFragment implements Observer {
 		super.onDestroy();
 		
 		if (mSensor != null) {
-			mSensor.deleteObserver(this);
+			mSensor.removeChangeListener(this);
 		}
 	}
 
@@ -96,23 +96,21 @@ public abstract class SensorFragment extends PageFragment implements Observer {
 				mSensor.setTitle(mSensorNameText.getText().toString());
 				return false;
 			}
-		});
-		
-		updateBackground();
-		updateBateryLevel();
-		updateRssi();		
+		});		
 	}
 	
 	protected abstract int getBackgroundColorRes();
 	
 	public void setSensor(Sensor sensor) {
 		if (mSensor != null) {
-			mSensor.deleteObserver(this);
+			mSensor.removeChangeListener(this);
 		}
 		
 		mSensor = sensor;
 		if (mSensor != null) {
-			mSensor.addObserver(this);
+			mSensor.addChangeListener(this, Sensor.OBSERVER_FIELD_SENSOR_CONNECTION);
+			mSensor.addChangeListener(this, Sensor.OBSERVER_FIELD_SENSOR_BATTERY_LEVEL);
+			mSensor.addChangeListener(this, Sensor.OBSERVER_FIELD_SENSOR_RSSI);
 		}
 	}
 	
@@ -123,50 +121,44 @@ public abstract class SensorFragment extends PageFragment implements Observer {
 		return TAG_SENSOR + mSensor.getId();
 	}
 	
-	private void updateBackground() {
-		if ((mSensor != null) && (mSensor.isConnected())) {
-			mView.setBackgroundColor(getResources().getColor(getBackgroundColorRes()));
-		} else {
-			mView.setBackgroundColor(getResources().getColor(R.color.color_light_gray));
-		}
+	private void updateBateryLevel(int batteryLevel) {
+		int resId = R.drawable.battery_low;
+        if (batteryLevel > 75) {
+        	resId = R.drawable.battery_full;
+        } else if (batteryLevel > 50) {
+        	resId = R.drawable.battery_high;
+        } else if (batteryLevel > 25) {
+        	resId = R.drawable.battery_medium;
+        }
+		mBatteryImageView.setImageDrawable(getResources().getDrawable(resId));
 	}
-	
-	private void updateRssi() {
-		if ((mSensor != null) && (mSensor.isConnected())) {
-			mRssiTextView.setVisibility(View.VISIBLE);
-			mRssiTextView.setText(mSensor.getRssi() + "dB");
-		} else {
-			mRssiTextView.setVisibility(View.INVISIBLE);
-		}		
-	}
-	
-	private void updateBateryLevel() {
-		if ((mSensor != null) && (mSensor.isConnected())) {
-			mBatteryImageView.setVisibility(View.VISIBLE);
-			
-			int resId = R.drawable.battery_low;
-            if (mSensor.getBatteryLevel() > 75) {
-            	resId = R.drawable.battery_full;
-            } else if (mSensor.getBatteryLevel() > 50) {
-            	resId = R.drawable.battery_high;
-            } else if (mSensor.getBatteryLevel() > 25) {
-            	resId = R.drawable.battery_medium;
-            }
-			mBatteryImageView.setImageDrawable(getResources().getDrawable(resId));
-		} else {
-			mBatteryImageView.setVisibility(View.INVISIBLE);
-		}		
-	}
-	
+
 	@Override
-	public void update(Observable observable, Object data) {
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-				updateBackground();
-				updateRssi();
-				updateBateryLevel();
-            }
-        });
+	public void propertyChange(final PropertyChangeEvent event) {
+		if (getActivity() == null) {
+			return;
+		}
+		getActivity().runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				String propertyName = event.getPropertyName();
+				if (Sensor.OBSERVER_FIELD_SENSOR_CONNECTION.equals(propertyName)) {
+					if (event.getNewValue() == null) {
+						mView.setBackgroundColor(getResources().getColor(R.color.color_light_gray));
+						mBatteryImageView.setVisibility(View.INVISIBLE);
+						mRssiTextView.setVisibility(View.INVISIBLE);
+					} else {
+						mView.setBackgroundColor(getResources().getColor(getBackgroundColorRes()));
+						mBatteryImageView.setVisibility(View.VISIBLE);
+						mRssiTextView.setVisibility(View.VISIBLE);
+					}
+				} else if (Sensor.OBSERVER_FIELD_SENSOR_BATTERY_LEVEL.equals(propertyName)) {
+					updateBateryLevel((Integer)event.getNewValue());
+				} else if (Sensor.OBSERVER_FIELD_SENSOR_RSSI.equals(propertyName)) {
+					mRssiTextView.setText((Integer)event.getNewValue() + "dB");
+				}	
+			}
+		});
 	}
+	
 }

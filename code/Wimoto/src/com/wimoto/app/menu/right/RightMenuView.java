@@ -1,7 +1,7 @@
 package com.wimoto.app.menu.right;
 
-import java.util.Observable;
-import java.util.Observer;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -10,10 +10,11 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.wimoto.app.MainActivity;
 import com.wimoto.app.R;
 import com.wimoto.app.model.Sensor;
 
-public class RightMenuView extends RelativeLayout implements Observer {
+public class RightMenuView extends RelativeLayout implements PropertyChangeListener {
 	
 	private Sensor mSensor;
 	
@@ -38,11 +39,11 @@ public class RightMenuView extends RelativeLayout implements Observer {
 		}
 		
 		if (mSensor != null) {
-			mSensor.deleteObserver(this);
+			mSensor.removeChangeListener(this);
 		}
 		
-		this.mSensor = sensor;
-		mSensor.addObserver(this);
+		mSensor = sensor;
+		mSensor.addChangeListener(this, Sensor.OBSERVER_FIELD_SENSOR_TITLE);
 		
 		setNormalMode();
 		
@@ -60,8 +61,14 @@ public class RightMenuView extends RelativeLayout implements Observer {
 	}
 
 	@Override
-	public void update(Observable observable, Object data) {
-		mTitleView.setText(mSensor.getTitle());		
+	public void propertyChange(PropertyChangeEvent event) {
+		final PropertyChangeEvent finalEvent = event;
+		((MainActivity) getContext()).runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				mTitleView.setText((String) finalEvent.getNewValue());			
+			}
+		});
 	}
 
 }

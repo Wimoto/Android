@@ -88,29 +88,29 @@ public class GrowSensorFragment extends SensorFragment {
 		return R.color.color_sensor_grow;
 	}
 	
-	@Override
-	public void update(Observable observable, Object data) {
-		super.update(observable, data);
-		
-		getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-        		if (mSensor == null) {
-        			mLightTextView.setText(getString(R.string.sensor_two_hyphens));
-        			mMoistureTextView.setText(getString(R.string.sensor_two_hyphens));
-        			mTemperatureTextView.setText(getString(R.string.sensor_two_hyphens));
-        		} else if (!mSensor.isConnected()){
-        			mLightTextView.setText(getString(R.string.sensor_two_hyphens));
-        			mMoistureTextView.setText(getString(R.string.sensor_two_hyphens));
-        			mTemperatureTextView.setText(getString(R.string.sensor_two_hyphens));
-        		} else {
-        			GrowSensor growSensor = (GrowSensor) mSensor;
-        			
-        			mLightTextView.setText(String.format("%.00f", growSensor.getLight()));
-        			mMoistureTextView.setText(String.format("%.01f", growSensor.getMoisture()));
-        			mTemperatureTextView.setText(String.format("%.01f", growSensor.getTemperature()));
-        		}        		
-            }
-        });
-	}
+//	@Override
+//	public void update(Observable observable, Object data) {
+//		super.update(observable, data);
+//		
+//		getActivity().runOnUiThread(new Runnable() {
+//            @Override
+//            public void run() {
+//        		if (mSensor == null) {
+//        			mLightTextView.setText(getString(R.string.sensor_two_hyphens));
+//        			mMoistureTextView.setText(getString(R.string.sensor_two_hyphens));
+//        			mTemperatureTextView.setText(getString(R.string.sensor_two_hyphens));
+//        		} else if (!mSensor.isConnected()){
+//        			mLightTextView.setText(getString(R.string.sensor_two_hyphens));
+//        			mMoistureTextView.setText(getString(R.string.sensor_two_hyphens));
+//        			mTemperatureTextView.setText(getString(R.string.sensor_two_hyphens));
+//        		} else {
+//        			GrowSensor growSensor = (GrowSensor) mSensor;
+//        			
+//        			mLightTextView.setText(String.format("%.00f", growSensor.getLight()));
+//        			mMoistureTextView.setText(String.format("%.01f", growSensor.getMoisture()));
+//        			mTemperatureTextView.setText(String.format("%.01f", growSensor.getTemperature()));
+//        		}        		
+//            }
+//        });
+//	}
 }
