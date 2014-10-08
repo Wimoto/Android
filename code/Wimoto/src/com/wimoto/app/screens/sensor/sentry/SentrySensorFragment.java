@@ -42,7 +42,7 @@ public class SentrySensorFragment extends SensorFragment {
 		mAccelerometerSparkView.setBackgroundColor(Color.TRANSPARENT);
 		mAccelerometerSparkView.setLineColor(Color.BLACK);
 		
-		mAccelerometerTextView = (TextView) mView.findViewById(R.id.temperature_text);
+		mAccelerometerTextView = (TextView) mView.findViewById(R.id.temperatureTextView);
 		mTemperatureSwitch = (AnimationSwitch)mView.findViewById(R.id.temperature_switch);
 		mTemperatureSwitch.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 			@Override
@@ -56,7 +56,7 @@ public class SentrySensorFragment extends SensorFragment {
 		mInfaredSparkView.setBackgroundColor(Color.TRANSPARENT);
 		mInfaredSparkView.setLineColor(Color.BLACK);
 		
-		mHumidityTextView = (TextView) mView.findViewById(R.id.humidity_text);
+		mHumidityTextView = (TextView) mView.findViewById(R.id.humidityTextView);
 		mHumiditySwitch = (AnimationSwitch)mView.findViewById(R.id.humidity_switch);
 		mHumiditySwitch.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 			@Override

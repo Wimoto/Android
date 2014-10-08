@@ -6,31 +6,36 @@
     android:background="@color/color_sensor_thermo" 
     android:focusableInTouchMode="true">
 
-    <ScrollView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:layout_marginBottom="10dp" >
-
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:orientation="vertical" >
+        
+        <include 
+        	android:layout_width="match_parent"
+        	android:layout_height="wrap_content"
+        	layout="@layout/sensor_screen_header" />
+        
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
+            android:layout_height="match_parent"
             android:orientation="vertical" >
-
-            <include 
-        		android:layout_width="match_parent"
-        		android:layout_height="wrap_content"
-        		layout="@layout/sensor_screen_header" />
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="76dp"
+                android:layout_height="0dp"
                 android:layout_marginTop="15dp"
-                android:orientation="horizontal" >
-                
-                <ImageView
+                android:layout_weight="1"
+                android:orientation="vertical" >
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" >
+                    
+                    <ImageView
                     android:layout_width="32dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="top"
@@ -46,7 +51,7 @@
                     android:layout_weight="1" />
                 
                 <TextView
-            		android:id="@+id/temperature_text"
+            		android:id="@+id/temperatureTextView"
             		android:layout_width="wrap_content"
            	 		android:layout_height="wrap_content"
            	 		android:layout_marginLeft="5dp"
@@ -63,62 +68,69 @@
             		android:text="@string/sensor_celsius"
             		android:textColor="@color/color_white"
             		android:textSize="24sp" />
-        		
+                    
+                </LinearLayout>
+
+                <LinearLayout
+	                android:layout_width="wrap_content"
+	                android:layout_height="wrap_content"
+	                android:layout_marginTop="5dp"
+	                android:layout_gravity="right"
+	                android:orientation="horizontal" >
+	
+	                <ImageView
+	                    android:layout_width="32dp"
+	                    android:layout_height="32dp"
+	                    android:layout_gravity="center"
+	                    android:src="@drawable/alarm_clock_white" />
+	                
+	                <com.wimoto.app.widgets.AnimationSwitch
+	                    android:id="@+id/temperature_switch"
+	                    android:layout_width="wrap_content"
+	                    android:layout_height="wrap_content"
+	                    android:layout_gravity="center"
+	                    android:layout_marginLeft="5dp"
+	                    android:checked="true"
+	                    android:clickable="true" />
+	                
+	                <TextView
+	            		android:id="@+id/temperatureHighTextView"
+	            		android:layout_width="wrap_content"
+	           			android:layout_height="wrap_content"
+	           			android:layout_gravity="center"
+	                    android:layout_marginLeft="10dp"
+	            		android:gravity="center"
+	            		android:text="@string/sensor_hi"
+	            		android:textColor="@color/color_black"
+	            		android:textSize="17sp" />
+	        
+	        		<TextView
+	            		android:id="@+id/temperatureLowTextView"
+	           	 		android:layout_width="wrap_content"
+	           			android:layout_height="wrap_content"
+	           			android:layout_gravity="center"
+	                    android:layout_marginLeft="15dp"
+	            		android:gravity="center"
+	            		android:text="@string/sensor_lo"
+	            		android:textColor="@color/color_black"
+	            		android:textSize="17sp" />
+	
+	            </LinearLayout>            
+                
             </LinearLayout>
 
             <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:layout_gravity="right"
-                android:orientation="horizontal" >
-
-                <ImageView
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
-                    android:layout_gravity="center"
-                    android:src="@drawable/alarm_clock_white" />
-                
-                <com.wimoto.app.widgets.AnimationSwitch
-                    android:id="@+id/temperature_switch"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginLeft="5dp"
-                    android:checked="true"
-                    android:clickable="true" />
-                
-                <TextView
-            		android:id="@+id/temperature_hi"
-            		android:layout_width="wrap_content"
-           			android:layout_height="wrap_content"
-           			android:layout_gravity="center"
-                    android:layout_marginLeft="10dp"
-            		android:gravity="center"
-            		android:text="@string/sensor_hi"
-            		android:textColor="@color/color_black"
-            		android:textSize="17sp" />
-        
-        		<TextView
-            		android:id="@+id/temperature_lo"
-           	 		android:layout_width="wrap_content"
-           			android:layout_height="wrap_content"
-           			android:layout_gravity="center"
-                    android:layout_marginLeft="15dp"
-            		android:gravity="center"
-            		android:text="@string/sensor_lo"
-            		android:textColor="@color/color_black"
-            		android:textSize="17sp" />
-
-            </LinearLayout>            
-
-            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="76dp"
+                android:layout_height="0dp"
                 android:layout_marginTop="15dp"
-                android:orientation="horizontal" >
-                
-                <ImageView
+                android:layout_weight="1"
+                android:orientation="vertical" >
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" >
+	        		
+                    <ImageView
                     android:layout_width="32dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="top"
@@ -134,7 +146,7 @@
                     android:layout_weight="1" />
                 
                 <TextView
-            		android:id="@+id/probe_text"
+            		android:id="@+id/probeTextView"
             		android:layout_width="wrap_content"
            	 		android:layout_height="wrap_content"
            	 		android:layout_marginLeft="5dp"
@@ -151,68 +163,78 @@
             		android:text="@string/sensor_celsius"
             		android:textColor="@color/color_white"
             		android:textSize="24sp" />
+                    
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                	android:layout_height="wrap_content"
+                	android:layout_marginTop="5dp"
+                	android:layout_gravity="right"
+                	android:orientation="horizontal"  >
         		
+                    <ImageView
+	                    android:layout_width="32dp"
+	                    android:layout_height="32dp"
+	                    android:layout_gravity="center"
+	                    android:src="@drawable/alarm_clock_white" />
+	                
+	                <com.wimoto.app.widgets.AnimationSwitch
+	                    android:id="@+id/probe_switch"
+	                    android:layout_width="wrap_content"
+	                    android:layout_height="wrap_content"
+	                    android:layout_gravity="center"
+	                    android:layout_marginLeft="5dp"
+	                    android:checked="true"
+	                    android:clickable="true" />
+	                
+	                <TextView
+	            		android:id="@+id/probeHighTextView"
+	            		android:layout_width="wrap_content"
+	           			android:layout_height="wrap_content"
+	           			android:layout_gravity="center"
+	                    android:layout_marginLeft="10dp"
+	            		android:gravity="center"
+	            		android:text="@string/sensor_hi"
+	            		android:textColor="@color/color_black"
+	            		android:textSize="17sp" />
+	        
+	        		<TextView
+	            		android:id="@+id/probeLowTextView"
+	           	 		android:layout_width="wrap_content"
+	           			android:layout_height="wrap_content"
+	           			android:layout_gravity="center"
+	                    android:layout_marginLeft="15dp"
+	            		android:gravity="center"
+	            		android:text="@string/sensor_lo"
+	            		android:textColor="@color/color_black"
+	            		android:textSize="17sp" />
+                    
+                </LinearLayout>
+                
             </LinearLayout>
 
             <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:layout_gravity="right"
-                android:orientation="horizontal" >
-
-                <ImageView
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
-                    android:layout_gravity="center"
-                    android:src="@drawable/alarm_clock_white" />
-                
-                <com.wimoto.app.widgets.AnimationSwitch
-                    android:id="@+id/probe_switch"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginLeft="5dp"
-                    android:checked="true"
-                    android:clickable="true" />
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_marginTop="15dp"
+                android:layout_weight="1"
+                android:orientation="vertical" >
                 
                 <TextView
-            		android:id="@+id/probe_hi"
-            		android:layout_width="wrap_content"
-           			android:layout_height="wrap_content"
-           			android:layout_gravity="center"
-                    android:layout_marginLeft="10dp"
-            		android:gravity="center"
-            		android:text="@string/sensor_hi"
-            		android:textColor="@color/color_black"
-            		android:textSize="17sp" />
-        
-        		<TextView
-            		android:id="@+id/probe_lo"
-           	 		android:layout_width="wrap_content"
-           			android:layout_height="wrap_content"
-           			android:layout_gravity="center"
-                    android:layout_marginLeft="15dp"
-            		android:gravity="center"
-            		android:text="@string/sensor_lo"
-            		android:textColor="@color/color_black"
-            		android:textSize="17sp" />
-
+	        		android:id="@+id/update"
+	        		android:layout_width="wrap_content"
+	       			android:layout_height="wrap_content"
+	       			android:layout_gravity="right"     
+	        		android:text="@string/sensor_update"
+	        		android:textColor="@color/color_blue"
+	        		android:textSize="15sp" />
+                
             </LinearLayout>
-            
-            <TextView
-        		android:id="@+id/update"
-        		android:layout_width="wrap_content"
-       			android:layout_height="wrap_content"
-       			android:layout_gravity="right"     
-        		android:layout_marginTop="15dp"
-        		android:text="@string/sensor_update"
-        		android:textColor="@color/color_blue"
-        		android:textSize="15sp" />
-            
+
         </LinearLayout>
         
-    </ScrollView>
+    </LinearLayout>
 
     <include 
         android:layout_width="match_parent"

@@ -6,31 +6,36 @@
     android:background="@color/color_sensor_grow" 
     android:focusableInTouchMode="true" >
 
-    <ScrollView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:layout_marginBottom="10dp" >
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:orientation="vertical" >
+        
+     <include 
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        layout="@layout/sensor_screen_header" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:orientation="vertical" >
+     <LinearLayout
+         android:layout_width="match_parent"
+         android:layout_height="match_parent"
+         android:orientation="vertical" >
 
-            <include 
-        		android:layout_width="match_parent"
-        		android:layout_height="wrap_content"
-        		layout="@layout/sensor_screen_header" />
-                
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="76dp"
-                android:layout_marginTop="15dp"
-                android:orientation="horizontal" >
-                
-                <ImageView
+         <LinearLayout
+             android:layout_width="match_parent"
+             android:layout_height="0dp"
+             android:layout_marginTop="15dp"
+             android:layout_weight="1"
+             android:orientation="vertical" >
+
+             <LinearLayout
+                 android:layout_width="match_parent"
+                 android:layout_height="wrap_content" >
+                 
+                 <ImageView
                     android:layout_width="32dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="top"
@@ -46,7 +51,7 @@
                     android:layout_weight="1" />
                 
                 <TextView
-            		android:id="@+id/light_text"
+            		android:id="@+id/lightTextView"
             		android:layout_width="wrap_content"
            	 		android:layout_height="wrap_content"
            	 		android:layout_marginLeft="5dp"
@@ -63,17 +68,17 @@
             		android:text="@string/sensor_lux"
             		android:textColor="@color/color_white"
             		android:textSize="24sp" />
+                 
+             </LinearLayout>
+
+             <LinearLayout
+                 android:layout_width="wrap_content"
+                 android:layout_height="wrap_content"
+                 android:layout_marginTop="5dp"
+                 android:layout_gravity="right"
+                 android:orientation="horizontal" >
         		
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:layout_gravity="right"
-                android:orientation="horizontal" >
-
-                <ImageView
+                 <ImageView
                     android:layout_width="32dp"
                     android:layout_height="32dp"
                     android:layout_gravity="center"
@@ -89,7 +94,7 @@
                     android:clickable="true" />
                 
                 <TextView
-            		android:id="@+id/light_hi"
+            		android:id="@+id/lightHighTextView"
             		android:layout_width="wrap_content"
            			android:layout_height="wrap_content"
            			android:layout_gravity="center"
@@ -100,7 +105,7 @@
             		android:textSize="17sp" />
         
         		<TextView
-            		android:id="@+id/light_lo"
+            		android:id="@+id/lightLowTextView"
            	 		android:layout_width="wrap_content"
            			android:layout_height="wrap_content"
            			android:layout_gravity="center"
@@ -109,16 +114,24 @@
             		android:text="@string/sensor_lo"
             		android:textColor="@color/color_black"
             		android:textSize="17sp" />
+                 
+                 
+             </LinearLayout>
 
-            </LinearLayout>
+         </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="76dp"
-                android:layout_marginTop="15dp"
-                android:orientation="horizontal" >
-                
-                <ImageView
+         <LinearLayout
+             android:layout_width="match_parent"
+             android:layout_height="0dp"
+             android:layout_marginTop="15dp"
+             android:layout_weight="1"
+             android:orientation="vertical" >
+
+             <LinearLayout
+                 android:layout_width="match_parent"
+                 android:layout_height="wrap_content" >
+        		
+                 <ImageView
                     android:layout_width="32dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="top"
@@ -134,7 +147,7 @@
                     android:layout_weight="1" />
                 
                 <TextView
-            		android:id="@+id/moisture_text"
+            		android:id="@+id/moistureTextView"
             		android:layout_width="wrap_content"
            	 		android:layout_height="wrap_content"
            	 		android:layout_marginLeft="5dp"
@@ -151,17 +164,17 @@
             		android:text="@string/sensor_empty"
             		android:textColor="@color/color_white"
             		android:textSize="24sp" />
+                 
+             </LinearLayout>
+
+             <LinearLayout
+                 android:layout_width="wrap_content"
+                 android:layout_height="wrap_content"
+                 android:layout_marginTop="5dp"
+                 android:layout_gravity="right"
+                 android:orientation="horizontal" >
         		
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:layout_gravity="right"
-                android:orientation="horizontal" >
-
-                <ImageView
+                 <ImageView
                     android:layout_width="32dp"
                     android:layout_height="32dp"
                     android:layout_gravity="center"
@@ -177,7 +190,7 @@
                     android:clickable="true" />
                 
                 <TextView
-            		android:id="@+id/moisture_hi"
+            		android:id="@+id/moistureHighTextView"
             		android:layout_width="wrap_content"
            			android:layout_height="wrap_content"
            			android:layout_gravity="center"
@@ -188,7 +201,7 @@
             		android:textSize="17sp" />
         
         		<TextView
-            		android:id="@+id/moisture_lo"
+            		android:id="@+id/moistureLowTextView"
            	 		android:layout_width="wrap_content"
            			android:layout_height="wrap_content"
            			android:layout_gravity="center"
@@ -197,16 +210,23 @@
             		android:text="@string/sensor_lo"
             		android:textColor="@color/color_black"
             		android:textSize="17sp" />
+                 
+             </LinearLayout>
 
-            </LinearLayout>            
+         </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="76dp"
-                android:layout_marginTop="15dp"
-                android:orientation="horizontal" >
-                
-                <ImageView
+         <LinearLayout
+             android:layout_width="match_parent"
+             android:layout_height="0dp"
+             android:layout_marginTop="15dp"
+             android:layout_weight="1"
+             android:orientation="vertical" >
+
+             <LinearLayout
+                 android:layout_width="match_parent"
+                 android:layout_height="wrap_content" >
+        		
+                 <ImageView
                     android:layout_width="32dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="top"
@@ -222,7 +242,7 @@
                     android:layout_weight="1" />
                 
                 <TextView
-            		android:id="@+id/temperature_text"
+            		android:id="@+id/temperatureTextView"
             		android:layout_width="wrap_content"
            	 		android:layout_height="wrap_content"
            	 		android:layout_marginLeft="5dp"
@@ -239,17 +259,17 @@
             		android:text="@string/sensor_celsius"
             		android:textColor="@color/color_white"
             		android:textSize="24sp" />
+                 
+             </LinearLayout>
+
+             <LinearLayout
+                 android:layout_width="wrap_content"
+                 android:layout_height="wrap_content"
+                 android:layout_marginTop="5dp"
+                 android:layout_gravity="right"
+                 android:orientation="horizontal" >
         		
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:layout_gravity="right"
-                android:orientation="horizontal" >
-
-                <ImageView
+                 <ImageView
                     android:layout_width="32dp"
                     android:layout_height="32dp"
                     android:layout_gravity="center"
@@ -265,7 +285,7 @@
                     android:clickable="true" />
                 
                 <TextView
-            		android:id="@+id/temperature_hi"
+            		android:id="@+id/temperatureHighTextView"
             		android:layout_width="wrap_content"
            			android:layout_height="wrap_content"
            			android:layout_gravity="center"
@@ -276,7 +296,7 @@
             		android:textSize="17sp" />
         
         		<TextView
-            		android:id="@+id/temperature_lo"
+            		android:id="@+id/temperatureLowTextView"
            	 		android:layout_width="wrap_content"
            			android:layout_height="wrap_content"
            			android:layout_gravity="center"
@@ -285,16 +305,19 @@
             		android:text="@string/sensor_lo"
             		android:textColor="@color/color_black"
             		android:textSize="17sp" />
+                 
+             </LinearLayout>
 
-            </LinearLayout>
-            
-        </LinearLayout>
+         </LinearLayout>
+
+     </LinearLayout>
         
-    </ScrollView>
-
+    </LinearLayout>
+    
     <include 
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
         layout="@layout/sensor_screen_footer" />
 
 </LinearLayout>

@@ -45,7 +45,7 @@ public class GrowSensorFragment extends SensorFragment {
 		mLightSparkView.setBackgroundColor(Color.TRANSPARENT);
 		mLightSparkView.setLineColor(Color.BLACK);
 		
-		mLightTextView = (TextView) mView.findViewById(R.id.light_text);
+		mLightTextView = (TextView) mView.findViewById(R.id.lightTextView);
 		mLightSwitch = (AnimationSwitch)mView.findViewById(R.id.light_switch);
 		mLightSwitch.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 			@Override
@@ -59,7 +59,7 @@ public class GrowSensorFragment extends SensorFragment {
 		mMoistureSparkView.setBackgroundColor(Color.TRANSPARENT);
 		mMoistureSparkView.setLineColor(Color.BLACK);
 		
-		mMoistureTextView = (TextView) mView.findViewById(R.id.moisture_text);
+		mMoistureTextView = (TextView) mView.findViewById(R.id.moistureTextView);
 		mMoistureSwitch = (AnimationSwitch)mView.findViewById(R.id.moisture_switch);
 		mMoistureSwitch.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 			@Override
@@ -73,7 +73,7 @@ public class GrowSensorFragment extends SensorFragment {
 		mTemperatureSparkView.setBackgroundColor(Color.TRANSPARENT);
 		mTemperatureSparkView.setLineColor(Color.BLACK);
 		
-		mTemperatureTextView = (TextView) mView.findViewById(R.id.temperature_text);
+		mTemperatureTextView = (TextView) mView.findViewById(R.id.temperatureTextView);
 		mTemperatureSwitch = (AnimationSwitch)mView.findViewById(R.id.temperature_switch);
 		mTemperatureSwitch.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 			@Override

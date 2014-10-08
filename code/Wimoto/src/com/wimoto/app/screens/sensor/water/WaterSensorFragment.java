@@ -42,7 +42,7 @@ public class WaterSensorFragment extends SensorFragment {
 		mContactSparkView.setBackgroundColor(Color.TRANSPARENT);
 		mContactSparkView.setLineColor(Color.BLACK);
 		
-		mContactTextView = (TextView) mView.findViewById(R.id.contact_text);
+		mContactTextView = (TextView) mView.findViewById(R.id.contactTextView);
 		mContactSwitch = (AnimationSwitch)mView.findViewById(R.id.contact_switch);
 		mContactSwitch.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 			@Override
@@ -56,7 +56,7 @@ public class WaterSensorFragment extends SensorFragment {
 		mLevelSparkView.setBackgroundColor(Color.TRANSPARENT);
 		mLevelSparkView.setLineColor(Color.BLACK);
 		
-		mLevelTextView = (TextView) mView.findViewById(R.id.level_text);
+		mLevelTextView = (TextView) mView.findViewById(R.id.levelTextView);
 		mLevelSwitch = (AnimationSwitch)mView.findViewById(R.id.level_switch);
 		mLevelSwitch.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 			@Override

@@ -42,7 +42,7 @@ public class ThermoSensorFragment extends SensorFragment {
 		mTemperatureSparkView.setBackgroundColor(Color.TRANSPARENT);
 		mTemperatureSparkView.setLineColor(Color.BLACK);
 		
-		mTemperatureTextView = (TextView) mView.findViewById(R.id.temperature_text);
+		mTemperatureTextView = (TextView) mView.findViewById(R.id.temperatureTextView);
 		mTemperatureSwitch = (AnimationSwitch)mView.findViewById(R.id.temperature_switch);
 		mTemperatureSwitch.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 			@Override
@@ -56,7 +56,7 @@ public class ThermoSensorFragment extends SensorFragment {
 		mProbeSparkView.setBackgroundColor(Color.TRANSPARENT);
 		mProbeSparkView.setLineColor(Color.BLACK);
 		
-		mProbeTextView = (TextView) mView.findViewById(R.id.probe_text);
+		mProbeTextView = (TextView) mView.findViewById(R.id.probeTextView);
 		mProbeSwitch = (AnimationSwitch)mView.findViewById(R.id.probe_switch);
 		mProbeSwitch.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 			@Override

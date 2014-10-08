@@ -82,7 +82,7 @@ public class ClimateSensorFragment extends SensorFragment implements AlarmSlider
 		mHumiditySparkView.setBackgroundColor(Color.TRANSPARENT);
 		mHumiditySparkView.setLineColor(Color.BLACK);
 		
-		mHumidityTextView = (TextView) mView.findViewById(R.id.humidity_text);
+		mHumidityTextView = (TextView) mView.findViewById(R.id.humidityTextView);
 		mHumiditySwitch = (AnimationSwitch)mView.findViewById(R.id.humidity_switch);
 		mHumiditySwitch.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 			@Override
@@ -106,7 +106,7 @@ public class ClimateSensorFragment extends SensorFragment implements AlarmSlider
 		mLightSparkView.setBackgroundColor(Color.TRANSPARENT);
 		mLightSparkView.setLineColor(Color.BLACK);
 		
-		mLightTextView = (TextView) mView.findViewById(R.id.light_text);
+		mLightTextView = (TextView) mView.findViewById(R.id.lightTextView);
 		mLightSwitch = (AnimationSwitch)mView.findViewById(R.id.light_switch);
 		mLightSwitch.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 			@Override
