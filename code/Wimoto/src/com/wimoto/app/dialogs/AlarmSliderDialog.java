@@ -79,7 +79,7 @@ public class AlarmSliderDialog extends AlertDialog.Builder {
 	}
 
 	public float getSelectedMinValue() {
-		return mSelectedMinValue;
+		return mSeekBar.getSelectedMinValue();
 	}
 
 	public void setSelectedMinValue(float selectedMinValue) {
@@ -90,7 +90,7 @@ public class AlarmSliderDialog extends AlertDialog.Builder {
 	}
 
 	public float getSelectedMaxValue() {
-		return mSelectedMaxValue;
+		return mSeekBar.getSelectedMaxValue();
 	}
 
 	public void setSelectedMaxValue(float selectedMaxValue) {

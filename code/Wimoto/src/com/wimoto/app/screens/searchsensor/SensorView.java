@@ -35,7 +35,7 @@ public class SensorView extends LinearLayout implements PropertyChangeListener {
 		}
 		
 		mSensor = sensor;
-		mSensor.addChangeListener(this, Sensor.OBSERVER_FIELD_SENSOR_RSSI);
+		mSensor.addChangeListener(this, Sensor.SENSOR_FIELD_RSSI);
 		
 		TextView titleView = (TextView)findViewById(R.id.sensor_title);
 		titleView.setText(mSensor.getTitle());

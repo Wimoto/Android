@@ -27,24 +27,20 @@ import com.wimoto.app.observer.PropertyObservable;
 
 public class Sensor extends PropertyObservable implements Observer {
 			
-	public static final String CB_DOCUMENT_SENSOR_ID		= "sensorId";
+	public static final String SENSOR_FIELD_ID							= "id";
+	public static final String SENSOR_FIELD_TITLE						= "title";
+	public static final String SENSOR_FIELD_CONNECTION					= "connection";
+	public static final String SENSOR_FIELD_BATTERY_LEVEL				= "batteryLevel";
+	public static final String SENSOR_FIELD_RSSI						= "rssi";
 	
-	public static final String OBSERVER_FIELD_SENSOR_CONNECTION			= "mConnection";
-	public static final String OBSERVER_FIELD_SENSOR_TITLE				= "mTitle";
-	public static final String OBSERVER_FIELD_SENSOR_BATTERY_LEVEL		= "mBatteryLevel";
-	public static final String OBSERVER_FIELD_SENSOR_RSSI				= "mRssi";
-	
-	private static final String CB_DOCUMENT_FIELD_SENSOR_ID		= "id";
-	private static final String CB_DOCUMENT_FIELD_SENSOR_TITLE	= "title";	
-	
-	private static final String BLE_GENERIC_SERVICE_UUID_BATTERY		 		= "0000180F-0000-1000-8000-00805F9B34FB";
+	private static final String BLE_GENERIC_SERVICE_UUID_BATTERY		 	= "0000180F-0000-1000-8000-00805F9B34FB";
 	private static final String BLE_GENERIC_CHAR_UUID_BATTERY_LEVEL			= "00002A19-0000-1000-8000-00805F9B34FB";
 		
-	protected BluetoothConnection mConnection;
 	protected Document mDocument;
 	
-	protected String id;
+	protected String mId;
 	protected String mTitle;
+	protected BluetoothConnection mConnection;
 	private int mBatteryLevel;
 	private int mRssi;
 	
@@ -105,7 +101,7 @@ public class Sensor extends PropertyObservable implements Observer {
 			mConnection.deleteObserver(this);
 		}
 		
-		notifyObservers(OBSERVER_FIELD_SENSOR_CONNECTION, mConnection, connection);
+		notifyObservers(SENSOR_FIELD_CONNECTION, mConnection, connection);
 		
 		mConnection = connection;
 		if (mConnection == null) {
@@ -144,11 +140,11 @@ public class Sensor extends PropertyObservable implements Observer {
 			return mConnection.getId();
 		}
 		
-		return id;
+		return mId;
 	}
 	
 	public void setTitle(String title) {
-		notifyObservers(OBSERVER_FIELD_SENSOR_TITLE, mTitle, title);
+		notifyObservers(SENSOR_FIELD_TITLE, mTitle, title);
 		
 		mTitle = title;
 	
@@ -158,7 +154,7 @@ public class Sensor extends PropertyObservable implements Observer {
 			Map<String, Object> newProperties = new HashMap<String, Object>();
 			newProperties.putAll(currentProperties);
 
-			newProperties.put(CB_DOCUMENT_FIELD_SENSOR_TITLE, title);
+			newProperties.put(SENSOR_FIELD_TITLE, title);
 			
 			try {
 				mDocument.putProperties(newProperties);
@@ -176,6 +172,11 @@ public class Sensor extends PropertyObservable implements Observer {
 		return mBatteryLevel;
 	}
 
+	public void setBatteryLevel(int batteryLevel) {
+		notifyObservers(SENSOR_FIELD_BATTERY_LEVEL, mBatteryLevel, batteryLevel);
+		mBatteryLevel = batteryLevel;
+	}
+
 	public boolean isConnected() {
 		return (mConnection != null);
 	}
@@ -185,7 +186,7 @@ public class Sensor extends PropertyObservable implements Observer {
 	}
 
 	public void setRssi(int rssi) {
-		notifyObservers(OBSERVER_FIELD_SENSOR_RSSI, mRssi, rssi);
+		notifyObservers(SENSOR_FIELD_RSSI, mRssi, rssi);
 		
 		mRssi = rssi;
 	}
@@ -194,8 +195,8 @@ public class Sensor extends PropertyObservable implements Observer {
 		this.mDocument = document;
 		
 		if (mDocument != null) {
-			id 		= (String) mDocument.getProperty(CB_DOCUMENT_FIELD_SENSOR_ID);
-			mTitle 	= (String) mDocument.getProperty(CB_DOCUMENT_FIELD_SENSOR_TITLE);			
+			mId 		= (String) mDocument.getProperty(SENSOR_FIELD_ID);
+			mTitle 	= (String) mDocument.getProperty(SENSOR_FIELD_TITLE);			
 			
 			Database database = mDocument.getDatabase(); 
 			
@@ -228,11 +229,11 @@ public class Sensor extends PropertyObservable implements Observer {
 					query.setDescending(true);
 					
 			        List<Object> startKeys = new ArrayList<Object>();
-			        startKeys.add(id);
+			        startKeys.add(mId);
 			        startKeys.add(new HashMap<String, Object>());
 	
 			        List<Object> endKeys = new ArrayList<Object>();
-			        endKeys.add(id);
+			        endKeys.add(mId);
 	
 			        query.setStartKey(startKeys);
 			        query.setEndKey(endKeys);
@@ -268,7 +269,7 @@ public class Sensor extends PropertyObservable implements Observer {
 		}
 	}
 	
-	public void writeAlarmValue(int alarmValue, String serviceUuidString, String characteristicUuidString) {
+	protected void writeAlarmValue(int alarmValue, String serviceUuidString, String characteristicUuidString) {
 		if (mConnection != null) {
 			BigInteger bigInt = BigInteger.valueOf(alarmValue); 
 			mConnection.writeCharacteristic(serviceUuidString, characteristicUuidString, bigInt.toByteArray());
@@ -288,9 +289,7 @@ public class Sensor extends PropertyObservable implements Observer {
 			
 			BigInteger bi = new BigInteger(characteristic.getValue());
 			if (uuid.equals(BLE_GENERIC_CHAR_UUID_BATTERY_LEVEL)) {
-				int batteryLevel = Float.valueOf(bi.floatValue()).intValue();
-				notifyObservers(OBSERVER_FIELD_SENSOR_BATTERY_LEVEL, mBatteryLevel, batteryLevel);
-				mBatteryLevel = batteryLevel;
+				setBatteryLevel(Float.valueOf(bi.floatValue()).intValue());
 			}
 		} else {
 			setRssi((Integer)data);
@@ -299,7 +298,7 @@ public class Sensor extends PropertyObservable implements Observer {
 	
 	protected void addValue(String type, float value) {
 		SensorValue sensorValue = new SensorValue(mDocument.getDatabase().createDocument());
-		sensorValue.setSensorId(id);
+		sensorValue.setSensorId(mId);
 		sensorValue.setType(type);
 		sensorValue.setValue(value);
 		

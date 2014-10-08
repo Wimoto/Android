@@ -43,7 +43,7 @@ public class RightMenuView extends RelativeLayout implements PropertyChangeListe
 		}
 		
 		mSensor = sensor;
-		mSensor.addChangeListener(this, Sensor.OBSERVER_FIELD_SENSOR_TITLE);
+		mSensor.addChangeListener(this, Sensor.SENSOR_FIELD_TITLE);
 		
 		setNormalMode();
 		

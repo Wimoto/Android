@@ -83,6 +83,8 @@ public abstract class SensorFragment extends PageFragment implements PropertyCha
 	}
 
 	protected void initViews() {
+		mView.setBackgroundColor(getResources().getColor(R.color.color_light_gray));
+		
 		mBatteryImageView = (ImageView)mView.findViewById(R.id.battery_level);
 		mRssiTextView = (TextView)mView.findViewById(R.id.rrsi_text);
 		mSensorNameText = (TextView)mView.findViewById(R.id.sensor_name_text);
@@ -108,9 +110,9 @@ public abstract class SensorFragment extends PageFragment implements PropertyCha
 		
 		mSensor = sensor;
 		if (mSensor != null) {
-			mSensor.addChangeListener(this, Sensor.OBSERVER_FIELD_SENSOR_CONNECTION);
-			mSensor.addChangeListener(this, Sensor.OBSERVER_FIELD_SENSOR_BATTERY_LEVEL);
-			mSensor.addChangeListener(this, Sensor.OBSERVER_FIELD_SENSOR_RSSI);
+			mSensor.addChangeListener(this, Sensor.SENSOR_FIELD_CONNECTION);
+			mSensor.addChangeListener(this, Sensor.SENSOR_FIELD_BATTERY_LEVEL);
+			mSensor.addChangeListener(this, Sensor.SENSOR_FIELD_RSSI);
 		}
 	}
 	
@@ -142,7 +144,7 @@ public abstract class SensorFragment extends PageFragment implements PropertyCha
 			@Override
 			public void run() {
 				String propertyName = event.getPropertyName();
-				if (Sensor.OBSERVER_FIELD_SENSOR_CONNECTION.equals(propertyName)) {
+				if (Sensor.SENSOR_FIELD_CONNECTION.equals(propertyName)) {
 					if (event.getNewValue() == null) {
 						mView.setBackgroundColor(getResources().getColor(R.color.color_light_gray));
 						mBatteryImageView.setVisibility(View.INVISIBLE);
@@ -152,9 +154,9 @@ public abstract class SensorFragment extends PageFragment implements PropertyCha
 						mBatteryImageView.setVisibility(View.VISIBLE);
 						mRssiTextView.setVisibility(View.VISIBLE);
 					}
-				} else if (Sensor.OBSERVER_FIELD_SENSOR_BATTERY_LEVEL.equals(propertyName)) {
+				} else if (Sensor.SENSOR_FIELD_BATTERY_LEVEL.equals(propertyName)) {
 					updateBateryLevel((Integer)event.getNewValue());
-				} else if (Sensor.OBSERVER_FIELD_SENSOR_RSSI.equals(propertyName)) {
+				} else if (Sensor.SENSOR_FIELD_RSSI.equals(propertyName)) {
 					mRssiTextView.setText((Integer)event.getNewValue() + "dB");
 				}	
 			}
