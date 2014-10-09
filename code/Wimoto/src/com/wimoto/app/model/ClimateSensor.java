@@ -32,7 +32,7 @@ public class ClimateSensor extends Sensor {
 	private static final String BLE_CLIMATE_SERVICE_UUID_TEMPERATURE 			= "E0035608-EC48-4ED0-9F3B-5419C00A94FD";
 	private static final String BLE_CLIMATE_CHAR_UUID_TEMPERATURE_CURRENT 		= "E0035609-EC48-4ED0-9F3B-5419C00A94FD";
 	private static final String BLE_CLIMATE_CHAR_UUID_TEMPERATURE_ALARM_LOW		= "E003560A-EC48-4ED0-9F3B-5419C00A94FD";
-	private static final String BLE_CLIMATE_CHAR_UUID_TEMPERATURE_ALARM_HIGH		= "E003560B-EC48-4ED0-9F3B-5419C00A94FD";
+	private static final String BLE_CLIMATE_CHAR_UUID_TEMPERATURE_ALARM_HIGH	= "E003560B-EC48-4ED0-9F3B-5419C00A94FD";
 	private static final String BLE_CLIMATE_CHAR_UUID_TEMPERATURE_ALARM_SET		= "E003560C-EC48-4ED0-9F3B-5419C00A94FD";
 	private static final String BLE_CLIMATE_CHAR_UUID_TEMPERATURE_ALARM			= "E003560D-EC48-4ED0-9F3B-5419C00A94FD";
 	
@@ -210,7 +210,8 @@ public class ClimateSensor extends Sensor {
 		notifyObservers(SENSOR_FIELD_CLIMATE_HUMIDITY_ALARM_LOW, mHumidityAlarmLow, humidityAlarmLow);
 		
 		mHumidityAlarmLow = humidityAlarmLow;
-		writeAlarmValue(mHumidityAlarmLow, ClimateSensor.BLE_CLIMATE_SERVICE_UUID_HUMIDITY, ClimateSensor.BLE_CLIMATE_CHAR_UUID_HUMIDITY_ALARM_LOW);	}
+		writeAlarmValue(mHumidityAlarmLow, ClimateSensor.BLE_CLIMATE_SERVICE_UUID_HUMIDITY, ClimateSensor.BLE_CLIMATE_CHAR_UUID_HUMIDITY_ALARM_LOW);	
+	}
 
 	public int getHumidityAlarmHigh() {
 		return mHumidityAlarmHigh;
