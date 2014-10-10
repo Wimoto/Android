@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.wimoto.app.R;
@@ -27,8 +28,14 @@ public class WaterSensorFragment extends SensorFragment implements AlarmSliderDi
 	private LineSparkView mContactSparkView;
 	private LineSparkView mLevelSparkView;
 	
+	private LinearLayout mContactAlarmLayout;
+	private LinearLayout mLevelAlarmLayout;
+	
 	private AnimationSwitch mContactSwitch;
 	private AnimationSwitch mLevelSwitch;
+	
+	private TextView mLevelAlarmLowTextView;
+	private TextView mLevelAlarmHighTextView;
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -46,6 +53,8 @@ public class WaterSensorFragment extends SensorFragment implements AlarmSliderDi
 		mContactSparkView.setLineColor(Color.BLACK);
 		
 		mContactTextView = (TextView) mView.findViewById(R.id.contactTextView);
+		
+		mContactAlarmLayout = (LinearLayout) mView.findViewById(R.id.contactAlarmLayout);
 		mContactSwitch = (AnimationSwitch)mView.findViewById(R.id.contact_switch);
 		mContactSwitch.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 			@Override
@@ -61,6 +70,8 @@ public class WaterSensorFragment extends SensorFragment implements AlarmSliderDi
 		mLevelSparkView.setLineColor(Color.BLACK);
 		
 		mLevelTextView = (TextView) mView.findViewById(R.id.levelTextView);
+		
+		mLevelAlarmLayout = (LinearLayout) mView.findViewById(R.id.levelAlarmLayout);
 		mLevelSwitch = (AnimationSwitch)mView.findViewById(R.id.level_switch);
 		mLevelSwitch.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 			@Override
@@ -76,6 +87,9 @@ public class WaterSensorFragment extends SensorFragment implements AlarmSliderDi
 				}
 			}
 		});
+		
+		mLevelAlarmLowTextView = (TextView) mView.findViewById(R.id.levelLowTextView);
+		mLevelAlarmHighTextView = (TextView) mView.findViewById(R.id.levelHighTextView);
 	}
 	
 	@Override
@@ -85,8 +99,6 @@ public class WaterSensorFragment extends SensorFragment implements AlarmSliderDi
 		if (mSensor != null) {
 			mSensor.addChangeListener(this, WaterSensor.SENSOR_FIELD_WATER_CONTACT);
 			mSensor.addChangeListener(this, WaterSensor.SENSOR_FIELD_WATER_CONTACT_ALARM_SET);
-//			mSensor.addChangeListener(this, WaterSensor.SENSOR_FIELD_WATER_CONTACT_ALARM_LOW);
-//			mSensor.addChangeListener(this, WaterSensor.SENSOR_FIELD_WATER_CONTACT_ALARM_HIGH);
 			
 			mSensor.addChangeListener(this, WaterSensor.SENSOR_FIELD_WATER_LEVEL);
 			mSensor.addChangeListener(this, WaterSensor.SENSOR_FIELD_WATER_LEVEL_ALARM_SET);
@@ -118,11 +130,11 @@ public class WaterSensorFragment extends SensorFragment implements AlarmSliderDi
 						mContactTextView.setText(getString(R.string.sensor_two_hyphens));
 						mLevelTextView.setText(getString(R.string.sensor_two_hyphens));
 	        			
-//	        			mContactAlarmLayout.setVisibility(View.INVISIBLE);
-//	        			mLevelAlarmLayout.setVisibility(View.INVISIBLE);
+						mContactAlarmLayout.setVisibility(View.INVISIBLE);
+	        			mLevelAlarmLayout.setVisibility(View.INVISIBLE);
 					} else {
-//						mContactAlarmLayout.setVisibility(View.VISIBLE);
-//						mLevelAlarmLayout.setVisibility(View.VISIBLE);
+						mContactAlarmLayout.setVisibility(View.VISIBLE);
+						mLevelAlarmLayout.setVisibility(View.VISIBLE);
 					}
 				} else if (WaterSensor.SENSOR_FIELD_WATER_CONTACT.equals(propertyName)) {
 					mContactTextView.setText(String.format("%.01f", event.getNewValue()));
@@ -131,19 +143,12 @@ public class WaterSensorFragment extends SensorFragment implements AlarmSliderDi
 					mLevelTextView.setText(String.format("%.01f", event.getNewValue()));
 				} else if (WaterSensor.SENSOR_FIELD_WATER_CONTACT_ALARM_SET.equals(propertyName)) {
 					mContactSwitch.setChecked(((Boolean)event.getNewValue()).booleanValue());
-				} 
-				//else if (WaterSensor.SENSOR_FIELD_WATER_CONTACT_ALARM_LOW.equals(propertyName)) {
-				//	mContactAlarmLowTextView.setText(event.getNewValue()  + "");
-				//} 
-				//else if (WaterSensor.SENSOR_FIELD_WATER_CONTACT_ALARM_HIGH.equals(propertyName)) {
-				//	mContactAlarmHighTextView.setText(event.getNewValue() + "");
-				//} 
-				else if (WaterSensor.SENSOR_FIELD_WATER_LEVEL_ALARM_SET.equals(propertyName)) {
+				} else if (WaterSensor.SENSOR_FIELD_WATER_LEVEL_ALARM_SET.equals(propertyName)) {
 					mLevelSwitch.setChecked(((Boolean)event.getNewValue()).booleanValue());
 				} else if (WaterSensor.SENSOR_FIELD_WATER_LEVEL_ALARM_LOW.equals(propertyName)) {
-					//mLevelAlarmLowTextView.setText(event.getNewValue()  + "");
+					mLevelAlarmLowTextView.setText(event.getNewValue()  + "");
 				} else if (WaterSensor.SENSOR_FIELD_WATER_LEVEL_ALARM_HIGH.equals(propertyName)) {
-					//mLevelAlarmHighTextView.setText(event.getNewValue() + "");
+					mLevelAlarmHighTextView.setText(event.getNewValue() + "");
 				} 
 			}
 		});
