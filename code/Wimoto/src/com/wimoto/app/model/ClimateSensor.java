@@ -13,6 +13,10 @@ import com.wimoto.app.bluetooth.BluetoothConnection.WimotoProfile;
 import com.wimoto.app.utils.AppContext;
 
 public class ClimateSensor extends Sensor {
+	
+	public static final String SENSOR_FIELD_TEMPERATURE							= "temperature";
+	public static final String SENSOR_FIELD_HUMIDITY							= "humidity";
+	public static final String SENSOR_FIELD_LIGHT								= "light";
 
 	public static final String SENSOR_FIELD_CLIMATE_TEMPERATURE					= "ClimateTemperature";
 	public static final String SENSOR_FIELD_CLIMATE_TEMPERATURE_ALARM_SET		= "ClimateTemperatureAlarmSet";

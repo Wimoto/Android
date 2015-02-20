@@ -3,6 +3,8 @@ package com.wimoto.app.screens.sensor;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -12,6 +14,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
+import com.jeremyfeinstein.slidingmenu.lib.app.SlidingFragmentActivity;
 import com.mobitexoft.leftmenu.PageFragment;
 import com.wimoto.app.R;
 import com.wimoto.app.model.ClimateSensor;
@@ -20,13 +23,17 @@ import com.wimoto.app.model.Sensor;
 import com.wimoto.app.model.SentrySensor;
 import com.wimoto.app.model.ThermoSensor;
 import com.wimoto.app.model.WaterSensor;
+import com.wimoto.app.model.demosensors.DemoClimateSensor;
 import com.wimoto.app.screens.sensor.climate.ClimateSensorFragment;
+import com.wimoto.app.screens.sensor.climate.DemoClimateSensorFragment;
 import com.wimoto.app.screens.sensor.grow.GrowSensorFragment;
 import com.wimoto.app.screens.sensor.sentry.SentrySensorFragment;
 import com.wimoto.app.screens.sensor.thermo.ThermoSensorFragment;
+import com.wimoto.app.screens.sensor.views.SensorFooterView;
+import com.wimoto.app.screens.sensor.views.SensorFooterView.SensorFooterListener;
 import com.wimoto.app.screens.sensor.water.WaterSensorFragment;
 
-public abstract class SensorFragment extends PageFragment implements PropertyChangeListener {
+public abstract class SensorFragment extends PageFragment implements PropertyChangeListener, SensorFooterListener {
 	
 	private static final String TAG_SENSOR = "sensor_tag";
 	private static final String TAG_NO_SENSOR = "no_sensor_tag";
@@ -37,6 +44,8 @@ public abstract class SensorFragment extends PageFragment implements PropertyCha
 	protected TextView mRssiTextView;
 	protected TextView mSensorNameText;
 	protected TextView mLastUpdateText;
+	
+	private SensorFooterView mSensorFooterView;
 	
 	protected Sensor mSensor;
 	
@@ -53,6 +62,8 @@ public abstract class SensorFragment extends PageFragment implements PropertyCha
 			fragment = new ThermoSensorFragment();
 		} else if (sensor instanceof WaterSensor) {
 			fragment = new WaterSensorFragment();
+		}  else if (sensor instanceof DemoClimateSensor) {
+			fragment = new DemoClimateSensorFragment();
 		}
 		
 		if (fragment != null) {
@@ -93,8 +104,7 @@ public abstract class SensorFragment extends PageFragment implements PropertyCha
 		mSensorNameText.setText(mSensor.getTitle());
 		mSensorNameText.setOnEditorActionListener(new OnEditorActionListener() {
 			@Override
-			public boolean onEditorAction(TextView v, int actionId,
-					KeyEvent event) {
+			public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
 				mSensor.setTitle(mSensorNameText.getText().toString());
 				return false;
 			}
@@ -122,7 +132,7 @@ public abstract class SensorFragment extends PageFragment implements PropertyCha
 		}
 		return TAG_SENSOR + mSensor.getId();
 	}
-	
+
 	private void updateBateryLevel(int batteryLevel) {
 		int resId = R.drawable.battery_low;
         if (batteryLevel > 75) {
@@ -135,6 +145,14 @@ public abstract class SensorFragment extends PageFragment implements PropertyCha
 		mBatteryImageView.setImageDrawable(getResources().getDrawable(resId));
 	}
 
+	public SensorFooterView getSensorFooterView() {
+		if (mSensorFooterView == null) {
+			mSensorFooterView = (SensorFooterView) mView.findViewById(R.id.sensorFooterView);
+			mSensorFooterView.setListener(this);
+		}
+		return mSensorFooterView;
+	}
+	
 	@Override
 	public void propertyChange(final PropertyChangeEvent event) {
 		if (getActivity() == null) {
@@ -163,4 +181,41 @@ public abstract class SensorFragment extends PageFragment implements PropertyCha
 		});
 	}
 	
+	protected void showAlarmMessage(final Sensor sensor, final String propertyString, String message) {
+		if (message.isEmpty()) {
+			return;
+		}
+
+		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+		builder.setMessage(sensor.getTitle() + " " + propertyString + " " + message)
+    			.setCancelable(false)
+    			.setPositiveButton("Switch off alarm",
+    					new DialogInterface.OnClickListener() {
+							public void onClick(DialogInterface dialog, int id) {
+								switchOffAlarm(propertyString);
+								dialog.cancel();
+							}
+    					})
+    			.setNegativeButton("Cancel",
+    					new DialogInterface.OnClickListener() {
+    						public void onClick(DialogInterface dialog, int id) {
+    							dialog.cancel();
+    						}
+    					});
+    	builder.create().show();
+	}
+	
+	protected void switchOffAlarm(String propertyString) {
+		//should be overridden in inheritors
+	}
+	
+	@Override
+	public void onLeftMenuClicked() {
+		((SlidingFragmentActivity) getActivity()).showMenu();
+	}
+
+	@Override
+	public void onRightMenuClicked() {
+		((SlidingFragmentActivity) getActivity()).showSecondaryMenu();		
+	}
 }

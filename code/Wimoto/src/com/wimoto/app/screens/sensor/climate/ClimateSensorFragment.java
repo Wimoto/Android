@@ -60,8 +60,6 @@ public class ClimateSensorFragment extends SensorFragment implements AlarmSlider
 		
 		mTemperatureSparkView = (LineSparkView) mView.findViewById(R.id.temperatureSparkView);
 		mTemperatureSparkView.setValues(mSensor.getLastValues(ClimateSensor.SENSOR_FIELD_CLIMATE_TEMPERATURE));
-		mTemperatureSparkView.setBackgroundColor(Color.TRANSPARENT);
-		mTemperatureSparkView.setLineColor(Color.BLACK);
 		
 		mTemperatureTextView = (TextView) mView.findViewById(R.id.temperatureTextView);
 		
@@ -138,6 +136,8 @@ public class ClimateSensorFragment extends SensorFragment implements AlarmSlider
 		
 		mLightAlarmLowTextView = (TextView) mView.findViewById(R.id.lightLowTextView);
 		mLightAlarmHighTextView = (TextView) mView.findViewById(R.id.lightHighTextView);
+		
+		getSensorFooterView().setLogo(R.drawable.climate_logo);
 	}
 	
 	@Override

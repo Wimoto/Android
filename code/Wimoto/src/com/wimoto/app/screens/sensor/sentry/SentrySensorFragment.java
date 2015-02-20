@@ -16,13 +16,14 @@ import com.wimoto.app.dialogs.AlarmSliderDialog.AlarmSliderDialogListener;
 import com.wimoto.app.model.Sensor;
 import com.wimoto.app.model.SentrySensor;
 import com.wimoto.app.screens.sensor.SensorFragment;
+import com.wimoto.app.screens.sensor.views.SensorFooterView;
 import com.wimoto.app.widgets.AnimationSwitch;
 import com.wimoto.app.widgets.AnimationSwitch.OnCheckedChangeListener;
 import com.wimoto.app.widgets.sparkline.LineSparkView;
 
 public class SentrySensorFragment extends SensorFragment implements AlarmSliderDialogListener {
 	
-	private TextView mAccelerometerTextView;
+	//private TextView mAccelerometerTextView;
 	private TextView mInfraredTextView;
 	
 	private LineSparkView mAccelerometerSparkView;
@@ -49,7 +50,7 @@ public class SentrySensorFragment extends SensorFragment implements AlarmSliderD
 		mAccelerometerSparkView.setBackgroundColor(Color.TRANSPARENT);
 		mAccelerometerSparkView.setLineColor(Color.BLACK);
 		
-		mAccelerometerTextView = (TextView) mView.findViewById(R.id.accelerometerTextView);
+		//mAccelerometerTextView = (TextView) mView.findViewById(R.id.accelerometerTextView);
 		
 		mAccelerometerAlarmLayout = (LinearLayout) mView.findViewById(R.id.accelerometerAlarmLayout);
 		mAccelerometerSwitch = (AnimationSwitch)mView.findViewById(R.id.accelerometer_switch);
@@ -77,6 +78,8 @@ public class SentrySensorFragment extends SensorFragment implements AlarmSliderD
 				sentrySensor.setInfraredAlarmSet(isChecked);
 			}
 		});
+		
+		getSensorFooterView().setLogo(R.drawable.sentry_logo);
 	}
 	
 	@Override
@@ -112,7 +115,7 @@ public class SentrySensorFragment extends SensorFragment implements AlarmSliderD
 				String propertyName = event.getPropertyName();
 				if (Sensor.SENSOR_FIELD_CONNECTION.equals(propertyName)) {
 					if (event.getNewValue() == null) {
-						mAccelerometerTextView.setText(getString(R.string.sensor_two_hyphens));
+						//mAccelerometerTextView.setText(getString(R.string.sensor_two_hyphens));
 						mInfraredTextView.setText(getString(R.string.sensor_two_hyphens));
 	        			
 						mAccelerometerAlarmLayout.setVisibility(View.INVISIBLE);
@@ -122,7 +125,7 @@ public class SentrySensorFragment extends SensorFragment implements AlarmSliderD
 						mInfraredAlarmLayout.setVisibility(View.VISIBLE);
 					}
 				} else if (SentrySensor.SENSOR_FIELD_SENTRY_ACCELEROMETER.equals(propertyName)) {
-					mAccelerometerTextView.setText(String.format("%.01f", event.getNewValue()));
+					//mAccelerometerTextView.setText(String.format("%.01f", event.getNewValue()));
 					mAccelerometerSparkView.invalidate();
 				} else if (SentrySensor.SENSOR_FIELD_SENTRY_PASSIVE_INFRARED.equals(propertyName)) {
 					mInfraredTextView.setText(String.format("%.01f", event.getNewValue()));

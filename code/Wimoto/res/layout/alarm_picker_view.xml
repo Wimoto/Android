@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="#FFFFFF"
+    android:orientation="vertical" >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp" >
+
+        <Button
+            android:id="@+id/alarmCancelButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="30dp"
+            android:text="@string/alert_cancel" />
+
+        <Button
+            android:id="@+id/alarmSaveButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginRight="30dp"
+            android:text="@string/alert_save" />
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="5dp" >
+
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center" >
+
+            <NumberPicker
+                android:id="@+id/alarmMinIntegerNumberPicker"
+                android:layout_width="65dp"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:id="@+id/pointMinTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginBottom="50dp"
+                android:layout_toRightOf="@+id/alarmMinIntegerNumberPicker"
+                android:text="."
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <NumberPicker
+                android:id="@+id/alarmMinFractNumberPicker"
+                android:layout_width="65dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_toRightOf="@+id/pointMinTextView" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center" >
+
+            <NumberPicker
+                android:id="@+id/alarmMaxIntegerNumberPicker"
+                android:layout_width="65dp"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:id="@+id/pointMaxTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginBottom="50dp"
+                android:layout_toRightOf="@+id/alarmMaxIntegerNumberPicker"
+                android:text="."
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <NumberPicker
+                android:id="@+id/alarmMaxFractNumberPicker"
+                android:layout_width="65dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_toRightOf="@+id/pointMaxTextView" />
+        </RelativeLayout>
+    </LinearLayout>
+
+</LinearLayout>

@@ -1,194 +1,231 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="@color/color_sensor_sentry" 
-    android:focusableInTouchMode="true">
+    android:background="@color/color_sensor_sentry"
+    android:focusableInTouchMode="true" >
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
+        android:layout_height="wrap_content"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
         android:orientation="vertical" >
 
-     	<include
-        	android:layout_width="match_parent"
-        	android:layout_height="wrap_content"
-        	layout="@layout/sensor_screen_header" />
+        <include
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            layout="@layout/sensor_screen_header_menu" />
 
-         <LinearLayout
+        <include
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            layout="@layout/sensor_screen_header" />
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical" >
 
-             <LinearLayout
-                 android:layout_width="match_parent"
-                 android:layout_height="0dp"
-                 android:layout_marginTop="15dp"
-                 android:layout_weight="1"
-                 android:orientation="vertical" >
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_marginTop="15dp"
+                android:layout_weight="1"
+                android:orientation="vertical" >
 
-                 <LinearLayout
-                     android:layout_width="match_parent"
-                     android:layout_height="wrap_content" >
-                     
-                     <ImageView
-	                    android:layout_width="32dp"
-	                    android:layout_height="wrap_content"
-	                    android:layout_gravity="top"
-	                    android:adjustViewBounds="true"
-	                    android:src="@drawable/plant_under_rain" />
-	                
-	                <com.wimoto.app.widgets.sparkline.LineSparkView
-	                    android:id="@+id/accelerometerSparkView"
-	                    android:layout_width="0dp"
-	                    android:layout_height="match_parent"
-	                    android:layout_gravity="center"
-	                    android:layout_marginLeft="5dp"
-	                    android:layout_weight="1" />
-	                
-	                <TextView
-	            		android:id="@+id/accelerometerTextView"
-	            		android:layout_width="wrap_content"
-	           	 		android:layout_height="wrap_content"
-	           	 		android:layout_marginLeft="5dp"
-	           	 		android:layout_gravity="center"
-	            		android:text="@string/sensor_two_hyphens"
-	            		android:textColor="@color/color_white"
-	            		android:textSize="50sp" />
-	        
-	        		<TextView
-	            		android:layout_width="wrap_content"
-	            		android:layout_height="wrap_content"
-	            		android:layout_marginLeft="5dp"
-	            		android:layout_gravity="top"
-	            		android:text="@string/sensor_celsius"
-	            		android:textColor="@color/color_white"
-	            		android:textSize="24sp" />
-                     
-                 </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="80dp" >
 
-                 <LinearLayout
-                     android:id="@+id/accelerometerAlarmLayout"
-                     android:layout_width="wrap_content"
-                     android:layout_height="wrap_content"
-                     android:layout_gravity="right"
-                     android:layout_marginTop="5dp"
-                     android:orientation="horizontal"
-                     android:visibility="invisible" >
-	
-	                <ImageView
-	                    android:layout_width="32dp"
-	                    android:layout_height="32dp"
-	                    android:layout_gravity="center"
-	                    android:src="@drawable/alarm_clock_white" />
-	                
-	                <com.wimoto.app.widgets.AnimationSwitch
-	                    android:id="@+id/accelerometer_switch"
-	                    android:layout_width="wrap_content"
-	                    android:layout_height="wrap_content"
-	                    android:layout_gravity="center"
-	                    android:layout_marginLeft="5dp"
-	                    android:checked="true"
-	                    android:clickable="true" />
-	
-	            </LinearLayout>        
+                    <ImageView
+                        android:layout_width="58dp"
+                        android:layout_height="58dp"
+                        android:layout_gravity="top"
+                        android:adjustViewBounds="true"
+                        android:src="@drawable/accelerometer" />
 
-             </LinearLayout>
+                    <com.wimoto.app.widgets.sparkline.LineSparkView
+                        android:id="@+id/accelerometerSparkView"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center"
+                        android:layout_marginLeft="5dp"
+                        android:layout_weight="1" />
 
-             <LinearLayout
-                 android:layout_width="match_parent"
-                 android:layout_height="0dp"
-                 android:layout_marginTop="15dp"
-                 android:layout_weight="1"
-                 android:orientation="vertical" >
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical" >
 
-                 <LinearLayout
-                     android:layout_width="match_parent"
-                     android:layout_height="wrap_content" >
-	                
-                     <ImageView
-	                    android:layout_width="32dp"
-	                    android:layout_height="wrap_content"
-	                    android:layout_gravity="top"
-	                    android:adjustViewBounds="true"
-	                    android:src="@drawable/motion_detector" />
-	                
-	                <com.wimoto.app.widgets.sparkline.LineSparkView
-	                    android:id="@+id/infraredSparkView"
-	                    android:layout_width="0dp"
-	                    android:layout_height="match_parent"
-	                    android:layout_gravity="center"
-	                    android:layout_marginLeft="5dp"
-	                    android:layout_weight="1" />
-	                
-	                <TextView
-	            		android:id="@+id/infraredTextView"
-	            		android:layout_width="wrap_content"
-	           	 		android:layout_height="wrap_content"
-	           	 		android:layout_marginLeft="5dp"
-	           	 		android:layout_gravity="center"
-	            		android:text="@string/sensor_two_hyphens"
-	            		android:textColor="@color/color_white"
-	            		android:textSize="50sp" />
-	        
-	        		<TextView
-	            		android:layout_width="25dp"
-	            		android:layout_height="wrap_content"
-	            		android:layout_marginLeft="5dp"
-	            		android:layout_gravity="top"
-	            		android:text="@string/sensor_empty"
-	            		android:textColor="@color/color_white"
-	            		android:textSize="24sp" />
-                     
-                 </LinearLayout>
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_gravity="right"
+                            android:layout_marginRight="15dp"
+                            android:layout_weight="1"
+                            android:gravity="right" >
 
-                 <LinearLayout
-                     android:id="@+id/infraredAlarmLayout"
-                     android:layout_width="wrap_content"
-                     android:layout_height="wrap_content"
-                     android:layout_gravity="right"
-                     android:layout_marginTop="5dp"
-                     android:orientation="horizontal"
-                     android:visibility="invisible" >
-	
-	                <ImageView
-	                    android:layout_width="32dp"
-	                    android:layout_height="32dp"
-	                    android:layout_gravity="center"
-	                    android:src="@drawable/alarm_clock_white" />
-	                
-	                <com.wimoto.app.widgets.AnimationSwitch
-	                    android:id="@+id/infrared_switch"
-	                    android:layout_width="wrap_content"
-	                    android:layout_height="wrap_content"
-	                    android:layout_gravity="center"
-	                    android:layout_marginLeft="5dp"
-	                    android:checked="true"
-	                    android:clickable="true" />
-	
-	            </LinearLayout>
+                            <TextView
+                                android:id="@+id/accelerometerZ"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="60dp"
+                                android:text="@string/sensor_two_hyphens"
+                                android:textColor="@color/color_white"
+                                android:textSize="40sp" />
 
-             </LinearLayout>
+                            <TextView
+                                android:id="@+id/accelerometerX"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentLeft="true"
+                                android:layout_alignParentTop="true"
+                                android:text="@string/sensor_two_hyphens"
+                                android:textColor="@color/color_white"
+                                android:textSize="40sp" />
 
-             <LinearLayout
-                 android:layout_width="match_parent"
-                 android:layout_height="0dp"
-                 android:layout_marginTop="15dp"
-                 android:layout_weight="1"
-                 android:orientation="vertical" >
-             </LinearLayout>
+                        </RelativeLayout>
 
-         </LinearLayout>
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="1" >
 
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="X"
+                                android:textColor="@color/color_white"
+                                android:textSize="20sp" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="20dp"
+                                android:layout_marginRight="20dp"
+                                android:text="Y"
+                                android:textColor="@color/color_white"
+                                android:textSize="20sp" />
+                            
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginRight="20dp"
+                                android:text="Z"
+                                android:textColor="@color/color_white"
+                                android:textSize="20sp" />
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/accelerometerAlarmLayout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="right"
+                    android:layout_marginTop="5dp"
+                    android:orientation="horizontal"
+                    android:visibility="invisible" >
+
+                    <ImageView
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/alarm_clock_white" />
+
+                    <com.wimoto.app.widgets.AnimationSwitch
+                        android:id="@+id/accelerometer_switch"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginLeft="5dp"
+                        android:checked="true"
+                        android:clickable="true" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_marginTop="15dp"
+                android:layout_weight="1"
+                android:orientation="vertical" >
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" >
+
+                    <ImageView
+                        android:layout_width="58dp"
+                        android:layout_height="58dp"
+                        android:layout_gravity="top"
+                        android:adjustViewBounds="true"
+                        android:src="@drawable/motion_detector" />
+
+                    <com.wimoto.app.widgets.sparkline.LineSparkView
+                        android:id="@+id/infraredSparkView"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center"
+                        android:layout_marginLeft="5dp"
+                        android:layout_weight="1" />
+
+                    <TextView
+                        android:id="@+id/infraredTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginLeft="5dp"
+                        android:text="@string/sensor_two_hyphens"
+                        android:textColor="@color/color_white"
+                        android:textSize="50sp" />
+
+                    <TextView
+                        android:layout_width="25dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="top"
+                        android:layout_marginLeft="5dp"
+                        android:text="@string/sensor_empty"
+                        android:textColor="@color/color_white"
+                        android:textSize="24sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/infraredAlarmLayout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="right"
+                    android:layout_marginTop="5dp"
+                    android:orientation="horizontal"
+                    android:visibility="invisible" >
+
+                    <ImageView
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/alarm_clock_white" />
+
+                    <com.wimoto.app.widgets.AnimationSwitch
+                        android:id="@+id/infrared_switch"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginLeft="5dp"
+                        android:checked="true"
+                        android:clickable="true" />
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
     </LinearLayout>
-    
-    <include
+
+    <com.wimoto.app.screens.sensor.views.SensorFooterView
+        android:id="@+id/sensorFooterView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        layout="@layout/sensor_screen_footer" />
+        android:layout_alignParentBottom="true"
+        android:layout_marginTop="2dp" />
 
-</LinearLayout>
+</RelativeLayout>

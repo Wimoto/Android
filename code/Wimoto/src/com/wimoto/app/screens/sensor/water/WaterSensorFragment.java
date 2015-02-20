@@ -16,6 +16,7 @@ import com.wimoto.app.dialogs.AlarmSliderDialog.AlarmSliderDialogListener;
 import com.wimoto.app.model.Sensor;
 import com.wimoto.app.model.WaterSensor;
 import com.wimoto.app.screens.sensor.SensorFragment;
+import com.wimoto.app.screens.sensor.views.SensorFooterView;
 import com.wimoto.app.widgets.AnimationSwitch;
 import com.wimoto.app.widgets.AnimationSwitch.OnCheckedChangeListener;
 import com.wimoto.app.widgets.sparkline.LineSparkView;
@@ -90,6 +91,8 @@ public class WaterSensorFragment extends SensorFragment implements AlarmSliderDi
 		
 		mLevelAlarmLowTextView = (TextView) mView.findViewById(R.id.levelLowTextView);
 		mLevelAlarmHighTextView = (TextView) mView.findViewById(R.id.levelHighTextView);
+		
+		getSensorFooterView().setLogo(R.drawable.leak_logo);
 	}
 	
 	@Override

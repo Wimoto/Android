@@ -1,12 +1,16 @@
 package com.wimoto.app.widgets.sparkline;
 
 
+import com.wimoto.app.R;
+
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Paint.Style;
 import android.graphics.Path;
 import android.util.AttributeSet;
+import android.util.Log;
 
 /**
  * A line spark view is a type of graph, which displays information as a series of data points 
@@ -53,7 +57,15 @@ public class LineSparkView extends SparkView {
   
 
   public LineSparkView(Context context) { super(context); }
-  public LineSparkView(Context context, AttributeSet attrs) { super(context, attrs); }
+  
+  public LineSparkView(Context context, AttributeSet attrs) { 
+	  super(context, attrs);
+	  
+	  //setBackgroundColor(getResources().getColor(R.color.color_sparkline_background));
+	  setBackgroundResource(R.drawable.sparkline_background);
+	  setLineColor(Color.WHITE);
+	  setLineWidth(3.0f);
+  }
   
   
   public float getNormalRangeMin() { return normalRangeMin; }

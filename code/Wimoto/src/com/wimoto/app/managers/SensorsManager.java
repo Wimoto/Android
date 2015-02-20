@@ -25,6 +25,7 @@ import com.wimoto.app.bluetooth.BluetoothConnection;
 import com.wimoto.app.bluetooth.BluetoothService;
 import com.wimoto.app.bluetooth.BluetoothService.BluetoothServiceListener;
 import com.wimoto.app.model.Sensor;
+import com.wimoto.app.model.demosensors.DemoClimateSensor;
 import com.wimoto.app.utils.AppContext;
 
 public class SensorsManager implements BluetoothServiceListener {
@@ -69,6 +70,9 @@ public class SensorsManager implements BluetoothServiceListener {
 			mBluetoothService = new BluetoothService(this);
 			
 			Log.e("Loaded Sensors Count", Integer.toString(mSensors.size()));	
+			
+			addDemoSensors();
+			
 		} catch (Exception e) {
 			e.printStackTrace();			
 		}
@@ -107,6 +111,10 @@ public class SensorsManager implements BluetoothServiceListener {
 		
 		Query query = view.createQuery();
 		return query;
+	}
+	
+	private void addDemoSensors() {
+		mSensors.put(DemoClimateSensor.BLE_CLIMATE_DEMO_MODEL, new DemoClimateSensor());
 	}
 	
 	public void registerSensor(Sensor newSensor) {

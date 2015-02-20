@@ -1,29 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="@color/color_sensor_climate" 
-    android:focusableInTouchMode="true">
-    
+    android:background="@color/color_sensor_water"
+    android:focusableInTouchMode="true" >
+
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
+        android:layout_height="wrap_content"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
         android:orientation="vertical" >
+
+        <include
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            layout="@layout/sensor_screen_header_menu" />
         
-        <include 
-        	android:layout_width="match_parent"
-        	android:layout_height="wrap_content"
-        	layout="@layout/sensor_screen_header" />
+        <include
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            layout="@layout/sensor_screen_header" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_marginTop="30dp"
             android:orientation="vertical" >
-            
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
@@ -34,41 +38,40 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" >
-                    
+
                     <ImageView
-	                    android:layout_width="32dp"
-	                    android:layout_height="wrap_content"
-	                    android:layout_gravity="top"
-	                    android:adjustViewBounds="true"
-	                    android:src="@drawable/droplet" />
-	                
-	                <com.wimoto.app.widgets.sparkline.LineSparkView
-	                    android:id="@+id/contactSparkView"
-	                    android:layout_width="0dp"
-	                    android:layout_height="match_parent"
-	                    android:layout_gravity="center"
-	                    android:layout_marginLeft="5dp"
-	                    android:layout_weight="1" />
-	                
-	                <TextView
-	            		android:id="@+id/contactTextView"
-	            		android:layout_width="wrap_content"
-	           	 		android:layout_height="wrap_content"
-	           	 		android:layout_marginLeft="5dp"
-	           	 		android:layout_gravity="center"
-	            		android:text="@string/sensor_two_hyphens"
-	            		android:textColor="@color/color_white"
-	            		android:textSize="50sp" />
-	        
-	        		<TextView
-	            		android:layout_width="25dp"
-	            		android:layout_height="wrap_content"
-	            		android:layout_marginLeft="5dp"
-	            		android:layout_gravity="top"
-	            		android:text="@string/sensor_empty"
-	            		android:textColor="@color/color_white"
-	            		android:textSize="24sp" />
-                    
+                        android:layout_width="32dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="top"
+                        android:adjustViewBounds="true"
+                        android:src="@drawable/droplet" />
+
+                    <com.wimoto.app.widgets.sparkline.LineSparkView
+                        android:id="@+id/contactSparkView"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center"
+                        android:layout_marginLeft="5dp"
+                        android:layout_weight="1" />
+
+                    <TextView
+                        android:id="@+id/contactTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginLeft="5dp"
+                        android:text="@string/sensor_two_hyphens"
+                        android:textColor="@color/color_white"
+                        android:textSize="50sp" />
+
+                    <TextView
+                        android:layout_width="25dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="top"
+                        android:layout_marginLeft="5dp"
+                        android:text="@string/sensor_empty"
+                        android:textColor="@color/color_white"
+                        android:textSize="24sp" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -79,72 +82,69 @@
                     android:layout_marginTop="5dp"
                     android:orientation="horizontal"
                     android:visibility="invisible" >
-	
-	                <ImageView
-	                    android:layout_width="32dp"
-	                    android:layout_height="32dp"
-	                    android:layout_gravity="center"
-	                    android:src="@drawable/alarm_clock_white" />
-	                
-	                <com.wimoto.app.widgets.AnimationSwitch
-	                    android:id="@+id/contact_switch"
-	                    android:layout_width="wrap_content"
-	                    android:layout_height="wrap_content"
-	                    android:layout_gravity="center"
-	                    android:layout_marginLeft="5dp"
-	                    android:checked="true"
-	                    android:clickable="true" />
-	
-	
-	            </LinearLayout>
 
+                    <ImageView
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/alarm_clock_white" />
+
+                    <com.wimoto.app.widgets.AnimationSwitch
+                        android:id="@+id/contact_switch"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginLeft="5dp"
+                        android:checked="true"
+                        android:clickable="true" />
+                </LinearLayout>
             </LinearLayout>
-            
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_marginTop="15dp"
                 android:layout_weight="1"
-                android:orientation="vertical" >
+                android:orientation="vertical"
+                android:visibility="gone" >
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" >
-	                
+
                     <ImageView
-                    android:layout_width="32dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="top"
-                    android:adjustViewBounds="true"
-                    android:src="@drawable/droplet" />
-                
-                <com.wimoto.app.widgets.sparkline.LineSparkView
-                    android:id="@+id/levelSparkView"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_gravity="center"
-                    android:layout_marginLeft="5dp"
-                    android:layout_weight="1" />
-                
-                <TextView
-            		android:id="@+id/levelTextView"
-            		android:layout_width="wrap_content"
-           	 		android:layout_height="wrap_content"
-           	 		android:layout_marginLeft="5dp"
-           	 		android:layout_gravity="center"
-            		android:text="@string/sensor_two_hyphens"
-            		android:textColor="@color/color_white"
-            		android:textSize="50sp" />
-        
-        		<TextView
-            		android:layout_width="wrap_content"
-            		android:layout_height="wrap_content"
-            		android:layout_marginLeft="5dp"
-            		android:layout_gravity="top"
-            		android:text="@string/sensor_cm"
-            		android:textColor="@color/color_white"
-            		android:textSize="24sp" />
-                    
+                        android:layout_width="32dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="top"
+                        android:adjustViewBounds="true"
+                        android:src="@drawable/droplet" />
+
+                    <com.wimoto.app.widgets.sparkline.LineSparkView
+                        android:id="@+id/levelSparkView"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center"
+                        android:layout_marginLeft="5dp"
+                        android:layout_weight="1" />
+
+                    <TextView
+                        android:id="@+id/levelTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginLeft="5dp"
+                        android:text="@string/sensor_two_hyphens"
+                        android:textColor="@color/color_white"
+                        android:textSize="50sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="top"
+                        android:layout_marginLeft="5dp"
+                        android:text="@string/sensor_cm"
+                        android:textColor="@color/color_white"
+                        android:textSize="24sp" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -155,48 +155,46 @@
                     android:layout_marginTop="5dp"
                     android:orientation="horizontal"
                     android:visibility="invisible" >
-	
-	                <ImageView
-	                    android:layout_width="32dp"
-	                    android:layout_height="32dp"
-	                    android:layout_gravity="center"
-	                    android:src="@drawable/alarm_clock_white" />
-	                
-	                <com.wimoto.app.widgets.AnimationSwitch
-	                    android:id="@+id/level_switch"
-	                    android:layout_width="wrap_content"
-	                    android:layout_height="wrap_content"
-	                    android:layout_gravity="center"
-	                    android:layout_marginLeft="5dp"
-	                    android:checked="true"
-	                    android:clickable="true" />
-	                
-	                <TextView
-	            		android:id="@+id/levelHighTextView"
-	            		android:layout_width="wrap_content"
-	           			android:layout_height="wrap_content"
-	           			android:layout_gravity="center"
-	                    android:layout_marginLeft="10dp"
-	            		android:gravity="center"
-	            		android:text="@string/sensor_hi"
-	            		android:textColor="@color/color_black"
-	            		android:textSize="17sp" />
-	        
-	        		<TextView
-	            		android:id="@+id/levelLowTextView"
-	           	 		android:layout_width="wrap_content"
-	           			android:layout_height="wrap_content"
-	           			android:layout_gravity="center"
-	                    android:layout_marginLeft="15dp"
-	            		android:gravity="center"
-	            		android:text="@string/sensor_lo"
-	            		android:textColor="@color/color_black"
-	            		android:textSize="17sp" />
-	
-	            </LinearLayout>
 
+                    <ImageView
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/alarm_clock_white" />
+
+                    <com.wimoto.app.widgets.AnimationSwitch
+                        android:id="@+id/level_switch"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginLeft="5dp"
+                        android:checked="true"
+                        android:clickable="true" />
+
+                    <TextView
+                        android:id="@+id/levelHighTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginLeft="10dp"
+                        android:gravity="center"
+                        android:text="@string/sensor_hi"
+                        android:textColor="@color/color_white"
+                        android:textSize="17sp" />
+
+                    <TextView
+                        android:id="@+id/levelLowTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginLeft="15dp"
+                        android:gravity="center"
+                        android:text="@string/sensor_lo"
+                        android:textColor="@color/color_white"
+                        android:textSize="17sp" />
+                </LinearLayout>
             </LinearLayout>
-            
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
@@ -204,14 +202,14 @@
                 android:layout_weight="1"
                 android:orientation="vertical" >
             </LinearLayout>
-            
         </LinearLayout>
-        
-     </LinearLayout>
+    </LinearLayout>
 
-    <include 
+    <com.wimoto.app.screens.sensor.views.SensorFooterView
+        android:id="@+id/sensorFooterView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        layout="@layout/sensor_screen_footer" />
+        android:layout_alignParentBottom="true"
+        android:layout_marginTop="2dp" />
 
-</LinearLayout>
+</RelativeLayout>
