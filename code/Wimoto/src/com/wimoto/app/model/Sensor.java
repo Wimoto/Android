@@ -21,17 +21,19 @@ import com.couchbase.lite.Mapper;
 import com.couchbase.lite.Query;
 import com.couchbase.lite.QueryEnumerator;
 import com.couchbase.lite.View;
+import com.mobitexoft.utils.propertyobserver.PropertyObservable;
 import com.wimoto.app.bluetooth.BluetoothConnection;
 import com.wimoto.app.bluetooth.BluetoothConnection.WimotoProfile;
-import com.wimoto.app.observer.PropertyObservable;
 
 public class Sensor extends PropertyObservable implements Observer {
 			
 	public static final String SENSOR_FIELD_ID							= "id";
 	public static final String SENSOR_FIELD_TITLE						= "title";
-	public static final String SENSOR_FIELD_CONNECTION					= "connection";
+	public static final String SENSOR_FIELD_CONNECTION					= "mConnection";
 	public static final String SENSOR_FIELD_BATTERY_LEVEL				= "batteryLevel";
 	public static final String SENSOR_FIELD_RSSI						= "rssi";
+	
+	public static final String SENSOR_FIELD_IS_DEMO						= "is_demo";
 	
 	private static final String BLE_GENERIC_SERVICE_UUID_BATTERY		 	= "0000180F-0000-1000-8000-00805F9B34FB";
 	private static final String BLE_GENERIC_CHAR_UUID_BATTERY_LEVEL			= "00002A19-0000-1000-8000-00805F9B34FB";
@@ -47,6 +49,8 @@ public class Sensor extends PropertyObservable implements Observer {
 	private Timer mRssiTimer;
 	
 	protected Map<String, LinkedList<Float>> mSensorValues;
+	
+	protected boolean mIsDemoSensor;
 	
 	public static Sensor getSensorFromDocument(Document document) {
 		Sensor sensor = null;
@@ -197,6 +201,7 @@ public class Sensor extends PropertyObservable implements Observer {
 		if (mDocument != null) {
 			mId 		= (String) mDocument.getProperty(SENSOR_FIELD_ID);
 			mTitle 	= (String) mDocument.getProperty(SENSOR_FIELD_TITLE);			
+			mIsDemoSensor = (Boolean) mDocument.getProperty(SENSOR_FIELD_IS_DEMO);
 			
 			Database database = mDocument.getDatabase(); 
 			
@@ -315,5 +320,8 @@ public class Sensor extends PropertyObservable implements Observer {
 	public LinkedList<Float> getLastValues(String valueType) {
 		return mSensorValues.get(valueType);
 	}
-
+	
+	public boolean isDemoSensor() {
+		return mIsDemoSensor;
+	}
 }

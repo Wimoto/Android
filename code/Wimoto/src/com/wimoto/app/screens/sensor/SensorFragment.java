@@ -23,9 +23,7 @@ import com.wimoto.app.model.Sensor;
 import com.wimoto.app.model.SentrySensor;
 import com.wimoto.app.model.ThermoSensor;
 import com.wimoto.app.model.WaterSensor;
-import com.wimoto.app.model.demosensors.DemoClimateSensor;
 import com.wimoto.app.screens.sensor.climate.ClimateSensorFragment;
-import com.wimoto.app.screens.sensor.climate.DemoClimateSensorFragment;
 import com.wimoto.app.screens.sensor.grow.GrowSensorFragment;
 import com.wimoto.app.screens.sensor.sentry.SentrySensorFragment;
 import com.wimoto.app.screens.sensor.thermo.ThermoSensorFragment;
@@ -62,12 +60,10 @@ public abstract class SensorFragment extends PageFragment implements PropertyCha
 			fragment = new ThermoSensorFragment();
 		} else if (sensor instanceof WaterSensor) {
 			fragment = new WaterSensorFragment();
-		}  else if (sensor instanceof DemoClimateSensor) {
-			fragment = new DemoClimateSensorFragment();
-		}
+		} 
 		
 		if (fragment != null) {
-			fragment.setSensor(sensor);
+			fragment.mSensor = sensor;
 		}
 		return fragment;
 	}
@@ -81,6 +77,9 @@ public abstract class SensorFragment extends PageFragment implements PropertyCha
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		initViews();	
+		
+		setSensor(mSensor);
+		
 		return mView;
 	}
 	
@@ -120,7 +119,7 @@ public abstract class SensorFragment extends PageFragment implements PropertyCha
 		
 		mSensor = sensor;
 		if (mSensor != null) {
-			mSensor.addChangeListener(this, Sensor.SENSOR_FIELD_CONNECTION);
+			mSensor.addChangeListener(this, Sensor.SENSOR_FIELD_CONNECTION, true);
 			mSensor.addChangeListener(this, Sensor.SENSOR_FIELD_BATTERY_LEVEL);
 			mSensor.addChangeListener(this, Sensor.SENSOR_FIELD_RSSI);
 		}
@@ -167,10 +166,12 @@ public abstract class SensorFragment extends PageFragment implements PropertyCha
 						mView.setBackgroundColor(getResources().getColor(R.color.color_light_gray));
 						mBatteryImageView.setVisibility(View.INVISIBLE);
 						mRssiTextView.setVisibility(View.INVISIBLE);
+						mSensorFooterView.showConnectionSensitiveButtons(false);
 					} else {
 						mView.setBackgroundColor(getResources().getColor(getBackgroundColorRes()));
 						mBatteryImageView.setVisibility(View.VISIBLE);
 						mRssiTextView.setVisibility(View.VISIBLE);
+						mSensorFooterView.showConnectionSensitiveButtons(true);
 					}
 				} else if (Sensor.SENSOR_FIELD_BATTERY_LEVEL.equals(propertyName)) {
 					updateBateryLevel((Integer)event.getNewValue());

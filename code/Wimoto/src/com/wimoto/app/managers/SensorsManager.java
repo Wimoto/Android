@@ -24,8 +24,8 @@ import com.wimoto.app.MainActivity;
 import com.wimoto.app.bluetooth.BluetoothConnection;
 import com.wimoto.app.bluetooth.BluetoothService;
 import com.wimoto.app.bluetooth.BluetoothService.BluetoothServiceListener;
+import com.wimoto.app.model.ClimateSensor;
 import com.wimoto.app.model.Sensor;
-import com.wimoto.app.model.demosensors.DemoClimateSensor;
 import com.wimoto.app.utils.AppContext;
 
 public class SensorsManager implements BluetoothServiceListener {
@@ -64,6 +64,7 @@ public class SensorsManager implements BluetoothServiceListener {
 				Document doc = enumerator.next().getDocument();
 				
 				Sensor sensor = Sensor.getSensorFromDocument(doc);
+
 				mSensors.put(sensor.getId(), sensor);
 			}
 			
@@ -114,7 +115,11 @@ public class SensorsManager implements BluetoothServiceListener {
 	}
 	
 	private void addDemoSensors() {
-		mSensors.put(DemoClimateSensor.BLE_CLIMATE_DEMO_MODEL, new DemoClimateSensor());
+//		if (!mSensors.containsKey(ClimateSensor.BLE_CLIMATE_DEMO_MODEL)) {
+//			mSensors.put(ClimateSensor.BLE_CLIMATE_DEMO_MODEL, new ClimateSensor(true));
+//			
+//			Log.e("Total Count with demo", Integer.toString(mSensors.size()));
+//		}
 	}
 	
 	public void registerSensor(Sensor newSensor) {
@@ -129,6 +134,8 @@ public class SensorsManager implements BluetoothServiceListener {
 		properties.put("id", newSensor.getId());
 		properties.put("sensor_type", newSensor.getType().getValue());
 		properties.put("created_at", currentTimeString);
+		
+		properties.put(Sensor.SENSOR_FIELD_IS_DEMO, newSensor.isDemoSensor());
 		
 		try {
 			Document document = mDatabase.createDocument();
@@ -149,10 +156,10 @@ public class SensorsManager implements BluetoothServiceListener {
 			sensor.getDocument().delete();
 			sensor.setDocument(null);
 			
-			if (!sensor.isConnected()) {
+			if (!sensor.isConnected() && !sensor.isDemoSensor()) {
 				mSensors.remove(sensor.getId());
 			}
-
+			
 			notifyRegisteredSensorObservers();
 			notifyUnregisteredSensorObservers();
 		} catch (CouchbaseLiteException e) {

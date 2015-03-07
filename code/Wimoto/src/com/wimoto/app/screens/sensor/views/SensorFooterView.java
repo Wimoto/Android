@@ -19,6 +19,10 @@ public class SensorFooterView extends RelativeLayout {
 	private Context mContext;
 	private SensorFooterListener mListener;
 	
+	private ImageView mCloudSyncButton;
+	private ImageView mDataLoggerButton;
+	private ImageView mFirmwareButton;
+	
 	public SensorFooterView(Context context, AttributeSet attrs) {
 		super(context, attrs);
 
@@ -36,6 +40,10 @@ public class SensorFooterView extends RelativeLayout {
 				}
 			}
 		});
+        
+    	mCloudSyncButton = (ImageView) findViewById(R.id.cloudSyncButton);
+    	mDataLoggerButton = (ImageView) findViewById(R.id.dataloggerButton);
+    	mFirmwareButton = (ImageView) findViewById(R.id.firmwareButton);
         
         ImageView rightMenuControl = (ImageView) findViewById(R.id.rightMenuButton);
         rightMenuControl.setOnClickListener(new OnClickListener() {
@@ -55,5 +63,11 @@ public class SensorFooterView extends RelativeLayout {
 	public void setLogo(int resourceId) {
 		ImageView logoImageView = (ImageView)findViewById(R.id.logoImageView);
 		logoImageView.setImageResource(resourceId);
+	}
+	
+	public void showConnectionSensitiveButtons(boolean doShow) {
+    	mCloudSyncButton.setVisibility((doShow)?View.VISIBLE:View.INVISIBLE);
+    	mDataLoggerButton.setVisibility((doShow)?View.VISIBLE:View.INVISIBLE);
+    	mFirmwareButton.setVisibility((doShow)?View.VISIBLE:View.INVISIBLE);
 	}
 }
