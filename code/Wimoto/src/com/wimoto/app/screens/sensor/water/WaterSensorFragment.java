@@ -40,7 +40,7 @@ public class WaterSensorFragment extends SensorFragment implements AlarmSliderDi
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		mView  = inflater.inflate(R.layout.sensor_water_fragment, null);
+		mView  = (ViewGroup)inflater.inflate(R.layout.sensor_water_fragment, null);
 		return super.onCreateView(inflater, container, savedInstanceState);
 	}
 	

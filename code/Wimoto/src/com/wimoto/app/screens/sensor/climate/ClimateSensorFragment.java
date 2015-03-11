@@ -21,7 +21,7 @@ import com.wimoto.app.widgets.AnimationSwitch;
 import com.wimoto.app.widgets.AnimationSwitch.OnCheckedChangeListener;
 import com.wimoto.app.widgets.sparkline.LineSparkView;
 
-public class ClimateSensorFragment extends SensorFragment implements AlarmPickerListener {
+public class ClimateSensorFragment extends SensorFragment {
 	
 	private TextView mTemperatureTextView;
 	private TextView mHumidityTextView;
@@ -48,13 +48,13 @@ public class ClimateSensorFragment extends SensorFragment implements AlarmPicker
 	private TextView mLightAlarmLowTextView;
 	private TextView mLightAlarmHighTextView;
 	
-	private AlarmPickerView mAlarmPickerView;
-	
-	private boolean mIsShowTemperatureAlert, mIsShowHumidityAlert, mIsShowLightAlert;
+	private AlarmPickerView mAlarmTemperaturePickerView;
+	private AlarmPickerView mAlarmHumidityPickerView;
+	private AlarmPickerView mAlarmLightPickerView;
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		mView  = inflater.inflate(R.layout.sensor_climate_fragment, null);
+		mView  = (ViewGroup) inflater.inflate(R.layout.sensor_climate_fragment, null);
 		
 		return super.onCreateView(inflater, container, savedInstanceState);
 	}
@@ -72,15 +72,39 @@ public class ClimateSensorFragment extends SensorFragment implements AlarmPicker
 		mTemperatureTextView.setText(Float.toString(((ClimateSensor)mSensor).getTemperature()));
 		
 		mTemperatureAlarmLayout = (LinearLayout) mView.findViewById(R.id.temperatureAlarmLayout);
+		
+		mAlarmTemperaturePickerView = new AlarmPickerView(getActivity(), ClimateSensor.SENSOR_FIELD_CLIMATE_TEMPERATURE, -60, 130, 
+				new AlarmPickerListener() {
+			@Override
+			public void onSave(float lowerValue, float upperValue) {
+				mView.removeView(mAlarmTemperaturePickerView);
+				
+				ClimateSensor climateSensor = (ClimateSensor) mSensor;
+				climateSensor.setTemperatureAlarmSet(true);
+				
+				climateSensor.setTemperatureAlarmLow(lowerValue);
+				climateSensor.setTemperatureAlarmHigh(upperValue);
+			}
+			
+			@Override
+			public void onCancel() {
+				mView.removeView(mAlarmTemperaturePickerView);
+				
+				ClimateSensor climateSensor = (ClimateSensor) mSensor;
+				climateSensor.setTemperatureAlarmSet(false);	
+			}
+		});
+		
 		mTemperatureSwitch = (AnimationSwitch) mView.findViewById(R.id.temperature_switch);
 		mTemperatureSwitch.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 			@Override
 			public void onCheckedChanged(AnimationSwitch view, boolean isChecked) {
 				if (isChecked) {
-					showAlarmPickerView(mTemperatureSwitch, ClimateSensor.SENSOR_FIELD_CLIMATE_TEMPERATURE, -60, 130);
+					showTemperaturePickerView();
 				} else {
+					mView.removeView(mAlarmTemperaturePickerView);
+					
 					((ClimateSensor)mSensor).setTemperatureAlarmSet(false);
-					enableSwitches();
 				}
 			}
 		});
@@ -100,15 +124,39 @@ public class ClimateSensorFragment extends SensorFragment implements AlarmPicker
 		mHumidityTextView.setText(Float.toString(((ClimateSensor)mSensor).getHumidity()));
 		
 		mHumidityAlarmLayout = (LinearLayout) mView.findViewById(R.id.humidityAlarmLayout);
+		
+		mAlarmHumidityPickerView = new AlarmPickerView(getActivity(), ClimateSensor.SENSOR_FIELD_CLIMATE_HUMIDITY, 10, 50, 
+				new AlarmPickerListener() {
+			@Override
+			public void onSave(float lowerValue, float upperValue) {
+				mView.removeView(mAlarmHumidityPickerView);
+				
+				ClimateSensor climateSensor = (ClimateSensor) mSensor;
+				climateSensor.setHumidityAlarmSet(true);
+				
+				climateSensor.setHumidityAlarmLow(lowerValue);
+				climateSensor.setHumidityAlarmHigh(upperValue);
+			}
+			
+			@Override
+			public void onCancel() {
+				mView.removeView(mAlarmHumidityPickerView);
+				
+				ClimateSensor climateSensor = (ClimateSensor) mSensor;
+				climateSensor.setHumidityAlarmSet(false);	
+			}
+		});
+		
 		mHumiditySwitch = (AnimationSwitch)mView.findViewById(R.id.humidity_switch);
 		mHumiditySwitch.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 			@Override
 			public void onCheckedChanged(AnimationSwitch view, boolean isChecked) {
 				if (isChecked) {
-					showAlarmPickerView(mHumiditySwitch, ClimateSensor.SENSOR_FIELD_CLIMATE_HUMIDITY, 10, 50);
+					showHumidityPickerView();
 				} else {
+					mView.removeView(mAlarmHumidityPickerView);
+					
 					((ClimateSensor)mSensor).setHumidityAlarmSet(false);
-					enableSwitches();
 				}
 			}
 		});
@@ -128,15 +176,37 @@ public class ClimateSensorFragment extends SensorFragment implements AlarmPicker
 		mLightTextView.setText(Float.toString(((ClimateSensor)mSensor).getLight()));
 		
 		mLightAlarmLayout = (LinearLayout) mView.findViewById(R.id.lightAlarmLayout);
+		
+		mAlarmLightPickerView = new AlarmPickerView(getActivity(), ClimateSensor.SENSOR_FIELD_CLIMATE_LIGHT, 10, 50,
+				new AlarmPickerListener() {
+			@Override
+			public void onSave(float lowerValue, float upperValue) {
+				mView.removeView(mAlarmLightPickerView);
+				
+				ClimateSensor climateSensor = (ClimateSensor) mSensor;
+				climateSensor.setLightAlarmSet(true);
+				
+				climateSensor.setLightAlarmLow(lowerValue);
+				climateSensor.setLightAlarmHigh(upperValue);
+			}
+			
+			@Override
+			public void onCancel() {
+				mView.removeView(mAlarmLightPickerView);
+				
+				ClimateSensor climateSensor = (ClimateSensor) mSensor;
+				climateSensor.setLightAlarmSet(false);	
+			}
+		});
+		
 		mLightSwitch = (AnimationSwitch)mView.findViewById(R.id.light_switch);
 		mLightSwitch.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 			@Override
 			public void onCheckedChanged(AnimationSwitch view, boolean isChecked) {
 				if (isChecked) {
-					showAlarmPickerView(mLightSwitch, ClimateSensor.SENSOR_FIELD_CLIMATE_LIGHT, 10, 50);
+					showLightPickerView();
 				} else {
 					((ClimateSensor)mSensor).setLightAlarmSet(false);
-					enableSwitches();
 				}
 			}
 		});
@@ -148,10 +218,7 @@ public class ClimateSensorFragment extends SensorFragment implements AlarmPicker
 		mLightAlarmHighTextView.setText(Float.toString(((ClimateSensor)mSensor).getLightAlarmHigh()));
 		
 		getSensorFooterView().setLogo(R.drawable.climate_logo);
-		
-		mAlarmPickerView = (AlarmPickerView) mView.findViewById(R.id.alarmPickerView);
-		mAlarmPickerView.setListener(this);
-		
+	
 		if (((ClimateSensor)mSensor).isDemoSensor()) {
 			mView.setBackgroundColor(getResources().getColor(getBackgroundColorRes()));
 
@@ -229,15 +296,15 @@ public class ClimateSensorFragment extends SensorFragment implements AlarmPicker
 					} else if (ClimateSensor.SENSOR_FIELD_CLIMATE_TEMPERATURE_ALARM_SET.equals(propertyName)) {
 						mTemperatureSwitch.setChecked(((Boolean)event.getNewValue()).booleanValue());
 					} else if (ClimateSensor.SENSOR_FIELD_CLIMATE_TEMPERATURE_ALARM_LOW.equals(propertyName)) {
-						mTemperatureAlarmLowTextView.setText(event.getNewValue()  + "");
+						mTemperatureAlarmLowTextView.setText(String.format(Locale.US, "%.01f", event.getNewValue()));
 					} else if (ClimateSensor.SENSOR_FIELD_CLIMATE_TEMPERATURE_ALARM_HIGH.equals(propertyName)) {
-						mTemperatureAlarmHighTextView.setText(event.getNewValue() + "");
+						mTemperatureAlarmHighTextView.setText(String.format(Locale.US, "%.01f", event.getNewValue()));
 					} else if (ClimateSensor.SENSOR_FIELD_CLIMATE_HUMIDITY_ALARM_SET.equals(propertyName)) {
 						mHumiditySwitch.setChecked(((Boolean)event.getNewValue()).booleanValue());
 					} else if (ClimateSensor.SENSOR_FIELD_CLIMATE_HUMIDITY_ALARM_LOW.equals(propertyName)) {
-						mHumidityAlarmLowTextView.setText(event.getNewValue()  + "");
+						mHumidityAlarmLowTextView.setText(String.format(Locale.US, "%.01f", event.getNewValue()));
 					} else if (ClimateSensor.SENSOR_FIELD_CLIMATE_HUMIDITY_ALARM_HIGH.equals(propertyName)) {
-						mHumidityAlarmHighTextView.setText(event.getNewValue() + "");
+						mHumidityAlarmHighTextView.setText(String.format(Locale.US, "%.01f", event.getNewValue()));
 					} else if (ClimateSensor.SENSOR_FIELD_CLIMATE_LIGHT_ALARM_SET.equals(propertyName)) {
 						mLightSwitch.setChecked(((Boolean)event.getNewValue()).booleanValue());
 					} else if (ClimateSensor.SENSOR_FIELD_CLIMATE_LIGHT_ALARM_LOW.equals(propertyName)) {
@@ -286,74 +353,65 @@ public class ClimateSensorFragment extends SensorFragment implements AlarmPicker
 //		}
 	}
 	
-	private void showAlarmPickerView(AnimationSwitch animationSwitch, String sensorCharacteristic, int absoluteMinValue, int absoluteMaxValue) {
-		mAlarmPickerView.setInitValues(animationSwitch, sensorCharacteristic, absoluteMinValue, absoluteMaxValue);
-
-		if (ClimateSensor.SENSOR_FIELD_CLIMATE_TEMPERATURE.equals(sensorCharacteristic)) {
-			mAlarmPickerView.setSelectedMinValue(((ClimateSensor)mSensor).getTemperatureAlarmLow());
-			mAlarmPickerView.setSelectedMaxValue(((ClimateSensor)mSensor).getTemperatureAlarmHigh());
-			
-			mTemperatureSwitch.setEnabled(true);
-			mHumiditySwitch.setEnabled(false);
-			mLightSwitch.setEnabled(false);
-		} else if (ClimateSensor.SENSOR_FIELD_CLIMATE_HUMIDITY.equals(sensorCharacteristic)) {
-			mAlarmPickerView.setSelectedMinValue(((ClimateSensor)mSensor).getHumidityAlarmLow());
-			mAlarmPickerView.setSelectedMaxValue(((ClimateSensor)mSensor).getHumidityAlarmHigh());
-			
-			mTemperatureSwitch.setEnabled(false);
-			mHumiditySwitch.setEnabled(true);
-			mLightSwitch.setEnabled(false);
-		} else if (ClimateSensor.SENSOR_FIELD_CLIMATE_LIGHT.equals(sensorCharacteristic)) {
-			mAlarmPickerView.setSelectedMinValue(((ClimateSensor)mSensor).getLightAlarmLow());
-			mAlarmPickerView.setSelectedMaxValue(((ClimateSensor)mSensor).getLightAlarmHigh());
-			
-			mTemperatureSwitch.setEnabled(false);
-			mHumiditySwitch.setEnabled(false);
-			mLightSwitch.setEnabled(true);
-		}
-
-		mAlarmPickerView.show();
+	private void showTemperaturePickerView() {
+		mView.addView(mAlarmTemperaturePickerView);
+		
+		mAlarmTemperaturePickerView.setSelectedMinValue(((ClimateSensor)mSensor).getTemperatureAlarmLow());
+		mAlarmTemperaturePickerView.setSelectedMaxValue(((ClimateSensor)mSensor).getTemperatureAlarmHigh());
+		
+		mAlarmTemperaturePickerView.show();
 	}
 	
-	private void enableSwitches() {
-		mAlarmPickerView.hide();
+	private void showHumidityPickerView() {
+		mView.addView(mAlarmHumidityPickerView);
 		
-		mTemperatureSwitch.setEnabled(true);
-		mHumiditySwitch.setEnabled(true);
-		mLightSwitch.setEnabled(true);
+		mAlarmHumidityPickerView.setSelectedMinValue(((ClimateSensor)mSensor).getHumidityAlarmLow());
+		mAlarmHumidityPickerView.setSelectedMaxValue(((ClimateSensor)mSensor).getHumidityAlarmHigh());
+		
+		mAlarmHumidityPickerView.show();
 	}
 	
-	@Override
-	public void onSave(AnimationSwitch animationSwitch, AlarmPickerView view, boolean needSave) {
-		ClimateSensor climateSensor = (ClimateSensor) mSensor;
-
-		String sensorCharacteristic = view.getSensorCharacteristic();
-		if (ClimateSensor.SENSOR_FIELD_CLIMATE_TEMPERATURE.equals(sensorCharacteristic)) {
-			mIsShowTemperatureAlert = false;
-			climateSensor.setTemperatureAlarmSet(needSave);	
-			
-			//climateSensor.setTemperatureAlarmLow(view.getSelectedMinValue());
-			//climateSensor.setTemperatureAlarmHigh(view.getSelectedMaxValue());
-		} else if (ClimateSensor.SENSOR_FIELD_CLIMATE_HUMIDITY.equals(sensorCharacteristic)) {
-			mIsShowHumidityAlert = false;
-			climateSensor.setHumidityAlarmSet(needSave);
-			
-			//climateSensor.setHumidityAlarmLow(view.getSelectedMinValue());
-			//climateSensor.setHumidityAlarmHigh(view.getSelectedMaxValue());	
-		} else if (ClimateSensor.SENSOR_FIELD_CLIMATE_LIGHT.equals(sensorCharacteristic)) {
-			mIsShowLightAlert = false;
-			climateSensor.setLightAlarmSet(needSave);
-			
-			//climateSensor.setLightAlarmLow(view.getSelectedMinValue());
-			//climateSensor.setLightAlarmHigh(view.getSelectedMaxValue());	
-		}
+	private void showLightPickerView() {
+		mView.addView(mAlarmLightPickerView);
 		
-		if (!needSave) {
-			animationSwitch.setChecked(false);
-		}
+		mAlarmLightPickerView.setSelectedMinValue(((ClimateSensor)mSensor).getLightAlarmLow());
+		mAlarmLightPickerView.setSelectedMaxValue(((ClimateSensor)mSensor).getLightAlarmHigh());
 		
-		enableSwitches();
+		mAlarmLightPickerView.show();
 	}
+	
+//	@Override
+//	public void onButtonTapped(AlarmPickerView view, boolean needSave) {
+//		mView.removeView(view);
+////		ClimateSensor climateSensor = (ClimateSensor) mSensor;
+////
+////		String sensorCharacteristic = view.getSensorCharacteristic();
+////		if (ClimateSensor.SENSOR_FIELD_CLIMATE_TEMPERATURE.equals(sensorCharacteristic)) {
+////			mIsShowTemperatureAlert = false;
+////			climateSensor.setTemperatureAlarmSet(needSave);	
+////			
+////			//climateSensor.setTemperatureAlarmLow(view.getSelectedMinValue());
+////			//climateSensor.setTemperatureAlarmHigh(view.getSelectedMaxValue());
+////		} else if (ClimateSensor.SENSOR_FIELD_CLIMATE_HUMIDITY.equals(sensorCharacteristic)) {
+////			mIsShowHumidityAlert = false;
+////			climateSensor.setHumidityAlarmSet(needSave);
+////			
+////			//climateSensor.setHumidityAlarmLow(view.getSelectedMinValue());
+////			//climateSensor.setHumidityAlarmHigh(view.getSelectedMaxValue());	
+////		} else if (ClimateSensor.SENSOR_FIELD_CLIMATE_LIGHT.equals(sensorCharacteristic)) {
+////			mIsShowLightAlert = false;
+////			climateSensor.setLightAlarmSet(needSave);
+////			
+////			//climateSensor.setLightAlarmLow(view.getSelectedMinValue());
+////			//climateSensor.setLightAlarmHigh(view.getSelectedMaxValue());	
+////		}
+////		
+//////		if (!needSave) {
+//////			animationSwitch.setChecked(false);
+//////		}
+////		
+////		enableSwitches();
+//	}
 	
 	protected void switchOffAlarm(String propertyString) {
 //		if (ClimateSensor.SENSOR_FIELD_TEMPERATURE.equals(propertyString)) {

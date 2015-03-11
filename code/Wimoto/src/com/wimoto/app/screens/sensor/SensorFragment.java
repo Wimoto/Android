@@ -36,7 +36,7 @@ public abstract class SensorFragment extends PageFragment implements PropertyCha
 	private static final String TAG_SENSOR = "sensor_tag";
 	private static final String TAG_NO_SENSOR = "no_sensor_tag";
 	
-	protected View mView;
+	protected ViewGroup mView;
 	
 	protected ImageView mBatteryImageView;
 	protected TextView mRssiTextView;

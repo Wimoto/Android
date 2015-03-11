@@ -21,7 +21,8 @@ import com.wimoto.app.R;
 public class AlarmPickerView extends RelativeLayout {
 
 	public interface AlarmPickerListener {
-		void onSave(AnimationSwitch animationSwitch, AlarmPickerView alarmPickerView, boolean needSave);
+		void onSave(float lowerValue, float upperValue);
+		void onCancel();
 	}
 	
 	private Context mContext;
@@ -29,7 +30,6 @@ public class AlarmPickerView extends RelativeLayout {
 	
 	private AlarmPickerListener mListener;
 	
-	private AnimationSwitch mSwitch;
 	private String mSensorCharacteristic;
 	
 	private NumberPicker mMinIntegerPicker, mMinFractPicker;
@@ -60,7 +60,7 @@ public class AlarmPickerView extends RelativeLayout {
         cancelButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				save(false);
+				//save(false);
 			}	
         });
         
@@ -68,22 +68,59 @@ public class AlarmPickerView extends RelativeLayout {
         saveButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				save(true);
+				//save(true);
 			}	
         });
 	}
 	
-	public void setListener(AlarmPickerListener listener) {
-		mListener = listener;
-	}
-	
-	public void setInitValues(AnimationSwitch animationSwitch, String sensorCharacteristic, int absoluteMinValue, int absoluteMaxValue) {
-		mSwitch = animationSwitch;
-        mSensorCharacteristic = sensorCharacteristic;
+	public AlarmPickerView(Context context, String sensorCharacteristic, int absoluteMinValue, int absoluteMaxValue, final AlarmPickerListener listener) {
+		super(context);
+		
+		mContext = context;
+		
+		LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        inflater.inflate(R.layout.alarm_picker_view, this);
         
+        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(
+		        RelativeLayout.LayoutParams.WRAP_CONTENT,
+		        RelativeLayout.LayoutParams.WRAP_CONTENT);
+		layoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+		setLayoutParams(layoutParams);
+        
+        mSensorCharacteristic = sensorCharacteristic;
+
+        mMinIntegerPicker = (NumberPicker) findViewById(R.id.alarmMinIntegerNumberPicker);
+        mMinFractPicker = (NumberPicker) findViewById(R.id.alarmMinFractNumberPicker);
+        setNumberPickerTextColor(mMinFractPicker, Color.RED);
+
+        mMaxIntegerPicker = (NumberPicker) findViewById(R.id.alarmMaxIntegerNumberPicker);
+        mMaxFractPicker = (NumberPicker) findViewById(R.id.alarmMaxFractNumberPicker);
+        setNumberPickerTextColor(mMaxFractPicker, Color.RED);
+        
+        Button cancelButton = (Button) findViewById(R.id.alarmCancelButton);
+        cancelButton.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				if (listener != null) {
+					listener.onCancel();
+				}
+			}	
+        });
+        
+        Button saveButton = (Button) findViewById(R.id.alarmSaveButton);
+        saveButton.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				if (listener != null) {
+					checkValues();
+					listener.onSave(mMinValue, mMaxValue);
+				}				
+			}	
+        });
+		
         mPickerMinValue = absoluteMinValue;
         mPickerMaxValue = absoluteMaxValue;
-		
+        
         mMinIntegerPicker.setMinValue(0);
         mMinIntegerPicker.setMaxValue(mPickerMaxValue - mPickerMinValue);
         
@@ -101,14 +138,14 @@ public class AlarmPickerView extends RelativeLayout {
         mMinFractPicker.setMaxValue(9);
 
         mMaxFractPicker.setMinValue(0);
-        mMaxFractPicker.setMaxValue(9);
+        mMaxFractPicker.setMaxValue(9);        
 	}
-	
+
 	public String getSensorCharacteristic() {
 		return mSensorCharacteristic;
 	}
 	
-	public void checkValues() {
+	private void checkValues() {
 		int intMinValue = mMinIntegerPicker.getValue() + mPickerMinValue;
 		int fractMinValue = mMinFractPicker.getValue();
 		
@@ -156,16 +193,6 @@ public class AlarmPickerView extends RelativeLayout {
 		
 		mMaxIntegerPicker.setValue(intValue - mPickerMinValue);
 		mMaxFractPicker.setValue(fractValue);
-	}
-	
-	private void save (boolean needSave) {
-		if (mListener != null) {
-			if (needSave) {
-				checkValues();
-			}
-			
-			mListener.onSave(mSwitch, this, needSave);
-		}
 	}
 	
 	public void show() {

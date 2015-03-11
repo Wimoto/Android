@@ -43,7 +43,7 @@ public class ThermoSensorFragment extends SensorFragment implements AlarmSliderD
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		mView  = inflater.inflate(R.layout.sensor_thermo_fragment, null);
+		mView  = (ViewGroup)inflater.inflate(R.layout.sensor_thermo_fragment, null);
 		return super.onCreateView(inflater, container, savedInstanceState);
 	}
 	

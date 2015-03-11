@@ -50,7 +50,7 @@ public class GrowSensorFragment extends SensorFragment implements AlarmSliderDia
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		mView  = inflater.inflate(R.layout.sensor_grow_fragment, null);
+		mView  = (ViewGroup)inflater.inflate(R.layout.sensor_grow_fragment, null);
 		return super.onCreateView(inflater, container, savedInstanceState);
 	}
 	

@@ -37,7 +37,7 @@ public class SentrySensorFragment extends SensorFragment implements AlarmSliderD
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		mView  = inflater.inflate(R.layout.sensor_sentry_fragment, null);
+		mView  = (ViewGroup)inflater.inflate(R.layout.sensor_sentry_fragment, null);
 		return super.onCreateView(inflater, container, savedInstanceState);
 	}
 	
