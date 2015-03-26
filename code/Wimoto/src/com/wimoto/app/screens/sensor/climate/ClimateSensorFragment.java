@@ -219,11 +219,12 @@ public class ClimateSensorFragment extends SensorFragment {
 		
 		getSensorFooterView().setLogo(R.drawable.climate_logo);
 	
-		if (((ClimateSensor)mSensor).isDemoSensor()) {
-			mView.setBackgroundColor(getResources().getColor(getBackgroundColorRes()));
-
-			runDemo();
-		}
+//		if (((ClimateSensor)mSensor).isDemoSensor()) {
+//			mView.setBackgroundColor(getResources().getColor(getBackgroundColorRes()));
+//
+//			runDemo();
+//		}
+		
 	}
 	
 	private void runDemo() {
@@ -308,9 +309,9 @@ public class ClimateSensorFragment extends SensorFragment {
 					} else if (ClimateSensor.SENSOR_FIELD_CLIMATE_LIGHT_ALARM_SET.equals(propertyName)) {
 						mLightSwitch.setChecked(((Boolean)event.getNewValue()).booleanValue());
 					} else if (ClimateSensor.SENSOR_FIELD_CLIMATE_LIGHT_ALARM_LOW.equals(propertyName)) {
-						mLightAlarmLowTextView.setText(event.getNewValue()  + "");
+						mLightAlarmLowTextView.setText(String.format(Locale.US, "%.01f", event.getNewValue()));
 					} else if (ClimateSensor.SENSOR_FIELD_CLIMATE_LIGHT_ALARM_HIGH.equals(propertyName)) {
-						mLightAlarmHighTextView.setText(event.getNewValue() + "");
+						mLightAlarmHighTextView.setText(String.format(Locale.US, "%.01f", event.getNewValue()));
 					}
 					
 					//String propertyString = ((ClimateSensor)mSensor).getPropertyString(propertyName);
@@ -355,7 +356,7 @@ public class ClimateSensorFragment extends SensorFragment {
 	
 	private void showTemperaturePickerView() {
 		mView.addView(mAlarmTemperaturePickerView);
-		
+
 		mAlarmTemperaturePickerView.setSelectedMinValue(((ClimateSensor)mSensor).getTemperatureAlarmLow());
 		mAlarmTemperaturePickerView.setSelectedMaxValue(((ClimateSensor)mSensor).getTemperatureAlarmHigh());
 		

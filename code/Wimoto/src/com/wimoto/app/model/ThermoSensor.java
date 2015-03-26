@@ -38,16 +38,16 @@ public class ThermoSensor extends Sensor {
 	private static final String BLE_THERMO_CHAR_UUID_PROBE_ALARM_SET			= "497B8E58-B61E-4F82-8FE9-B12CF2497338";
 	private static final String BLE_THERMO_CHAR_UUID_PROBE_ALARM				= "497B8E59-B61E-4F82-8FE9-B12CF2497338";
 	
-	private float mTemperature;
-	private float mProbe;
+	protected float mTemperature;
+	protected float mProbe;
 	
-	private boolean mTemperatureAlarmSet;
-	private int mTemperatureAlarmLow;
-	private int mTemperatureAlarmHigh;
+	protected boolean mTemperatureAlarmSet;
+	protected float mTemperatureAlarmLow;
+	protected float mTemperatureAlarmHigh;
 
-	private boolean mProbeAlarmSet;
-	private int mProbeAlarmLow;
-	private int mProbeAlarmHigh;
+	protected boolean mProbeAlarmSet;
+	protected float mProbeAlarmLow;
+	protected float mProbeAlarmHigh;
 	
 	public ThermoSensor() {
 		super();
@@ -123,26 +123,26 @@ public class ThermoSensor extends Sensor {
 		addValue(SENSOR_FIELD_THERMO_PROBE, mProbe);
 	}
 	
-	public int getTemperatureAlarmLow() {
+	public float getTemperatureAlarmLow() {
 		return mTemperatureAlarmLow;
 	}
 
-	public void setTemperatureAlarmLow(int temperatureAlarmLow) {
+	public void setTemperatureAlarmLow(float temperatureAlarmLow) {
 		notifyObservers(SENSOR_FIELD_THERMO_TEMPERATURE_ALARM_LOW, mTemperatureAlarmLow, temperatureAlarmLow);
 		
 		mTemperatureAlarmLow = temperatureAlarmLow;
-		writeAlarmValue(mTemperatureAlarmLow, ThermoSensor.BLE_THERMO_SERVICE_UUID_TEMPERATURE, ThermoSensor.BLE_THERMO_CHAR_UUID_TEMPERATURE_ALARM_LOW);
+		writeAlarmValue(Float.valueOf(mTemperatureAlarmLow).intValue(), ThermoSensor.BLE_THERMO_SERVICE_UUID_TEMPERATURE, ThermoSensor.BLE_THERMO_CHAR_UUID_TEMPERATURE_ALARM_LOW);
 	}
 
-	public int getTemperatureAlarmHigh() {
+	public float getTemperatureAlarmHigh() {
 		return mTemperatureAlarmHigh;
 	}
 
-	public void setTemperatureAlarmHigh(int temperatureAlarmHigh) {
+	public void setTemperatureAlarmHigh(float temperatureAlarmHigh) {
 		notifyObservers(SENSOR_FIELD_THERMO_TEMPERATURE_ALARM_HIGH, mTemperatureAlarmHigh, temperatureAlarmHigh);
 
 		mTemperatureAlarmHigh = temperatureAlarmHigh;
-		writeAlarmValue(mTemperatureAlarmHigh, ThermoSensor.BLE_THERMO_SERVICE_UUID_TEMPERATURE, ThermoSensor.BLE_THERMO_CHAR_UUID_TEMPERATURE_ALARM_HIGH);
+		writeAlarmValue(Float.valueOf(mTemperatureAlarmHigh).intValue(), ThermoSensor.BLE_THERMO_SERVICE_UUID_TEMPERATURE, ThermoSensor.BLE_THERMO_CHAR_UUID_TEMPERATURE_ALARM_HIGH);
 	}
 	
 	public boolean isTemperatureAlarmSet() {
@@ -156,26 +156,26 @@ public class ThermoSensor extends Sensor {
 		enableAlarm(mTemperatureAlarmSet, BLE_THERMO_SERVICE_UUID_TEMPERATURE, BLE_THERMO_CHAR_UUID_TEMPERATURE_ALARM_SET);
 	}
 	
-	public int getProbeAlarmLow() {
+	public float getProbeAlarmLow() {
 		return mProbeAlarmLow;
 	}
 
-	public void setProbeAlarmLow(int probeAlarmLow) {
+	public void setProbeAlarmLow(float probeAlarmLow) {
 		notifyObservers(SENSOR_FIELD_THERMO_PROBE_ALARM_LOW, mProbeAlarmLow, probeAlarmLow);
 		
 		mTemperatureAlarmLow = probeAlarmLow;
-		writeAlarmValue(mProbeAlarmLow, ThermoSensor.BLE_THERMO_SERVICE_UUID_PROBE, ThermoSensor.BLE_THERMO_CHAR_UUID_PROBE_ALARM_LOW);
+		writeAlarmValue(Float.valueOf(mProbeAlarmLow).intValue(), ThermoSensor.BLE_THERMO_SERVICE_UUID_PROBE, ThermoSensor.BLE_THERMO_CHAR_UUID_PROBE_ALARM_LOW);
 	}
 
-	public int getProbeAlarmHigh() {
+	public float getProbeAlarmHigh() {
 		return mProbeAlarmHigh;
 	}
 
-	public void setProbeAlarmHigh(int probeAlarmHigh) {
+	public void setProbeAlarmHigh(float probeAlarmHigh) {
 		notifyObservers(SENSOR_FIELD_THERMO_PROBE_ALARM_HIGH, mProbeAlarmHigh, probeAlarmHigh);
 
 		mProbeAlarmHigh = probeAlarmHigh;
-		writeAlarmValue(mProbeAlarmHigh, ThermoSensor.BLE_THERMO_SERVICE_UUID_PROBE, ThermoSensor.BLE_THERMO_CHAR_UUID_PROBE_ALARM_HIGH);
+		writeAlarmValue(Float.valueOf(mProbeAlarmHigh).intValue(), ThermoSensor.BLE_THERMO_SERVICE_UUID_PROBE, ThermoSensor.BLE_THERMO_CHAR_UUID_PROBE_ALARM_HIGH);
 	}
 	
 	public boolean isProbeAlarmSet() {

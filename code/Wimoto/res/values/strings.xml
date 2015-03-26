@@ -39,6 +39,7 @@
      <string name="sensor_grow">Wimoto_Grow</string> 
      <string name="sensor_sentry">Wimoto_Sentry</string> 
      <string name="sensor_thermo">Wimoto_Thermo</string> 
+     <string name="sensor_thermo_demo">Wimoto_Thermo_Demo</string> 
      <string name="sensor_water">Wimoto_Water</string> 
      
      <!-- Found sensor screen -->

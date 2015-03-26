@@ -24,8 +24,9 @@ import com.wimoto.app.MainActivity;
 import com.wimoto.app.bluetooth.BluetoothConnection;
 import com.wimoto.app.bluetooth.BluetoothService;
 import com.wimoto.app.bluetooth.BluetoothService.BluetoothServiceListener;
-import com.wimoto.app.model.ClimateSensor;
 import com.wimoto.app.model.Sensor;
+import com.wimoto.app.model.demosensors.ClimateDemoSensor;
+import com.wimoto.app.model.demosensors.ThermoDemoSensor;
 import com.wimoto.app.utils.AppContext;
 
 public class SensorsManager implements BluetoothServiceListener {
@@ -115,11 +116,15 @@ public class SensorsManager implements BluetoothServiceListener {
 	}
 	
 	private void addDemoSensors() {
-//		if (!mSensors.containsKey(ClimateSensor.BLE_CLIMATE_DEMO_MODEL)) {
-//			mSensors.put(ClimateSensor.BLE_CLIMATE_DEMO_MODEL, new ClimateSensor(true));
-//			
-//			Log.e("Total Count with demo", Integer.toString(mSensors.size()));
-//		}
+		if (!mSensors.containsKey(ClimateDemoSensor.SENSOR_CLIMATE_DEMO)) {
+			mSensors.put(ClimateDemoSensor.SENSOR_CLIMATE_DEMO, new ClimateDemoSensor());
+		}
+		
+		if (!mSensors.containsKey(ThermoDemoSensor.SENSOR_THERMO_DEMO)) {
+			mSensors.put(ThermoDemoSensor.SENSOR_THERMO_DEMO, new ThermoDemoSensor());
+		}
+		
+		Log.e("Total Count with demo", Integer.toString(mSensors.size()));
 	}
 	
 	public void registerSensor(Sensor newSensor) {

@@ -14,6 +14,7 @@ import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.NumberPicker;
+import android.widget.NumberPicker.OnValueChangeListener;
 import android.widget.RelativeLayout;
 
 import com.wimoto.app.R;
@@ -27,15 +28,14 @@ public class AlarmPickerView extends RelativeLayout {
 	
 	private Context mContext;
 	private boolean mIsShown;
-	
-	private AlarmPickerListener mListener;
-	
+
 	private String mSensorCharacteristic;
 	
 	private NumberPicker mMinIntegerPicker, mMinFractPicker;
 	private NumberPicker mMaxIntegerPicker, mMaxFractPicker;
 	
 	private float mMinValue, mMaxValue;
+	public int mMinusZero;
 	
 	private int mPickerMinValue;
 	private int mPickerMaxValue;
@@ -121,16 +121,55 @@ public class AlarmPickerView extends RelativeLayout {
         mPickerMinValue = absoluteMinValue;
         mPickerMaxValue = absoluteMaxValue;
         
+        mMinusZero = ((mPickerMinValue < 0) && (mPickerMaxValue >= 0)) ? 1 : 0;
+        
+        final int maxValue = mPickerMaxValue - mPickerMinValue + mMinusZero;
+        
         mMinIntegerPicker.setMinValue(0);
-        mMinIntegerPicker.setMaxValue(mPickerMaxValue - mPickerMinValue);
+        mMinIntegerPicker.setMaxValue(maxValue);
+        
+        mMinIntegerPicker.setOnValueChangedListener(new OnValueChangeListener() {
+			@Override
+			public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
+				if ((oldVal == 0) && (newVal == maxValue)) {
+					mMinIntegerPicker.setValue(0);
+				} else if ((oldVal == maxValue) && (newVal == 0)) {
+					mMinIntegerPicker.setValue(maxValue);
+				}
+			}
+        });
         
         mMaxIntegerPicker.setMinValue(0);
-        mMaxIntegerPicker.setMaxValue(mPickerMaxValue - mPickerMinValue);
+        mMaxIntegerPicker.setMaxValue(maxValue);
         
-        String[] nums = new String[mPickerMaxValue - mPickerMinValue + 1];
+        mMaxIntegerPicker.setOnValueChangedListener(new OnValueChangeListener() {
+			@Override
+			public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
+				if ((oldVal == 0) && (newVal == maxValue)) {
+					mMaxIntegerPicker.setValue(0);
+				} else if ((oldVal == maxValue) && (newVal == 0)) {
+					mMaxIntegerPicker.setValue(maxValue);
+				}
+			}
+        });
+        
+        String[] nums = new String[mPickerMaxValue - mPickerMinValue + 1 + mMinusZero];
         for(int i=0; i<nums.length; i++) {
-        	nums[i] = Integer.toString(i + mPickerMinValue);
+        	if (mMinusZero == 0) {
+        		nums[i] = Integer.toString(i + mPickerMinValue);
+        	} else {
+        		int value = i + mPickerMinValue;
+            	
+        		if (value < 0) {
+        			nums[i] = Integer.toString(i + mPickerMinValue);
+        		} else if (value == 0) {
+        			nums[i] = "-0";
+        		} else if (value > 0) {
+        			nums[i] = Integer.toString(i + mPickerMinValue - 1);
+        		}
+        	}
         }
+        
         mMinIntegerPicker.setDisplayedValues(nums);
         mMaxIntegerPicker.setDisplayedValues(nums);
         
@@ -149,12 +188,12 @@ public class AlarmPickerView extends RelativeLayout {
 		int intMinValue = mMinIntegerPicker.getValue() + mPickerMinValue;
 		int fractMinValue = mMinFractPicker.getValue();
 		
-		mMinValue = (float) (intMinValue + ((float)fractMinValue / 10));
+		mMinValue = (float) ((intMinValue > 0) ? (intMinValue + ((float)fractMinValue / 10) - mMinusZero) : (intMinValue - ((float)fractMinValue / 10)));
 		
 		int intMaxValue = mMaxIntegerPicker.getValue() + mPickerMinValue;
 		int fractMaxValue = mMaxFractPicker.getValue();
 		
-		mMaxValue = (float) (intMaxValue + ((float)fractMaxValue / 10));
+		mMaxValue = (float) ((intMaxValue > 0) ? (intMaxValue + ((float)fractMaxValue / 10) - mMinusZero) : (intMaxValue - ((float)fractMaxValue / 10)));
 		
 		if (mMinValue > mMaxValue) {
 			swapValues();
@@ -172,12 +211,16 @@ public class AlarmPickerView extends RelativeLayout {
 	}
 
 	public void setSelectedMinValue(float selectedMinValue) {
-		mMinValue = selectedMinValue;
+		int tenMultValue = (int) (Math.round(selectedMinValue * 10));
 		
-		int intValue = (int)selectedMinValue;
-		int fractValue = (int) ((selectedMinValue - intValue) * 10);
-		
-		mMinIntegerPicker.setValue(intValue - mPickerMinValue);
+		mMinValue = (float)tenMultValue / 10.0f;
+
+		int intValue = tenMultValue / 10;		
+		int fractValue = Math.abs(tenMultValue) % 10;
+
+		int value = intValue - mPickerMinValue;
+
+		mMinIntegerPicker.setValue((mMinValue < 0) ? value : value + mMinusZero);
 		mMinFractPicker.setValue(fractValue);
 	}
 
@@ -186,12 +229,16 @@ public class AlarmPickerView extends RelativeLayout {
 	}
 
 	public void setSelectedMaxValue(float selectedMaxValue) {
-		mMaxValue = selectedMaxValue;
+		int tenMultValue = (int) (Math.round(selectedMaxValue * 10));
 		
-		int intValue = (int)selectedMaxValue;
-		int fractValue = (int) ((selectedMaxValue - intValue) * 10);
+		mMaxValue = (float)tenMultValue / 10.0f;
 		
-		mMaxIntegerPicker.setValue(intValue - mPickerMinValue);
+		int intValue = tenMultValue / 10;
+		int fractValue = Math.abs(tenMultValue) % 10;
+		
+		int value = intValue - mPickerMinValue;
+		
+		mMaxIntegerPicker.setValue((mMaxValue < 0) ? value : value + mMinusZero);
 		mMaxFractPicker.setValue(fractValue);
 	}
 	

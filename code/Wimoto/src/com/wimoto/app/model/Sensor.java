@@ -13,6 +13,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import android.bluetooth.BluetoothGattCharacteristic;
+import android.util.Log;
 
 import com.couchbase.lite.Database;
 import com.couchbase.lite.Document;
@@ -21,6 +22,7 @@ import com.couchbase.lite.Mapper;
 import com.couchbase.lite.Query;
 import com.couchbase.lite.QueryEnumerator;
 import com.couchbase.lite.View;
+import com.mobitexoft.utils.SHA256Hash;
 import com.mobitexoft.utils.propertyobserver.PropertyObservable;
 import com.wimoto.app.bluetooth.BluetoothConnection;
 import com.wimoto.app.bluetooth.BluetoothConnection.WimotoProfile;
@@ -277,6 +279,7 @@ public class Sensor extends PropertyObservable implements Observer {
 	protected void writeAlarmValue(int alarmValue, String serviceUuidString, String characteristicUuidString) {
 		if (mConnection != null) {
 			BigInteger bigInt = BigInteger.valueOf(alarmValue); 
+			Log.e("", "writeAlarmValue _" + SHA256Hash.toHexString(bigInt.toByteArray()) + " for " + alarmValue);
 			mConnection.writeCharacteristic(serviceUuidString, characteristicUuidString, bigInt.toByteArray());
 		}
 	}
