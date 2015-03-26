@@ -277,7 +277,7 @@ public class BluetoothConnection extends Observable {
 		@Override
 		public void onDescriptorWrite(BluetoothGatt gatt,
 				BluetoothGattDescriptor descriptor, int status) {
-			Log.e("", "onDescriptorWrite " + status);
+			Log.e("", "onDescriptorWrite " + descriptor.getCharacteristic().getUuid() + " _status_" + status);
 			performNextRequest();
 		}
 
