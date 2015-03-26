@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.Observable;
 
 import android.bluetooth.BluetoothGattCharacteristic;
+import android.util.Log;
 
 import com.couchbase.lite.Document;
 import com.wimoto.app.R;
@@ -263,25 +264,33 @@ public class ClimateSensor extends Sensor {
 			
 			String uuid = characteristic.getUuid().toString().toUpperCase();
 			
+			Log.e("", "reads " + uuid);
 			BigInteger bi = new BigInteger(characteristic.getValue());
 			if (uuid.equals(BLE_CLIMATE_CHAR_UUID_TEMPERATURE_CURRENT)) {
+				Log.e("", "reads BLE_CLIMATE_CHAR_UUID_TEMPERATURE_CURRENT " + bi);
 				setTemperature(getPhysicalTemperature(bi));				
 			} else if (uuid.equals(BLE_CLIMATE_CHAR_UUID_LIGHT_CURRENT)) {
 				setLight((float)(0.96 * bi.floatValue()));				
 			} else if (uuid.equals(BLE_CLIMATE_CHAR_UUID_HUMIDITY_CURRENT)) {
-				setHumidity(getPhysicalHumidity(bi));				
+				setHumidity(getPhysicalHumidity(bi));	
+			} else if (uuid.equals(BLE_CLIMATE_CHAR_UUID_TEMPERATURE_ALARM)) {
+				Log.e("", "BLE_CLIMATE_CHAR_UUID_TEMPERATURE_ALARM alarm triggered");
 			} else if (uuid.equals(BLE_CLIMATE_CHAR_UUID_TEMPERATURE_ALARM_SET)) {
 				setTemperatureAlarmSet((bi.floatValue() == 0) ? false:true);
 			} else if (uuid.equals(BLE_CLIMATE_CHAR_UUID_TEMPERATURE_ALARM_LOW)) {
 				setTemperatureAlarmLow(getPhysicalTemperature(bi));
 			} else if (uuid.equals(BLE_CLIMATE_CHAR_UUID_TEMPERATURE_ALARM_HIGH)) {
 				setTemperatureAlarmHigh(getPhysicalTemperature(bi));
+			} else if (uuid.equals(BLE_CLIMATE_CHAR_UUID_HUMIDITY_ALARM)) {
+				Log.e("", "BLE_CLIMATE_CHAR_UUID_HUMIDITY_ALARM alarm triggered");
 			} else if (uuid.equals(BLE_CLIMATE_CHAR_UUID_HUMIDITY_ALARM_SET)) {
 				setHumidityAlarmSet((bi.floatValue() == 0) ? false:true);
 			} else if (uuid.equals(BLE_CLIMATE_CHAR_UUID_HUMIDITY_ALARM_LOW)) {
 				setHumidityAlarmLow(getPhysicalHumidity(bi));
 			} else if (uuid.equals(BLE_CLIMATE_CHAR_UUID_HUMIDITY_ALARM_HIGH)) {
 				setHumidityAlarmHigh(getPhysicalHumidity(bi));
+			} else if (uuid.equals(BLE_CLIMATE_CHAR_UUID_LIGHT_ALARM)) {
+				Log.e("", "BLE_CLIMATE_CHAR_UUID_LIGHT_ALARM alarm triggered");
 			} else if (uuid.equals(BLE_CLIMATE_CHAR_UUID_LIGHT_ALARM_SET)) {
 				setLightAlarmSet((bi.floatValue() == 0) ? false:true);
 			} else if (uuid.equals(BLE_CLIMATE_CHAR_UUID_LIGHT_ALARM_LOW)) {
