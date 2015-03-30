@@ -69,7 +69,6 @@ public class ClimateSensorFragment extends SensorFragment {
 		mTemperatureSparkView.setLineColor(Color.WHITE);
 		
 		mTemperatureTextView = (TextView) mView.findViewById(R.id.temperatureTextView);
-		mTemperatureTextView.setText(Float.toString(((ClimateSensor)mSensor).getTemperature()));
 		
 		mTemperatureAlarmLayout = (LinearLayout) mView.findViewById(R.id.temperatureAlarmLayout);
 		
@@ -110,10 +109,7 @@ public class ClimateSensorFragment extends SensorFragment {
 		});
 		
 		mTemperatureAlarmLowTextView = (TextView) mView.findViewById(R.id.temperatureLowTextView);
-		mTemperatureAlarmLowTextView.setText(Float.toString(((ClimateSensor)mSensor).getTemperatureAlarmLow()));
-		
 		mTemperatureAlarmHighTextView = (TextView) mView.findViewById(R.id.temperatureHighTextView);
-		mTemperatureAlarmHighTextView.setText(Float.toString(((ClimateSensor)mSensor).getTemperatureAlarmHigh()));
 		
 		mHumiditySparkView = (LineSparkView) mView.findViewById(R.id.humiditySparkView);
 		mHumiditySparkView.setValues(mSensor.getLastValues(ClimateSensor.SENSOR_FIELD_CLIMATE_HUMIDITY));
@@ -121,7 +117,6 @@ public class ClimateSensorFragment extends SensorFragment {
 		mHumiditySparkView.setLineColor(Color.WHITE);
 		
 		mHumidityTextView = (TextView) mView.findViewById(R.id.humidityTextView);
-		mHumidityTextView.setText(Float.toString(((ClimateSensor)mSensor).getHumidity()));
 		
 		mHumidityAlarmLayout = (LinearLayout) mView.findViewById(R.id.humidityAlarmLayout);
 		
@@ -161,11 +156,8 @@ public class ClimateSensorFragment extends SensorFragment {
 			}
 		});
 		
-		mHumidityAlarmLowTextView = (TextView) mView.findViewById(R.id.humidityLowTextView);
-		mHumidityAlarmLowTextView.setText(Float.toString(((ClimateSensor)mSensor).getHumidityAlarmLow()));
-		
+		mHumidityAlarmLowTextView = (TextView) mView.findViewById(R.id.humidityLowTextView);		
 		mHumidityAlarmHighTextView = (TextView) mView.findViewById(R.id.humidityHighTextView);
-		mHumidityAlarmHighTextView.setText(Float.toString(((ClimateSensor)mSensor).getHumidityAlarmHigh()));
 		
 		mLightSparkView = (LineSparkView) mView.findViewById(R.id.lightSparkView);
 		mLightSparkView.setValues(mSensor.getLastValues(ClimateSensor.SENSOR_FIELD_CLIMATE_LIGHT));
@@ -173,7 +165,6 @@ public class ClimateSensorFragment extends SensorFragment {
 		mLightSparkView.setLineColor(Color.WHITE);
 		
 		mLightTextView = (TextView) mView.findViewById(R.id.lightTextView);
-		mLightTextView.setText(Float.toString(((ClimateSensor)mSensor).getLight()));
 		
 		mLightAlarmLayout = (LinearLayout) mView.findViewById(R.id.lightAlarmLayout);
 		
@@ -211,11 +202,8 @@ public class ClimateSensorFragment extends SensorFragment {
 			}
 		});
 		
-		mLightAlarmLowTextView = (TextView) mView.findViewById(R.id.lightLowTextView);
-		mLightAlarmLowTextView.setText(Float.toString(((ClimateSensor)mSensor).getLightAlarmLow()));
-		
+		mLightAlarmLowTextView = (TextView) mView.findViewById(R.id.lightLowTextView);		
 		mLightAlarmHighTextView = (TextView) mView.findViewById(R.id.lightHighTextView);
-		mLightAlarmHighTextView.setText(Float.toString(((ClimateSensor)mSensor).getLightAlarmHigh()));
 		
 		getSensorFooterView().setLogo(R.drawable.climate_logo);
 	
@@ -242,20 +230,20 @@ public class ClimateSensorFragment extends SensorFragment {
 		super.setSensor(sensor);
 		
 		if (mSensor != null) {
-			mSensor.addChangeListener(this, ClimateSensor.SENSOR_FIELD_CLIMATE_TEMPERATURE);
+			mSensor.addChangeListener(this, ClimateSensor.SENSOR_FIELD_CLIMATE_TEMPERATURE, true);
 			mSensor.addChangeListener(this, ClimateSensor.SENSOR_FIELD_CLIMATE_TEMPERATURE_ALARM_SET);
-			mSensor.addChangeListener(this, ClimateSensor.SENSOR_FIELD_CLIMATE_TEMPERATURE_ALARM_LOW);
-			mSensor.addChangeListener(this, ClimateSensor.SENSOR_FIELD_CLIMATE_TEMPERATURE_ALARM_HIGH);
+			mSensor.addChangeListener(this, ClimateSensor.SENSOR_FIELD_CLIMATE_TEMPERATURE_ALARM_LOW, true);
+			mSensor.addChangeListener(this, ClimateSensor.SENSOR_FIELD_CLIMATE_TEMPERATURE_ALARM_HIGH, true);
 			
-			mSensor.addChangeListener(this, ClimateSensor.SENSOR_FIELD_CLIMATE_HUMIDITY);
+			mSensor.addChangeListener(this, ClimateSensor.SENSOR_FIELD_CLIMATE_HUMIDITY, true);
 			mSensor.addChangeListener(this, ClimateSensor.SENSOR_FIELD_CLIMATE_HUMIDITY_ALARM_SET);
-			mSensor.addChangeListener(this, ClimateSensor.SENSOR_FIELD_CLIMATE_HUMIDITY_ALARM_LOW);
-			mSensor.addChangeListener(this, ClimateSensor.SENSOR_FIELD_CLIMATE_HUMIDITY_ALARM_HIGH);
+			mSensor.addChangeListener(this, ClimateSensor.SENSOR_FIELD_CLIMATE_HUMIDITY_ALARM_LOW, true);
+			mSensor.addChangeListener(this, ClimateSensor.SENSOR_FIELD_CLIMATE_HUMIDITY_ALARM_HIGH, true);
 			
-			mSensor.addChangeListener(this, ClimateSensor.SENSOR_FIELD_CLIMATE_LIGHT);
+			mSensor.addChangeListener(this, ClimateSensor.SENSOR_FIELD_CLIMATE_LIGHT, true);
 			mSensor.addChangeListener(this, ClimateSensor.SENSOR_FIELD_CLIMATE_LIGHT_ALARM_SET);
-			mSensor.addChangeListener(this, ClimateSensor.SENSOR_FIELD_CLIMATE_LIGHT_ALARM_LOW);
-			mSensor.addChangeListener(this, ClimateSensor.SENSOR_FIELD_CLIMATE_LIGHT_ALARM_HIGH);
+			mSensor.addChangeListener(this, ClimateSensor.SENSOR_FIELD_CLIMATE_LIGHT_ALARM_LOW, true);
+			mSensor.addChangeListener(this, ClimateSensor.SENSOR_FIELD_CLIMATE_LIGHT_ALARM_HIGH, true);
 		}
 	}
 	
