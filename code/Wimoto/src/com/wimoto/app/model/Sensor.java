@@ -10,7 +10,6 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.Set;
 import java.util.Timer;
-import java.util.TimerTask;
 
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.util.Log;
@@ -111,25 +110,25 @@ public class Sensor extends PropertyObservable implements Observer {
 		
 		mConnection = connection;
 		if (mConnection == null) {
-			if (mRssiTimer != null) {
-				mRssiTimer.cancel();
-			}
-			mRssiTimer = null;
+//			if (mRssiTimer != null) {
+//				mRssiTimer.cancel();
+//			}
+//			mRssiTimer = null;
 		} else {
 			mConnection.addObserver(this);
-						
-			if (mRssiTimer == null) {
-				mRssiTimer = new Timer();
-
-				mRssiTimer.schedule(new TimerTask() {
-					@Override
-					public void run() {
-		        		if (mConnection != null) {
-		        			mConnection.readRssi();
-		        		}
-					}
-				}, 0, 1000);
-			}
+//						
+//			if (mRssiTimer == null) {
+//				mRssiTimer = new Timer();
+//
+//				mRssiTimer.schedule(new TimerTask() {
+//					@Override
+//					public void run() {
+//		        		if (mConnection != null) {
+//		        			mConnection.readRssi();
+//		        		}
+//					}
+//				}, 0, 1000);
+//			}
 		}		
 	}
 
@@ -289,7 +288,8 @@ public class Sensor extends PropertyObservable implements Observer {
 	}
 	
 	@Override
-	public void update(Observable observable, Object data) {		
+	public void update(Observable observable, Object data) {
+		Log.e("", "Sensor update");
 		if (data instanceof BluetoothGattCharacteristic) {
 			BluetoothGattCharacteristic characteristic = (BluetoothGattCharacteristic) data;
 			
@@ -326,5 +326,13 @@ public class Sensor extends PropertyObservable implements Observer {
 	
 	public boolean isDemoSensor() {
 		return mIsDemoSensor;
+	}
+	
+	public static float fahrToCels(float fahrValue) {
+		return (fahrValue - 32.0f) * 5.0f / 9.0f;
+	}
+	
+	public static float celsToFahr(float celsValue) {
+		return celsValue * 9.0f / 5.0f + 32.0f; 
 	}
 }

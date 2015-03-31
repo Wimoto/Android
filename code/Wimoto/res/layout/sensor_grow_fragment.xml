@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/color_sensor_grow"
-    android:focusableInTouchMode="true" >
+    android:focusableInTouchMode="true">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -11,11 +11,6 @@
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
         android:orientation="vertical" >
-
-        <include
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            layout="@layout/sensor_screen_header_menu" />
 
         <include
             android:layout_width="match_parent"
@@ -38,39 +33,53 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" >
 
-                    <ImageView
-                        android:layout_width="32dp"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="top"
-                        android:adjustViewBounds="true"
-                        android:src="@drawable/plant_under_sun" />
-
-                    <com.wimoto.app.widgets.sparkline.LineSparkView
-                        android:id="@+id/lightSparkView"
+                    <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
-                        android:layout_gravity="center"
-                        android:layout_marginLeft="5dp"
-                        android:layout_weight="1" />
+                        android:layout_weight="1"
+                        android:orientation="horizontal" >
 
-                    <TextView
-                        android:id="@+id/lightTextView"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_marginLeft="5dp"
-                        android:text="@string/sensor_two_hyphens"
-                        android:textColor="@color/color_white"
-                        android:textSize="33sp" />
+                        <ImageView
+                            android:layout_width="32dp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:adjustViewBounds="true"
+                            android:src="@drawable/plant_under_sun" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="top"
-                        android:layout_marginLeft="5dp"
-                        android:text="@string/sensor_lux"
-                        android:textColor="@color/color_white"
-                        android:textSize="24sp" />
+                        <com.wimoto.app.widgets.sparkline.LineSparkView
+                            android:id="@+id/lightSparkView"
+                            android:layout_width="0dp"
+                            android:layout_height="50dp"
+                            android:layout_gravity="center"
+                            android:layout_marginLeft="10dp"
+                            android:layout_weight="1" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:orientation="horizontal" >
+
+                        <TextView
+                            android:id="@+id/lightTextView"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="center_vertical|right"
+                            android:text="@string/sensor_two_hyphens"
+                            android:textColor="@color/color_white"
+                            android:textSize="42sp" />
+
+                        <TextView
+                            android:layout_width="35dp"
+                            android:layout_height="match_parent"
+                            android:layout_marginLeft="5dp"
+                            android:gravity="top"
+                            android:text="@string/sensor_lux"
+                            android:textColor="@color/color_white"
+                            android:textSize="24sp" />
+                    </LinearLayout>
                 </LinearLayout>
 
                 <LinearLayout
@@ -79,8 +88,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="right"
                     android:layout_marginTop="5dp"
-                    android:orientation="horizontal"
-                    android:visibility="invisible" >
+                    android:orientation="horizontal" >
 
                     <ImageView
                         android:layout_width="32dp"
@@ -94,28 +102,28 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:layout_marginLeft="5dp"
-                        android:checked="true"
+                        android:checked="false"
                         android:clickable="true" />
 
                     <TextView
-                        android:id="@+id/lightHighTextView"
-                        android:layout_width="wrap_content"
+                        android:id="@+id/lightLowTextView"
+                        android:layout_width="50dp"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:layout_marginLeft="10dp"
                         android:gravity="center"
-                        android:text="@string/sensor_hi"
+                        android:text="@string/sensor_lo"
                         android:textColor="@color/color_white"
                         android:textSize="17sp" />
 
                     <TextView
-                        android:id="@+id/lightLowTextView"
-                        android:layout_width="wrap_content"
+                        android:id="@+id/lightHighTextView"
+                        android:layout_width="50dp"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:layout_marginLeft="15dp"
                         android:gravity="center"
-                        android:text="@string/sensor_lo"
+                        android:text="@string/sensor_hi"
                         android:textColor="@color/color_white"
                         android:textSize="17sp" />
                 </LinearLayout>
@@ -132,39 +140,53 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" >
 
-                    <ImageView
-                        android:layout_width="32dp"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="top"
-                        android:adjustViewBounds="true"
-                        android:src="@drawable/plant_under_rain" />
-
-                    <com.wimoto.app.widgets.sparkline.LineSparkView
-                        android:id="@+id/moistureSparkView"
+                    <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
-                        android:layout_gravity="center"
-                        android:layout_marginLeft="5dp"
-                        android:layout_weight="1" />
+                        android:layout_weight="1"
+                        android:orientation="horizontal" >
 
-                    <TextView
-                        android:id="@+id/moistureTextView"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_marginLeft="5dp"
-                        android:text="@string/sensor_two_hyphens"
-                        android:textColor="@color/color_white"
-                        android:textSize="33sp" />
+                        <ImageView
+                            android:layout_width="32dp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:adjustViewBounds="true"
+                            android:src="@drawable/plant_under_rain" />
 
-                    <TextView
-                        android:layout_width="25dp"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="top"
-                        android:layout_marginLeft="5dp"
-                        android:text="@string/sensor_empty"
-                        android:textColor="@color/color_white"
-                        android:textSize="24sp" />
+                        <com.wimoto.app.widgets.sparkline.LineSparkView
+                            android:id="@+id/moistureSparkView"
+                            android:layout_width="0dp"
+                            android:layout_height="50dp"
+                            android:layout_gravity="center"
+                            android:layout_marginLeft="5dp"
+                            android:layout_weight="1" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:orientation="horizontal" >
+
+                        <TextView
+                            android:id="@+id/moistureTextView"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="center_vertical|right"
+                            android:text="@string/sensor_two_hyphens"
+                            android:textColor="@color/color_white"
+                            android:textSize="42sp" />
+
+                        <TextView
+                            android:layout_width="33dp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="top"
+                            android:layout_marginLeft="5dp"
+                            android:text="@string/sensor_empty"
+                            android:textColor="@color/color_white"
+                            android:textSize="24sp" />
+                    </LinearLayout>
                 </LinearLayout>
 
                 <LinearLayout
@@ -173,8 +195,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="right"
                     android:layout_marginTop="5dp"
-                    android:orientation="horizontal"
-                    android:visibility="invisible" >
+                    android:orientation="horizontal" >
 
                     <ImageView
                         android:layout_width="32dp"
@@ -188,28 +209,28 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:layout_marginLeft="5dp"
-                        android:checked="true"
+                        android:checked="false"
                         android:clickable="true" />
 
                     <TextView
-                        android:id="@+id/moistureHighTextView"
-                        android:layout_width="wrap_content"
+                        android:id="@+id/moistureLowTextView"
+                        android:layout_width="50dp"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:layout_marginLeft="10dp"
                         android:gravity="center"
-                        android:text="@string/sensor_hi"
+                        android:text="@string/sensor_lo"
                         android:textColor="@color/color_white"
                         android:textSize="17sp" />
 
                     <TextView
-                        android:id="@+id/moistureLowTextView"
-                        android:layout_width="wrap_content"
+                        android:id="@+id/moistureHighTextView"
+                        android:layout_width="50dp"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:layout_marginLeft="15dp"
                         android:gravity="center"
-                        android:text="@string/sensor_lo"
+                        android:text="@string/sensor_hi"
                         android:textColor="@color/color_white"
                         android:textSize="17sp" />
                 </LinearLayout>
@@ -226,39 +247,53 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" >
 
-                    <ImageView
-                        android:layout_width="32dp"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="top"
-                        android:adjustViewBounds="true"
-                        android:src="@drawable/plant_temperature" />
-
-                    <com.wimoto.app.widgets.sparkline.LineSparkView
-                        android:id="@+id/temperatureSparkView"
+                    <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
-                        android:layout_gravity="center"
-                        android:layout_marginLeft="5dp"
-                        android:layout_weight="1" />
+                        android:layout_weight="1"
+                        android:orientation="horizontal" >
 
-                    <TextView
-                        android:id="@+id/temperatureTextView"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_marginLeft="5dp"
-                        android:text="@string/sensor_two_hyphens"
-                        android:textColor="@color/color_white"
-                        android:textSize="33sp" />
+                        <ImageView
+                            android:layout_width="32dp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:adjustViewBounds="true"
+                            android:src="@drawable/plant_temperature" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="top"
-                        android:layout_marginLeft="5dp"
-                        android:text="@string/sensor_celsius"
-                        android:textColor="@color/color_white"
-                        android:textSize="24sp" />
+                        <com.wimoto.app.widgets.sparkline.LineSparkView
+                            android:id="@+id/temperatureSparkView"
+                            android:layout_width="0dp"
+                            android:layout_height="50dp"
+                            android:layout_gravity="center"
+                            android:layout_marginLeft="5dp"
+                            android:layout_weight="1" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:orientation="horizontal" >
+
+                        <TextView
+                            android:id="@+id/temperatureTextView"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="center_vertical|right"
+                            android:text="@string/sensor_two_hyphens"
+                            android:textColor="@color/color_white"
+                            android:textSize="42sp" />
+
+                        <TextView
+                            android:layout_width="35dp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="top"
+                            android:layout_marginLeft="5dp"
+                            android:text="@string/sensor_celsius"
+                            android:textColor="@color/color_white"
+                            android:textSize="24sp" />
+                    </LinearLayout>
                 </LinearLayout>
 
                 <LinearLayout
@@ -267,8 +302,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="right"
                     android:layout_marginTop="5dp"
-                    android:orientation="horizontal"
-                    android:visibility="invisible" >
+                    android:orientation="horizontal" >
 
                     <ImageView
                         android:layout_width="32dp"
@@ -282,28 +316,28 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:layout_marginLeft="5dp"
-                        android:checked="true"
+                        android:checked="false"
                         android:clickable="true" />
 
                     <TextView
-                        android:id="@+id/temperatureHighTextView"
-                        android:layout_width="wrap_content"
+                        android:id="@+id/temperatureLowTextView"
+                        android:layout_width="50sp"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:layout_marginLeft="10dp"
                         android:gravity="center"
-                        android:text="@string/sensor_hi"
+                        android:text="@string/sensor_lo"
                         android:textColor="@color/color_white"
                         android:textSize="17sp" />
 
                     <TextView
-                        android:id="@+id/temperatureLowTextView"
-                        android:layout_width="wrap_content"
+                        android:id="@+id/temperatureHighTextView"
+                        android:layout_width="50sp"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:layout_marginLeft="15dp"
                         android:gravity="center"
-                        android:text="@string/sensor_lo"
+                        android:text="@string/sensor_hi"
                         android:textColor="@color/color_white"
                         android:textSize="17sp" />
                 </LinearLayout>

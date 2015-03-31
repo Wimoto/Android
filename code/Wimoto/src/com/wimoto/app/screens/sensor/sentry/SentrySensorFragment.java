@@ -1,6 +1,7 @@
 package com.wimoto.app.screens.sensor.sentry;
 
 import java.beans.PropertyChangeEvent;
+import java.util.Locale;
 
 import android.graphics.Color;
 import android.os.Bundle;
@@ -11,17 +12,14 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.wimoto.app.R;
-import com.wimoto.app.dialogs.AlarmSliderDialog;
-import com.wimoto.app.dialogs.AlarmSliderDialog.AlarmSliderDialogListener;
 import com.wimoto.app.model.Sensor;
 import com.wimoto.app.model.SentrySensor;
 import com.wimoto.app.screens.sensor.SensorFragment;
-import com.wimoto.app.screens.sensor.views.SensorFooterView;
 import com.wimoto.app.widgets.AnimationSwitch;
 import com.wimoto.app.widgets.AnimationSwitch.OnCheckedChangeListener;
 import com.wimoto.app.widgets.sparkline.LineSparkView;
 
-public class SentrySensorFragment extends SensorFragment implements AlarmSliderDialogListener {
+public class SentrySensorFragment extends SensorFragment {
 	
 	//private TextView mAccelerometerTextView;
 	private TextView mInfraredTextView;
@@ -48,34 +46,34 @@ public class SentrySensorFragment extends SensorFragment implements AlarmSliderD
 		mAccelerometerSparkView = (LineSparkView) mView.findViewById(R.id.accelerometerSparkView);
 		mAccelerometerSparkView.setValues(mSensor.getLastValues(SentrySensor.SENSOR_FIELD_SENTRY_ACCELEROMETER));
 		mAccelerometerSparkView.setBackgroundColor(Color.TRANSPARENT);
-		mAccelerometerSparkView.setLineColor(Color.BLACK);
+		mAccelerometerSparkView.setLineColor(Color.WHITE);
 		
 		//mAccelerometerTextView = (TextView) mView.findViewById(R.id.accelerometerTextView);
 		
 		mAccelerometerAlarmLayout = (LinearLayout) mView.findViewById(R.id.accelerometerAlarmLayout);
+		
 		mAccelerometerSwitch = (AnimationSwitch)mView.findViewById(R.id.accelerometer_switch);
 		mAccelerometerSwitch.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 			@Override
 			public void onCheckedChanged(AnimationSwitch view, boolean isChecked) {
-				SentrySensor sentrySensor = (SentrySensor) mSensor;
-				sentrySensor.setAccelerometerAlarmSet(isChecked);
+				((SentrySensor)mSensor).setAccelerometerAlarmSet(isChecked);
 			}
 		});
 		
 		mInfraredSparkView = (LineSparkView) mView.findViewById(R.id.infraredSparkView);
 		mInfraredSparkView.setValues(mSensor.getLastValues(SentrySensor.SENSOR_FIELD_SENTRY_PASSIVE_INFRARED));
 		mInfraredSparkView.setBackgroundColor(Color.TRANSPARENT);
-		mInfraredSparkView.setLineColor(Color.BLACK);
+		mInfraredSparkView.setLineColor(Color.WHITE);
 		
 		mInfraredTextView = (TextView) mView.findViewById(R.id.infraredTextView);
+		mInfraredTextView.setText(Float.toString(((SentrySensor)mSensor).getInfrared()));
 		
 		mInfraredAlarmLayout = (LinearLayout) mView.findViewById(R.id.infraredAlarmLayout);
 		mInfraredSwitch = (AnimationSwitch)mView.findViewById(R.id.infrared_switch);
 		mInfraredSwitch.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 			@Override
 			public void onCheckedChanged(AnimationSwitch view, boolean isChecked) {
-				SentrySensor sentrySensor = (SentrySensor) mSensor;
-				sentrySensor.setInfraredAlarmSet(isChecked);
+				((SentrySensor)mSensor).setInfraredAlarmSet(isChecked);
 			}
 		});
 		
@@ -95,11 +93,7 @@ public class SentrySensorFragment extends SensorFragment implements AlarmSliderD
 			mSensor.addChangeListener(this, SentrySensor.SENSOR_FIELD_SENTRY_PASSIVE_INFRARED_ALARM_SET);
 		}
 	}
-	
-	protected AlarmSliderDialogListener self() {
-		return this;
-	}
-	
+
 	@Override
 	protected int getBackgroundColorRes() {
 		return R.color.color_sensor_sentry;
@@ -128,7 +122,7 @@ public class SentrySensorFragment extends SensorFragment implements AlarmSliderD
 					//mAccelerometerTextView.setText(String.format("%.01f", event.getNewValue()));
 					mAccelerometerSparkView.invalidate();
 				} else if (SentrySensor.SENSOR_FIELD_SENTRY_PASSIVE_INFRARED.equals(propertyName)) {
-					mInfraredTextView.setText(String.format("%.01f", event.getNewValue()));
+					mInfraredTextView.setText(String.format(Locale.US, "%.01f", event.getNewValue()));
 				} else if (SentrySensor.SENSOR_FIELD_SENTRY_ACCELEROMETER_ALARM_SET.equals(propertyName)) {
 					mAccelerometerSwitch.setChecked(((Boolean)event.getNewValue()).booleanValue());
 				} else if (SentrySensor.SENSOR_FIELD_SENTRY_PASSIVE_INFRARED_ALARM_SET.equals(propertyName)) {
@@ -136,19 +130,5 @@ public class SentrySensorFragment extends SensorFragment implements AlarmSliderD
 				} 
 			}
 		});
-	}
-	
-	@Override
-	public void onSave(AlarmSliderDialog dialog) {
-		SentrySensor sentrySensor = (SentrySensor) mSensor;
-		
-		String sensorCharacteristic = dialog.getSensorCharacteristic();
-		if (SentrySensor.SENSOR_FIELD_SENTRY_ACCELEROMETER.equals(sensorCharacteristic)) {
-			//sentrySensor.setAccelerometerAlarmLow((int)dialog.getSelectedMinValue());
-			//sentrySensor.setAccelerometerAlarmHigh((int)dialog.getSelectedMaxValue());
-		} else if (SentrySensor.SENSOR_FIELD_SENTRY_PASSIVE_INFRARED.equals(sensorCharacteristic)) {
-			//sentrySensor.setInfraredAlarmLow((int)dialog.getSelectedMinValue());
-			//sentrySensor.setInfraredAlarmHigh((int)dialog.getSelectedMaxValue());
-		} 
 	}
 }

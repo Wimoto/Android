@@ -55,16 +55,16 @@ public class GrowSensor extends Sensor {
 	private float mTemperature;
 	
 	private boolean mLightAlarmSet;
-	private int mLightAlarmLow;
-	private int mLightAlarmHigh;
+	private float mLightAlarmLow;
+	private float mLightAlarmHigh;
 
 	private boolean mMoistureAlarmSet;
-	private int mMoistureAlarmLow;
-	private int mMoistureAlarmHigh;
+	private float mMoistureAlarmLow;
+	private float mMoistureAlarmHigh;
 
 	private boolean mTemperatureAlarmSet;
-	private int mTemperatureAlarmLow;
-	private int mTemperatureAlarmHigh;
+	private float mTemperatureAlarmLow;
+	private float mTemperatureAlarmHigh;
 	
 	public GrowSensor() {
 		super();
@@ -168,26 +168,26 @@ public class GrowSensor extends Sensor {
 		enableAlarm(mLightAlarmSet, BLE_GROW_SERVICE_UUID_LIGHT, BLE_GROW_CHAR_UUID_LIGHT_ALARM_SET);
 	}
 
-	public int getLightAlarmLow() {
+	public float getLightAlarmLow() {
 		return mLightAlarmLow;
 	}
 
-	public void setLightAlarmLow(int lightAlarmLow) {
+	public void setLightAlarmLow(float lightAlarmLow) {
 		notifyObservers(SENSOR_FIELD_GROW_LIGHT_ALARM_LOW, mLightAlarmLow, lightAlarmLow);
 		
 		mLightAlarmLow = lightAlarmLow;
-		writeAlarmValue(mLightAlarmLow, GrowSensor.BLE_GROW_SERVICE_UUID_LIGHT, GrowSensor.BLE_GROW_CHAR_UUID_LIGHT_ALARM_LOW);
+		writeAlarmValue(Float.valueOf(mLightAlarmLow).intValue(), GrowSensor.BLE_GROW_SERVICE_UUID_LIGHT, GrowSensor.BLE_GROW_CHAR_UUID_LIGHT_ALARM_LOW);
 	}
 
-	public int getLightAlarmHigh() {
+	public float getLightAlarmHigh() {
 		return mLightAlarmHigh;
 	}
 
-	public void setLightAlarmHigh(int lightAlarmHigh) {
+	public void setLightAlarmHigh(float lightAlarmHigh) {
 		notifyObservers(SENSOR_FIELD_GROW_LIGHT_ALARM_HIGH, mLightAlarmHigh, lightAlarmHigh);
 		
 		mLightAlarmHigh = lightAlarmHigh;
-		writeAlarmValue(mLightAlarmHigh, GrowSensor.BLE_GROW_SERVICE_UUID_LIGHT, GrowSensor.BLE_GROW_CHAR_UUID_LIGHT_ALARM_HIGH);
+		writeAlarmValue(Float.valueOf(mLightAlarmHigh).intValue(), GrowSensor.BLE_GROW_SERVICE_UUID_LIGHT, GrowSensor.BLE_GROW_CHAR_UUID_LIGHT_ALARM_HIGH);
 	}
 	
 	public boolean isMoistureAlarmSet() {
@@ -201,26 +201,26 @@ public class GrowSensor extends Sensor {
 		enableAlarm(mMoistureAlarmSet, BLE_GROW_SERVICE_UUID_MOISTURE, BLE_GROW_CHAR_UUID_MOISTURE_ALARM_SET);
 	}
 
-	public int getMoistureAlarmLow() {
+	public float getMoistureAlarmLow() {
 		return mMoistureAlarmLow;
 	}
 
-	public void setMoistureAlarmLow(int moistureAlarmLow) {
+	public void setMoistureAlarmLow(float moistureAlarmLow) {
 		notifyObservers(SENSOR_FIELD_GROW_MOISTURE_ALARM_LOW, mMoistureAlarmLow, moistureAlarmLow);
 		
 		mMoistureAlarmLow = moistureAlarmLow;
-		writeAlarmValue(mMoistureAlarmLow, GrowSensor.BLE_GROW_SERVICE_UUID_MOISTURE, GrowSensor.BLE_GROW_CHAR_UUID_MOISTURE_ALARM_LOW);
+		writeAlarmValue(Float.valueOf(mMoistureAlarmLow).intValue(), GrowSensor.BLE_GROW_SERVICE_UUID_MOISTURE, GrowSensor.BLE_GROW_CHAR_UUID_MOISTURE_ALARM_LOW);
 	}
 
-	public int getMoistureAlarmHigh() {
+	public float getMoistureAlarmHigh() {
 		return mMoistureAlarmHigh;
 	}
 
-	public void setMoistureAlarmHigh(int moistureAlarmHigh) {
+	public void setMoistureAlarmHigh(float moistureAlarmHigh) {
 		notifyObservers(SENSOR_FIELD_GROW_MOISTURE_ALARM_HIGH, mMoistureAlarmHigh, moistureAlarmHigh);
 		
 		mMoistureAlarmHigh = moistureAlarmHigh;
-		writeAlarmValue(mMoistureAlarmHigh, GrowSensor.BLE_GROW_SERVICE_UUID_MOISTURE, GrowSensor.BLE_GROW_CHAR_UUID_MOISTURE_ALARM_HIGH);
+		writeAlarmValue(Float.valueOf(mMoistureAlarmHigh).intValue(), GrowSensor.BLE_GROW_SERVICE_UUID_MOISTURE, GrowSensor.BLE_GROW_CHAR_UUID_MOISTURE_ALARM_HIGH);
 	}
 	
 	public boolean isTemperatureAlarmSet() {
@@ -234,26 +234,26 @@ public class GrowSensor extends Sensor {
 		enableAlarm(temperatureAlarmSet, BLE_GROW_SERVICE_UUID_TEMPERATURE, BLE_GROW_CHAR_UUID_TEMPERATURE_ALARM_SET);
 	}
 
-	public int getTemperatureAlarmLow() {
+	public float getTemperatureAlarmLow() {
 		return mTemperatureAlarmLow;
 	}
 
-	public void setTemperatureAlarmLow(int temperatureAlarmLow) {
+	public void setTemperatureAlarmLow(float temperatureAlarmLow) {
 		notifyObservers(SENSOR_FIELD_GROW_TEMPERATURE_ALARM_LOW, mTemperatureAlarmLow, temperatureAlarmLow);
 		
 		mTemperatureAlarmLow = temperatureAlarmLow;
-		writeAlarmValue(mTemperatureAlarmLow, GrowSensor.BLE_GROW_SERVICE_UUID_TEMPERATURE, GrowSensor.BLE_GROW_CHAR_UUID_TEMPERATURE_ALARM_LOW);
+		writeAlarmValue(Float.valueOf(mTemperatureAlarmLow).intValue(), GrowSensor.BLE_GROW_SERVICE_UUID_TEMPERATURE, GrowSensor.BLE_GROW_CHAR_UUID_TEMPERATURE_ALARM_LOW);
 	}
 
-	public int getTemperatureAlarmHigh() {
+	public float getTemperatureAlarmHigh() {
 		return mTemperatureAlarmHigh;
 	}
 
-	public void setTemperatureAlarmHigh(int temperatureAlarmHigh) {
+	public void setTemperatureAlarmHigh(float temperatureAlarmHigh) {
 		notifyObservers(SENSOR_FIELD_GROW_TEMPERATURE_ALARM_HIGH, mTemperatureAlarmLow, temperatureAlarmHigh);
 		
 		mTemperatureAlarmLow = temperatureAlarmHigh;
-		writeAlarmValue(temperatureAlarmHigh, GrowSensor.BLE_GROW_SERVICE_UUID_TEMPERATURE, GrowSensor.BLE_GROW_CHAR_UUID_TEMPERATURE_ALARM_HIGH);
+		writeAlarmValue(Float.valueOf(temperatureAlarmHigh).intValue(), GrowSensor.BLE_GROW_SERVICE_UUID_TEMPERATURE, GrowSensor.BLE_GROW_CHAR_UUID_TEMPERATURE_ALARM_HIGH);
 	}
 	
 	@Override

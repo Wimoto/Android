@@ -55,7 +55,6 @@ public class ClimateSensorFragment extends SensorFragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		mView  = (ViewGroup) inflater.inflate(R.layout.sensor_climate_fragment, null);
-		
 		return super.onCreateView(inflater, container, savedInstanceState);
 	}
 

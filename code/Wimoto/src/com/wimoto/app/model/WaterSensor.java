@@ -40,8 +40,8 @@ public class WaterSensor extends Sensor {
 	private boolean mContactAlarmSet;
 
 	private boolean mLevelAlarmSet;
-	private int mLevelAlarmLow;
-	private int mLevelAlarmHigh;
+	private float mLevelAlarmLow;
+	private float mLevelAlarmHigh;
 	
 	public WaterSensor() {
 		super();
@@ -137,26 +137,26 @@ public class WaterSensor extends Sensor {
 		enableAlarm(mLevelAlarmSet, BLE_WATER_SERVICE_UUID_LEVEL, BLE_WATER_CHAR_UUID_LEVEL_ALARM_SET);
 	}
 	
-	public int getLevelAlarmLow() {
+	public float getLevelAlarmLow() {
 		return mLevelAlarmLow;
 	}
 
-	public void setLevelAlarmLow(int levelAlarmLow) {
+	public void setLevelAlarmLow(float levelAlarmLow) {
 		notifyObservers(SENSOR_FIELD_WATER_LEVEL_ALARM_LOW, mLevelAlarmLow, levelAlarmLow);
 		
 		mLevelAlarmLow = levelAlarmLow;
-		writeAlarmValue(mLevelAlarmLow, WaterSensor.SENSOR_FIELD_WATER_LEVEL_ALARM_LOW, WaterSensor.BLE_WATER_CHAR_UUID_LEVEL_ALARM_LOW);	
+		writeAlarmValue(Float.valueOf(mLevelAlarmLow).intValue(), WaterSensor.SENSOR_FIELD_WATER_LEVEL_ALARM_LOW, WaterSensor.BLE_WATER_CHAR_UUID_LEVEL_ALARM_LOW);	
 	}
 
-	public int getLevelAlarmHigh() {
+	public float getLevelAlarmHigh() {
 		return mLevelAlarmHigh;
 	}
 
-	public void setLevelAlarmHigh(int levelAlarmHigh) {
+	public void setLevelAlarmHigh(float levelAlarmHigh) {
 		notifyObservers(SENSOR_FIELD_WATER_LEVEL_ALARM_HIGH, mLevelAlarmHigh, levelAlarmHigh);
 		
 		mLevelAlarmHigh = levelAlarmHigh;
-		writeAlarmValue(mLevelAlarmHigh, WaterSensor.SENSOR_FIELD_WATER_LEVEL_ALARM_HIGH, WaterSensor.BLE_WATER_CHAR_UUID_LEVEL_ALARM_HIGH);
+		writeAlarmValue(Float.valueOf(mLevelAlarmHigh).intValue(), WaterSensor.SENSOR_FIELD_WATER_LEVEL_ALARM_HIGH, WaterSensor.BLE_WATER_CHAR_UUID_LEVEL_ALARM_HIGH);
 	}
 	
 	@Override

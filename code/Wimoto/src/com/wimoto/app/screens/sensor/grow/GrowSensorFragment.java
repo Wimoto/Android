@@ -1,6 +1,7 @@
 package com.wimoto.app.screens.sensor.grow;
 
 import java.beans.PropertyChangeEvent;
+import java.util.Locale;
 
 import android.graphics.Color;
 import android.os.Bundle;
@@ -11,17 +12,16 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.wimoto.app.R;
-import com.wimoto.app.dialogs.AlarmSliderDialog;
-import com.wimoto.app.dialogs.AlarmSliderDialog.AlarmSliderDialogListener;
 import com.wimoto.app.model.GrowSensor;
 import com.wimoto.app.model.Sensor;
 import com.wimoto.app.screens.sensor.SensorFragment;
-import com.wimoto.app.screens.sensor.views.SensorFooterView;
+import com.wimoto.app.widgets.AlarmPickerView;
+import com.wimoto.app.widgets.AlarmPickerView.AlarmPickerListener;
 import com.wimoto.app.widgets.AnimationSwitch;
 import com.wimoto.app.widgets.AnimationSwitch.OnCheckedChangeListener;
 import com.wimoto.app.widgets.sparkline.LineSparkView;
 
-public class GrowSensorFragment extends SensorFragment implements AlarmSliderDialogListener {
+public class GrowSensorFragment extends SensorFragment {
 	
 	private TextView mLightTextView;
 	private TextView mMoistureTextView;
@@ -48,6 +48,10 @@ public class GrowSensorFragment extends SensorFragment implements AlarmSliderDia
 	private TextView mTemperatureAlarmLowTextView;
 	private TextView mTemperatureAlarmHighTextView;
 	
+	private AlarmPickerView mAlarmLightPickerView;
+	private AlarmPickerView mAlarmMoisturePickerView;
+	private AlarmPickerView mAlarmTemperaturePickerView;
+	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		mView  = (ViewGroup)inflater.inflate(R.layout.sensor_grow_fragment, null);
@@ -61,80 +65,156 @@ public class GrowSensorFragment extends SensorFragment implements AlarmSliderDia
 		mLightSparkView = (LineSparkView) mView.findViewById(R.id.lightSparkView);
 		mLightSparkView.setValues(mSensor.getLastValues(GrowSensor.SENSOR_FIELD_GROW_LIGHT));
 		mLightSparkView.setBackgroundColor(Color.TRANSPARENT);
-		mLightSparkView.setLineColor(Color.BLACK);
+		mLightSparkView.setLineColor(Color.WHITE);
 		
 		mLightTextView = (TextView) mView.findViewById(R.id.lightTextView);
+		mLightTextView.setText(Float.toString(((GrowSensor)mSensor).getLight()));
 		
 		mLightAlarmLayout = (LinearLayout) mView.findViewById(R.id.lightAlarmLayout);
+		
+		mAlarmLightPickerView = new AlarmPickerView(getActivity(), GrowSensor.SENSOR_FIELD_GROW_LIGHT, -60, 130, 
+				new AlarmPickerListener() {
+			@Override
+			public void onSave(float lowerValue, float upperValue) {
+				mView.removeView(mAlarmLightPickerView);
+				
+				GrowSensor growSensor = (GrowSensor) mSensor;
+				growSensor.setLightAlarmSet(true);
+				
+				growSensor.setLightAlarmLow(lowerValue);
+				growSensor.setLightAlarmHigh(upperValue);
+			}
+			
+			@Override
+			public void onCancel() {
+				mView.removeView(mAlarmLightPickerView);
+				
+				GrowSensor growSensor = (GrowSensor) mSensor;
+				growSensor.setLightAlarmSet(false);	
+			}
+		});
+		
 		mLightSwitch = (AnimationSwitch)mView.findViewById(R.id.light_switch);
 		mLightSwitch.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 			@Override
 			public void onCheckedChanged(AnimationSwitch view, boolean isChecked) {
-				GrowSensor growSensor = (GrowSensor) mSensor;
-				growSensor.setLightAlarmSet(isChecked);
-				
 				if (isChecked) {
-					AlarmSliderDialog lightSlider = new AlarmSliderDialog(getActivity(), GrowSensor.SENSOR_FIELD_GROW_LIGHT, self(), -60, 130);
-					lightSlider.setSelectedMinValue(growSensor.getLightAlarmLow());
-					lightSlider.setSelectedMaxValue(growSensor.getLightAlarmHigh());
-					lightSlider.create().show();
+					showLightPickerView();
+				} else {
+					mView.removeView(mAlarmLightPickerView);
+					
+					((GrowSensor)mSensor).setLightAlarmSet(false);
 				}
 			}
 		});
 		
 		mLightAlarmLowTextView = (TextView) mView.findViewById(R.id.lightLowTextView);
+		mLightAlarmLowTextView.setText(Float.toString(((GrowSensor)mSensor).getLightAlarmLow()));
+		
 		mLightAlarmHighTextView = (TextView) mView.findViewById(R.id.lightHighTextView);
+		mLightAlarmHighTextView.setText(Float.toString(((GrowSensor)mSensor).getLightAlarmHigh()));
 		
 		mMoistureSparkView = (LineSparkView) mView.findViewById(R.id.moistureSparkView);
 		mMoistureSparkView.setValues(mSensor.getLastValues(GrowSensor.SENSOR_FIELD_GROW_MOISTURE));
 		mMoistureSparkView.setBackgroundColor(Color.TRANSPARENT);
-		mMoistureSparkView.setLineColor(Color.BLACK);
+		mMoistureSparkView.setLineColor(Color.WHITE);
 		
 		mMoistureTextView = (TextView) mView.findViewById(R.id.moistureTextView);
+		mMoistureTextView.setText(Float.toString(((GrowSensor)mSensor).getMoisture()));
 		
 		mMoistureAlarmLayout = (LinearLayout) mView.findViewById(R.id.moistureAlarmLayout);
+		
+		mAlarmMoisturePickerView = new AlarmPickerView(getActivity(), GrowSensor.SENSOR_FIELD_GROW_MOISTURE, 10, 50, 
+				new AlarmPickerListener() {
+			@Override
+			public void onSave(float lowerValue, float upperValue) {
+				mView.removeView(mAlarmMoisturePickerView);
+				
+				GrowSensor growSensor = (GrowSensor) mSensor;
+				growSensor.setMoistureAlarmSet(true);
+				
+				growSensor.setMoistureAlarmLow(lowerValue);
+				growSensor.setMoistureAlarmHigh(upperValue);
+			}
+			
+			@Override
+			public void onCancel() {
+				mView.removeView(mAlarmMoisturePickerView);
+				
+				GrowSensor growSensor = (GrowSensor) mSensor;
+				growSensor.setMoistureAlarmSet(false);	
+			}
+		});
+		
 		mMoistureSwitch = (AnimationSwitch)mView.findViewById(R.id.moisture_switch);
 		mMoistureSwitch.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 			@Override
 			public void onCheckedChanged(AnimationSwitch view, boolean isChecked) {
-				GrowSensor growSensor = (GrowSensor) mSensor;
-				growSensor.setMoistureAlarmSet(isChecked);
-
 				if (isChecked) {
-					AlarmSliderDialog moistureSlider = new AlarmSliderDialog(getActivity(), GrowSensor.SENSOR_FIELD_GROW_MOISTURE, self(), 10, 50);
-					moistureSlider.setSelectedMinValue(growSensor.getMoistureAlarmLow());
-					moistureSlider.setSelectedMaxValue(growSensor.getMoistureAlarmHigh());
-					moistureSlider.create().show();
+					showMoisturePickerView();
+				} else {
+					mView.removeView(mAlarmMoisturePickerView);
+					
+					((GrowSensor)mSensor).setMoistureAlarmSet(false);
 				}
 			}
 		});
 		
 		mMoistureAlarmLowTextView = (TextView) mView.findViewById(R.id.moistureLowTextView);
+		mMoistureAlarmLowTextView.setText(Float.toString(((GrowSensor)mSensor).getMoistureAlarmLow()));
+		
 		mMoistureAlarmHighTextView = (TextView) mView.findViewById(R.id.moistureHighTextView);
+		mMoistureAlarmHighTextView.setText(Float.toString(((GrowSensor)mSensor).getMoistureAlarmHigh()));
 		
 		mTemperatureSparkView = (LineSparkView) mView.findViewById(R.id.temperatureSparkView);
 		mTemperatureSparkView.setValues(mSensor.getLastValues(GrowSensor.SENSOR_FIELD_GROW_TEMPERATURE));
 		mTemperatureSparkView.setBackgroundColor(Color.TRANSPARENT);
-		mTemperatureSparkView.setLineColor(Color.BLACK);
+		mTemperatureSparkView.setLineColor(Color.WHITE);
 		
 		mTemperatureTextView = (TextView) mView.findViewById(R.id.temperatureTextView);
+		mTemperatureTextView.setText(Float.toString(((GrowSensor)mSensor).getTemperature()));
 		
 		mTemperatureAlarmLayout = (LinearLayout) mView.findViewById(R.id.temperatureAlarmLayout);
+		
+		mAlarmTemperaturePickerView = new AlarmPickerView(getActivity(), GrowSensor.SENSOR_FIELD_GROW_MOISTURE, 10, 50,
+				new AlarmPickerListener() {
+			@Override
+			public void onSave(float lowerValue, float upperValue) {
+				mView.removeView(mAlarmTemperaturePickerView);
+				
+				GrowSensor growSensor = (GrowSensor) mSensor;
+				growSensor.setLightAlarmSet(true);
+				
+				growSensor.setTemperatureAlarmLow(lowerValue);
+				growSensor.setTemperatureAlarmHigh(upperValue);
+			}
+			
+			@Override
+			public void onCancel() {
+				mView.removeView(mAlarmTemperaturePickerView);
+				
+				GrowSensor growSensor = (GrowSensor) mSensor;
+				growSensor.setTemperatureAlarmSet(false);	
+			}
+		});
+		
 		mTemperatureSwitch = (AnimationSwitch)mView.findViewById(R.id.temperature_switch);
 		mTemperatureSwitch.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 			@Override
 			public void onCheckedChanged(AnimationSwitch view, boolean isChecked) {
-				GrowSensor growSensor = (GrowSensor) mSensor;
-				growSensor.setTemperatureAlarmSet(isChecked);
-				
 				if (isChecked) {
-					AlarmSliderDialog temperatureSlider = new AlarmSliderDialog(getActivity(), GrowSensor.SENSOR_FIELD_GROW_TEMPERATURE, self(), 10, 50);
-					temperatureSlider.setSelectedMinValue(growSensor.getTemperatureAlarmLow());
-					temperatureSlider.setSelectedMaxValue(growSensor.getTemperatureAlarmHigh());
-					temperatureSlider.create().show();
+					showTemperaturePickerView();
+				} else {
+					((GrowSensor)mSensor).setTemperatureAlarmSet(false);
 				}
 			}
 		});
+		
+		mTemperatureAlarmLowTextView = (TextView) mView.findViewById(R.id.temperatureLowTextView);
+		mTemperatureAlarmLowTextView.setText(Float.toString(((GrowSensor)mSensor).getLightAlarmLow()));
+		
+		mTemperatureAlarmHighTextView = (TextView) mView.findViewById(R.id.temperatureHighTextView);
+		mTemperatureAlarmHighTextView.setText(Float.toString(((GrowSensor)mSensor).getLightAlarmHigh()));
 		
 		getSensorFooterView().setLogo(R.drawable.grow_logo);
 	}
@@ -159,10 +239,6 @@ public class GrowSensorFragment extends SensorFragment implements AlarmSliderDia
 			mSensor.addChangeListener(this, GrowSensor.SENSOR_FIELD_GROW_TEMPERATURE_ALARM_LOW);
 			mSensor.addChangeListener(this, GrowSensor.SENSOR_FIELD_GROW_TEMPERATURE_ALARM_HIGH);
 		}
-	}
-	
-	protected AlarmSliderDialogListener self() {
-		return this;
 	}
 	
 	@Override
@@ -193,49 +269,59 @@ public class GrowSensorFragment extends SensorFragment implements AlarmSliderDia
 	        			mTemperatureAlarmLayout.setVisibility(View.VISIBLE);
 					}
 				} else if (GrowSensor.SENSOR_FIELD_GROW_LIGHT.equals(propertyName)) {
-					mLightTextView.setText(String.format("%.01f", event.getNewValue()));
+					mLightTextView.setText(String.format(Locale.US, "%.01f", event.getNewValue()));
 					mLightSparkView.invalidate();
 				} else if (GrowSensor.SENSOR_FIELD_GROW_MOISTURE.equals(propertyName)) {
-					mMoistureTextView.setText(String.format("%.01f", event.getNewValue()));
+					mMoistureTextView.setText(String.format(Locale.US, "%.01f", event.getNewValue()));
 				} else if (GrowSensor.SENSOR_FIELD_GROW_TEMPERATURE.equals(propertyName)) {
-					mTemperatureTextView.setText(String.format("%.00f", event.getNewValue()));
+					mTemperatureTextView.setText(String.format(Locale.US, "%.01f", event.getNewValue()));
 				} else if (GrowSensor.SENSOR_FIELD_GROW_LIGHT_ALARM_SET.equals(propertyName)) {
 					mLightSwitch.setChecked(((Boolean)event.getNewValue()).booleanValue());
 				} else if (GrowSensor.SENSOR_FIELD_GROW_LIGHT_ALARM_LOW.equals(propertyName)) {
-					mLightAlarmLowTextView.setText(event.getNewValue()  + "");
+					mLightAlarmLowTextView.setText(String.format(Locale.US, "%.01f", event.getNewValue()));
 				} else if (GrowSensor.SENSOR_FIELD_GROW_LIGHT_ALARM_HIGH.equals(propertyName)) {
-					mLightAlarmHighTextView.setText(event.getNewValue() + "");
+					mLightAlarmHighTextView.setText(String.format(Locale.US, "%.01f", event.getNewValue()));
 				} else if (GrowSensor.SENSOR_FIELD_GROW_MOISTURE_ALARM_SET.equals(propertyName)) {
 					mMoistureSwitch.setChecked(((Boolean)event.getNewValue()).booleanValue());
 				} else if (GrowSensor.SENSOR_FIELD_GROW_MOISTURE_ALARM_LOW.equals(propertyName)) {
-					mMoistureAlarmLowTextView.setText(event.getNewValue()  + "");
+					mMoistureAlarmLowTextView.setText(String.format(Locale.US, "%.01f", event.getNewValue()));
 				} else if (GrowSensor.SENSOR_FIELD_GROW_MOISTURE_ALARM_HIGH.equals(propertyName)) {
-					mMoistureAlarmHighTextView.setText(event.getNewValue() + "");
+					mMoistureAlarmHighTextView.setText(String.format(Locale.US, "%.01f", event.getNewValue()));
 				}  else if (GrowSensor.SENSOR_FIELD_GROW_TEMPERATURE_ALARM_SET.equals(propertyName)) {
 					mTemperatureSwitch.setChecked(((Boolean)event.getNewValue()).booleanValue());
 				} else if (GrowSensor.SENSOR_FIELD_GROW_TEMPERATURE_ALARM_LOW.equals(propertyName)) {
-					mTemperatureAlarmLowTextView.setText(event.getNewValue()  + "");
+					mTemperatureAlarmLowTextView.setText(String.format(Locale.US, "%.01f", event.getNewValue()));
 				} else if (GrowSensor.SENSOR_FIELD_GROW_TEMPERATURE_ALARM_HIGH.equals(propertyName)) {
-					mTemperatureAlarmHighTextView.setText(event.getNewValue() + "");
+					mTemperatureAlarmHighTextView.setText(String.format(Locale.US, "%.01f", event.getNewValue()));
 				}
 			}
 		});
 	}
 	
-	@Override
-	public void onSave(AlarmSliderDialog dialog) {
-		GrowSensor growSensor = (GrowSensor) mSensor;
+	private void showLightPickerView() {
+		mView.addView(mAlarmLightPickerView);
+
+		mAlarmLightPickerView.setSelectedMinValue(((GrowSensor)mSensor).getLightAlarmLow());
+		mAlarmLightPickerView.setSelectedMaxValue(((GrowSensor)mSensor).getLightAlarmHigh());
 		
-		String sensorCharacteristic = dialog.getSensorCharacteristic();
-		if (GrowSensor.SENSOR_FIELD_GROW_LIGHT.equals(sensorCharacteristic)) {
-			growSensor.setLightAlarmLow((int)dialog.getSelectedMinValue());
-			growSensor.setLightAlarmHigh((int)dialog.getSelectedMaxValue());
-		} else if (GrowSensor.SENSOR_FIELD_GROW_MOISTURE.equals(sensorCharacteristic)) {
-			growSensor.setMoistureAlarmLow((int)dialog.getSelectedMinValue());
-			growSensor.setMoistureAlarmHigh((int)dialog.getSelectedMaxValue());
-		} else if (GrowSensor.SENSOR_FIELD_GROW_TEMPERATURE.equals(sensorCharacteristic)) {
-			growSensor.setTemperatureAlarmLow((int)dialog.getSelectedMinValue());
-			growSensor.setTemperatureAlarmHigh((int)dialog.getSelectedMaxValue());
-		}
+		mAlarmLightPickerView.show();
+	}
+	
+	private void showMoisturePickerView() {
+		mView.addView(mAlarmMoisturePickerView);
+		
+		mAlarmMoisturePickerView.setSelectedMinValue(((GrowSensor)mSensor).getMoistureAlarmLow());
+		mAlarmMoisturePickerView.setSelectedMaxValue(((GrowSensor)mSensor).getMoistureAlarmHigh());
+		
+		mAlarmMoisturePickerView.show();
+	}
+	
+	private void showTemperaturePickerView() {
+		mView.addView(mAlarmTemperaturePickerView);
+		
+		mAlarmTemperaturePickerView.setSelectedMinValue(((GrowSensor)mSensor).getTemperatureAlarmLow());
+		mAlarmTemperaturePickerView.setSelectedMaxValue(((GrowSensor)mSensor).getTemperatureAlarmHigh());
+		
+		mAlarmTemperaturePickerView.show();
 	}
 }

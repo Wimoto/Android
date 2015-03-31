@@ -1,6 +1,7 @@
 package com.wimoto.app.screens.sensor.water;
 
 import java.beans.PropertyChangeEvent;
+import java.util.Locale;
 
 import android.graphics.Color;
 import android.os.Bundle;
@@ -11,17 +12,16 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.wimoto.app.R;
-import com.wimoto.app.dialogs.AlarmSliderDialog;
-import com.wimoto.app.dialogs.AlarmSliderDialog.AlarmSliderDialogListener;
 import com.wimoto.app.model.Sensor;
 import com.wimoto.app.model.WaterSensor;
 import com.wimoto.app.screens.sensor.SensorFragment;
-import com.wimoto.app.screens.sensor.views.SensorFooterView;
+import com.wimoto.app.widgets.AlarmPickerView;
+import com.wimoto.app.widgets.AlarmPickerView.AlarmPickerListener;
 import com.wimoto.app.widgets.AnimationSwitch;
 import com.wimoto.app.widgets.AnimationSwitch.OnCheckedChangeListener;
 import com.wimoto.app.widgets.sparkline.LineSparkView;
 
-public class WaterSensorFragment extends SensorFragment implements AlarmSliderDialogListener {
+public class WaterSensorFragment extends SensorFragment {
 
 	private TextView mContactTextView;
 	private TextView mLevelTextView;
@@ -38,6 +38,8 @@ public class WaterSensorFragment extends SensorFragment implements AlarmSliderDi
 	private TextView mLevelAlarmLowTextView;
 	private TextView mLevelAlarmHighTextView;
 	
+	private AlarmPickerView mAlarmLevelPickerView;
+	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		mView  = (ViewGroup)inflater.inflate(R.layout.sensor_water_fragment, null);
@@ -51,46 +53,72 @@ public class WaterSensorFragment extends SensorFragment implements AlarmSliderDi
 		mContactSparkView = (LineSparkView) mView.findViewById(R.id.contactSparkView);
 		mContactSparkView.setValues(mSensor.getLastValues(WaterSensor.SENSOR_FIELD_WATER_CONTACT));
 		mContactSparkView.setBackgroundColor(Color.TRANSPARENT);
-		mContactSparkView.setLineColor(Color.BLACK);
+		mContactSparkView.setLineColor(Color.WHITE);
 		
 		mContactTextView = (TextView) mView.findViewById(R.id.contactTextView);
+		mContactTextView.setText(Float.toString(((WaterSensor)mSensor).getContact()));
 		
 		mContactAlarmLayout = (LinearLayout) mView.findViewById(R.id.contactAlarmLayout);
+		
 		mContactSwitch = (AnimationSwitch)mView.findViewById(R.id.contact_switch);
 		mContactSwitch.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 			@Override
 			public void onCheckedChanged(AnimationSwitch view, boolean isChecked) {
-				WaterSensor waterSensor = (WaterSensor) mSensor;
-				waterSensor.setContactAlarmSet(isChecked);
+				((WaterSensor)mSensor).setContactAlarmSet(isChecked);
 			}
 		});
 		
 		mLevelSparkView = (LineSparkView) mView.findViewById(R.id.levelSparkView);
 		mLevelSparkView.setValues(mSensor.getLastValues(WaterSensor.SENSOR_FIELD_WATER_LEVEL));
 		mLevelSparkView.setBackgroundColor(Color.TRANSPARENT);
-		mLevelSparkView.setLineColor(Color.BLACK);
+		mLevelSparkView.setLineColor(Color.WHITE);
 		
 		mLevelTextView = (TextView) mView.findViewById(R.id.levelTextView);
+		mLevelTextView.setText(Float.toString(((WaterSensor)mSensor).getLevel()));
 		
 		mLevelAlarmLayout = (LinearLayout) mView.findViewById(R.id.levelAlarmLayout);
+		
+		mAlarmLevelPickerView = new AlarmPickerView(getActivity(), WaterSensor.SENSOR_FIELD_WATER_LEVEL, 10, 50, 
+				new AlarmPickerListener() {
+			@Override
+			public void onSave(float lowerValue, float upperValue) {
+				mView.removeView(mAlarmLevelPickerView);
+				
+				WaterSensor waterSensor = (WaterSensor) mSensor;
+				waterSensor.setLevelAlarmSet(true);
+				
+				waterSensor.setLevelAlarmLow(lowerValue);
+				waterSensor.setLevelAlarmHigh(upperValue);
+			}
+			
+			@Override
+			public void onCancel() {
+				mView.removeView(mAlarmLevelPickerView);
+				
+				WaterSensor waterSensor = (WaterSensor) mSensor;
+				waterSensor.setLevelAlarmSet(false);	
+			}
+		});
+		
 		mLevelSwitch = (AnimationSwitch)mView.findViewById(R.id.level_switch);
 		mLevelSwitch.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 			@Override
 			public void onCheckedChanged(AnimationSwitch view, boolean isChecked) {
-				WaterSensor waterSensor = (WaterSensor) mSensor;
-				waterSensor.setLevelAlarmSet(isChecked);
-
 				if (isChecked) {
-					AlarmSliderDialog waterSlider = new AlarmSliderDialog(getActivity(), WaterSensor.SENSOR_FIELD_WATER_LEVEL, self(), 10, 50);
-					waterSlider.setSelectedMinValue(waterSensor.getLevelAlarmLow());
-					waterSlider.setSelectedMaxValue(waterSensor.getLevelAlarmHigh());
-					waterSlider.create().show();
+					showLevelPickerView();
+				} else {
+					mView.removeView(mAlarmLevelPickerView);
+					
+					((WaterSensor)mSensor).setLevelAlarmSet(false);
 				}
 			}
 		});
 		
 		mLevelAlarmLowTextView = (TextView) mView.findViewById(R.id.levelLowTextView);
+		mLevelAlarmLowTextView.setText(Float.toString(((WaterSensor)mSensor).getLevelAlarmLow()));
+		
 		mLevelAlarmHighTextView = (TextView) mView.findViewById(R.id.levelHighTextView);
+		mLevelAlarmHighTextView.setText(Float.toString(((WaterSensor)mSensor).getLevelAlarmHigh()));
 		
 		getSensorFooterView().setLogo(R.drawable.leak_logo);
 	}
@@ -109,12 +137,7 @@ public class WaterSensorFragment extends SensorFragment implements AlarmSliderDi
 			mSensor.addChangeListener(this, WaterSensor.SENSOR_FIELD_WATER_LEVEL_ALARM_HIGH);
 		}
 	}
-	
-	
-	protected AlarmSliderDialogListener self() {
-		return this;
-	}
-	
+
 	@Override
 	protected int getBackgroundColorRes() {
 		return R.color.color_sensor_water;
@@ -140,34 +163,29 @@ public class WaterSensorFragment extends SensorFragment implements AlarmSliderDi
 						mLevelAlarmLayout.setVisibility(View.VISIBLE);
 					}
 				} else if (WaterSensor.SENSOR_FIELD_WATER_CONTACT.equals(propertyName)) {
-					mContactTextView.setText(String.format("%.01f", event.getNewValue()));
+					mContactTextView.setText(String.format(Locale.US, "%.01f", event.getNewValue()));
 					mContactSparkView.invalidate();
 				} else if (WaterSensor.SENSOR_FIELD_WATER_LEVEL.equals(propertyName)) {
-					mLevelTextView.setText(String.format("%.01f", event.getNewValue()));
+					mLevelTextView.setText(String.format(Locale.US, "%.01f", event.getNewValue()));
 				} else if (WaterSensor.SENSOR_FIELD_WATER_CONTACT_ALARM_SET.equals(propertyName)) {
 					mContactSwitch.setChecked(((Boolean)event.getNewValue()).booleanValue());
 				} else if (WaterSensor.SENSOR_FIELD_WATER_LEVEL_ALARM_SET.equals(propertyName)) {
 					mLevelSwitch.setChecked(((Boolean)event.getNewValue()).booleanValue());
 				} else if (WaterSensor.SENSOR_FIELD_WATER_LEVEL_ALARM_LOW.equals(propertyName)) {
-					mLevelAlarmLowTextView.setText(event.getNewValue()  + "");
+					mLevelAlarmLowTextView.setText(String.format(Locale.US, "%.01f", event.getNewValue()));
 				} else if (WaterSensor.SENSOR_FIELD_WATER_LEVEL_ALARM_HIGH.equals(propertyName)) {
-					mLevelAlarmHighTextView.setText(event.getNewValue() + "");
+					mLevelAlarmHighTextView.setText(String.format(Locale.US, "%.01f", event.getNewValue()));
 				} 
 			}
 		});
 	}
 	
-	@Override
-	public void onSave(AlarmSliderDialog dialog) {
-		WaterSensor waterSensor = (WaterSensor) mSensor;
+	private void showLevelPickerView() {
+		mView.addView(mAlarmLevelPickerView);
+
+		mAlarmLevelPickerView.setSelectedMinValue(((WaterSensor)mSensor).getLevelAlarmLow());
+		mAlarmLevelPickerView.setSelectedMaxValue(((WaterSensor)mSensor).getLevelAlarmHigh());
 		
-		String sensorCharacteristic = dialog.getSensorCharacteristic();
-		if (WaterSensor.SENSOR_FIELD_WATER_CONTACT.equals(sensorCharacteristic)) {
-//			waterSensor.setContactAlarmLow((int)dialog.getSelectedMinValue());
-//			waterSensor.setContactAlarmHigh((int)dialog.getSelectedMaxValue());
-		} else if (WaterSensor.SENSOR_FIELD_WATER_LEVEL.equals(sensorCharacteristic)) {
-			waterSensor.setLevelAlarmLow((int)dialog.getSelectedMinValue());
-			waterSensor.setLevelAlarmHigh((int)dialog.getSelectedMaxValue());
-		}
+		mAlarmLevelPickerView.show();
 	}
 }
