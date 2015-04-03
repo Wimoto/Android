@@ -25,6 +25,8 @@ import com.mobitexoft.utils.SHA256Hash;
 import com.mobitexoft.utils.propertyobserver.PropertyObservable;
 import com.wimoto.app.bluetooth.BluetoothConnection;
 import com.wimoto.app.bluetooth.BluetoothConnection.WimotoProfile;
+import com.wimoto.app.model.demosensors.ClimateDemoSensor;
+import com.wimoto.app.model.demosensors.ThermoDemoSensor;
 
 public class Sensor extends PropertyObservable implements Observer {
 			
@@ -58,15 +60,29 @@ public class Sensor extends PropertyObservable implements Observer {
 		
 		Integer property = (Integer)document.getProperty("sensor_type");
 		
+		Boolean isDemo = (Boolean)document.getProperty(Sensor.SENSOR_FIELD_IS_DEMO);
+		
 		WimotoProfile wimotoProfile = WimotoProfile.values()[property.intValue()];
 		if (wimotoProfile == WimotoProfile.CLIMATE) {
-			sensor = new ClimateSensor();
+			if (!isDemo) {
+				Log.e("sensor", "climate");
+				sensor = new ClimateSensor();
+			} else {
+				Log.e("sensor", "climatedemo");
+				sensor = new ClimateDemoSensor();
+			}	
 		} else if (wimotoProfile == WimotoProfile.GROW) {
 			sensor = new GrowSensor();
 		} else if (wimotoProfile == WimotoProfile.SENTRY) {
 			sensor = new SentrySensor();
 		} else if (wimotoProfile == WimotoProfile.THERMO) {
-			sensor = new ThermoSensor();
+			if (!isDemo) {
+				Log.e("sensor", "thermo");
+				sensor = new ThermoSensor();
+			} else {
+				Log.e("sensor", "thermodemo");
+				sensor = new ThermoDemoSensor();
+			}	
 		} else if (wimotoProfile == WimotoProfile.WATER) {
 			sensor = new WaterSensor();
 		} else {

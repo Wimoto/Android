@@ -139,7 +139,7 @@ public class SensorsManager implements BluetoothServiceListener {
 		properties.put("id", newSensor.getId());
 		properties.put("sensor_type", newSensor.getType().getValue());
 		properties.put("created_at", currentTimeString);
-		
+
 		properties.put(Sensor.SENSOR_FIELD_IS_DEMO, newSensor.isDemoSensor());
 		
 		try {

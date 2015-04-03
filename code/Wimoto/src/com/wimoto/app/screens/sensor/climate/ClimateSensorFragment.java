@@ -205,23 +205,6 @@ public class ClimateSensorFragment extends SensorFragment {
 		mLightAlarmHighTextView = (TextView) mView.findViewById(R.id.lightHighTextView);
 		
 		getSensorFooterView().setLogo(R.drawable.climate_logo);
-	
-//		if (((ClimateSensor)mSensor).isDemoSensor()) {
-//			mView.setBackgroundColor(getResources().getColor(getBackgroundColorRes()));
-//
-//			runDemo();
-//		}
-		
-	}
-	
-	private void runDemo() {
-		//((ClimateSensor)mSensor).runDemo();
-	}
-
-	@Override
-	public void onStop() {
-		//((ClimateSensor)mSensor).stopDemo();
-		super.onPause();
 	}
 	
 	@Override

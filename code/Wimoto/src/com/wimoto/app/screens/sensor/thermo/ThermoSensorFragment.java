@@ -203,10 +203,10 @@ public class ThermoSensorFragment extends SensorFragment {
 	        			mProbeAlarmLayout.setVisibility(View.VISIBLE);
 					}
 				} else if (ThermoSensor.SENSOR_FIELD_THERMO_TEMPERATURE.equals(propertyName)) {
-					mTemperatureTextView.setText(String.format("%.01f", event.getNewValue()));
+					mTemperatureTextView.setText(String.format(Locale.US, "%.01f", event.getNewValue()));
 					mTemperatureSparkView.invalidate();
 				} else if (ThermoSensor.SENSOR_FIELD_THERMO_PROBE.equals(propertyName)) {
-					mProbeTextView.setText(String.format("%.01f", event.getNewValue()));
+					mProbeTextView.setText(String.format(Locale.US, "%.01f", event.getNewValue()));
 				}  else if (ThermoSensor.SENSOR_FIELD_THERMO_TEMPERATURE_ALARM_SET.equals(propertyName)) {
 					mTemperatureSwitch.setChecked(((Boolean)event.getNewValue()).booleanValue());
 				} else if (ThermoSensor.SENSOR_FIELD_THERMO_TEMPERATURE_ALARM_LOW.equals(propertyName)) {

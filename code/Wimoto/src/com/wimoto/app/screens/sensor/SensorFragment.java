@@ -6,6 +6,7 @@ import java.beans.PropertyChangeListener;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,9 +24,11 @@ import com.wimoto.app.model.Sensor;
 import com.wimoto.app.model.SentrySensor;
 import com.wimoto.app.model.ThermoSensor;
 import com.wimoto.app.model.WaterSensor;
+import com.wimoto.app.screens.sensor.climate.ClimateDemoSensorFragment;
 import com.wimoto.app.screens.sensor.climate.ClimateSensorFragment;
 import com.wimoto.app.screens.sensor.grow.GrowSensorFragment;
 import com.wimoto.app.screens.sensor.sentry.SentrySensorFragment;
+import com.wimoto.app.screens.sensor.thermo.ThermoDemoSensorFragment;
 import com.wimoto.app.screens.sensor.thermo.ThermoSensorFragment;
 import com.wimoto.app.screens.sensor.views.SensorFooterView;
 import com.wimoto.app.screens.sensor.views.SensorFooterView.SensorFooterListener;
@@ -51,13 +54,21 @@ public abstract class SensorFragment extends PageFragment implements PropertyCha
 		SensorFragment fragment = null;
 		
 		if (sensor instanceof ClimateSensor) {
-			fragment = new ClimateSensorFragment();
+			if (sensor.isDemoSensor()) {
+				fragment = new ClimateDemoSensorFragment();
+			} else {
+				fragment = new ClimateSensorFragment();
+			}
 		} else if (sensor instanceof GrowSensor) {
 			fragment = new GrowSensorFragment();
 		} else if (sensor instanceof SentrySensor) {
 			fragment = new SentrySensorFragment();
 		} else if (sensor instanceof ThermoSensor) {
-			fragment = new ThermoSensorFragment();
+			if (sensor.isDemoSensor()) {
+				fragment = new ThermoDemoSensorFragment();
+			} else {
+				fragment = new ThermoSensorFragment();
+			}
 		} else if (sensor instanceof WaterSensor) {
 			fragment = new WaterSensorFragment();
 		} 
@@ -80,7 +91,25 @@ public abstract class SensorFragment extends PageFragment implements PropertyCha
 		
 		setSensor(mSensor);
 		
+		if (mSensor.isDemoSensor()) {
+			Log.e("SensorFragment", "run demo " + mSensor.getClass().getName());
+			runDemo();
+		}
+		
 		return mView;
+	}
+	
+	protected void runDemo() {}
+	protected void stopDemo() {}
+	
+	@Override
+	public void onStop() {
+		if (mSensor.isDemoSensor()) {
+			Log.e("SensorFragment", "stop demo " + mSensor.getClass().getName());
+			stopDemo();
+		}
+		
+		super.onStop();
 	}
 	
 	@Override
