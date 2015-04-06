@@ -9,7 +9,6 @@ import android.bluetooth.BluetoothGattCharacteristic;
 import com.couchbase.lite.Document;
 import com.wimoto.app.R;
 import com.wimoto.app.bluetooth.BluetoothConnection;
-import com.wimoto.app.bluetooth.BluetoothConnection.WimotoProfile;
 import com.wimoto.app.utils.AppContext;
 
 public class SentrySensor extends Sensor {
@@ -85,8 +84,8 @@ public class SentrySensor extends Sensor {
 		}
 	}
 	
-	public WimotoProfile getType() {
-		return WimotoProfile.SENTRY;
+	public SensorProfile getType() {
+		return SensorProfile.SENTRY;
 	}
 	
 	public float getAccelerometer() {

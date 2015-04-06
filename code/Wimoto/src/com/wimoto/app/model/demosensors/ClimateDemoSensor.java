@@ -7,6 +7,7 @@ import android.os.Handler;
 
 import com.wimoto.app.R;
 import com.wimoto.app.model.ClimateSensor;
+import com.wimoto.app.model.SensorProfile;
 import com.wimoto.app.utils.AppContext;
 
 public class ClimateDemoSensor extends ClimateSensor {
@@ -18,8 +19,6 @@ public class ClimateDemoSensor extends ClimateSensor {
 	public ClimateDemoSensor() {
 		mTitle = AppContext.getContext().getString(R.string.sensor_climate_demo);
 		mId = SENSOR_CLIMATE_DEMO;
-		
-		mIsDemoSensor = true;
 		
 		mTemperature = 22.0f;
         mHumidity = 50.0f;
@@ -94,5 +93,9 @@ public class ClimateDemoSensor extends ClimateSensor {
 		}
 		
 		notifyObservers(SENSOR_FIELD_CLIMATE_LIGHT, mLight, mLight);
+	}
+	
+	public SensorProfile getType() {
+		return SensorProfile.CLIMATE_DEMO;
 	}
 }

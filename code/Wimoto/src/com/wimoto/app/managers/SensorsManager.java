@@ -140,8 +140,6 @@ public class SensorsManager implements BluetoothServiceListener {
 		properties.put("sensor_type", newSensor.getType().getValue());
 		properties.put("created_at", currentTimeString);
 
-		properties.put(Sensor.SENSOR_FIELD_IS_DEMO, newSensor.isDemoSensor());
-		
 		try {
 			Document document = mDatabase.createDocument();
 			document.putProperties(properties);
@@ -161,7 +159,7 @@ public class SensorsManager implements BluetoothServiceListener {
 			sensor.getDocument().delete();
 			sensor.setDocument(null);
 			
-			if (!sensor.isConnected() && !sensor.isDemoSensor()) {
+			if (!sensor.isConnected()) {
 				mSensors.remove(sensor.getId());
 			}
 			

@@ -14,6 +14,7 @@ import android.bluetooth.BluetoothGattService;
 import android.bluetooth.BluetoothProfile;
 import android.util.Log;
 
+import com.wimoto.app.model.SensorProfile;
 import com.wimoto.app.utils.AppContext;
 
 public class BluetoothConnection extends Observable {
@@ -30,7 +31,7 @@ public class BluetoothConnection extends Observable {
 	final private static char[] hexArray = {'0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f'};
 	
 	private String mSystemId;
-	private WimotoProfile mWimotoProfile;
+	private SensorProfile mSensorProfile;
 	
 	private int mRssi;
 		
@@ -49,7 +50,7 @@ public class BluetoothConnection extends Observable {
             byte[] scanRecord) {
 		BluetoothConnection connection = new BluetoothConnection(listener, device, scanRecord);
 		
-		if (connection.getWimotoProfile() == WimotoProfile.UNDEFINED) {
+		if (connection.getSensorProfile() == SensorProfile.UNDEFINED) {
 			return null;
 		} else {
 			connection.connect();
@@ -62,7 +63,7 @@ public class BluetoothConnection extends Observable {
 		
 		mBluetoothConnectionStateListener = listener;
 		
-		mWimotoProfile = defineProfile(scanRecord);
+		mSensorProfile = defineProfile(scanRecord);
 		
 		mBluetoothDevice = device;
 		
@@ -106,15 +107,15 @@ public class BluetoothConnection extends Observable {
 		}
 	}
 	
-	public WimotoProfile getWimotoProfile() {
-		return mWimotoProfile;
+	public SensorProfile getSensorProfile() {
+		return mSensorProfile;
 	}
 	
 	public void setSystemId(String systemId) {
 		mSystemId = systemId;
 	}
 
-	private WimotoProfile defineProfile(byte[] bytes) {
+	private SensorProfile defineProfile(byte[] bytes) {
         char[] hexChars = new char[bytes.length * 2];
         int v;
         for ( int j = 0; j < bytes.length; j++ ) {
@@ -125,18 +126,18 @@ public class BluetoothConnection extends Observable {
 		
 		String scanString = new String(hexChars).toUpperCase();
 		if (scanString.contains(BLE_CLIMATE_AD_SERVICE_UUID)) {
-			return WimotoProfile.CLIMATE;
+			return SensorProfile.CLIMATE;
 		} else if (scanString.contains(BLE_GROW_AD_SERVICE_UUID)) {
-			return WimotoProfile.GROW;
+			return SensorProfile.GROW;
 		} else if (scanString.contains(BLE_SENTRY_AD_SERVICE_UUID)) {
-			return WimotoProfile.SENTRY;
+			return SensorProfile.SENTRY;
 		} else if (scanString.contains(BLE_THERMO_AD_SERVICE_UUID)) {
-			return WimotoProfile.THERMO;
+			return SensorProfile.THERMO;
 		} else if (scanString.contains(BLE_WATER_AD_SERVICE_UUID)) {
-			return WimotoProfile.WATER;
+			return SensorProfile.WATER;
 		}
 		
-		return WimotoProfile.UNDEFINED;
+		return SensorProfile.UNDEFINED;
 	}
 
 	public void connect() {
@@ -294,25 +295,6 @@ public class BluetoothConnection extends Observable {
 		}
     };
 
-    public enum WimotoProfile {
-    	UNDEFINED(0),
-    	CLIMATE(1),
-    	GROW(2),
-    	SENTRY(3),
-    	THERMO(4),
-    	WATER(5);
-    	
-    	private int value;
-    	
-    	private WimotoProfile(int value) {
-    		this.value = value;
-    	}
-    	
-    	public int getValue() {
-    		return value;
-    	}
-    }
-    
     private class CharacteristicRequest {
     	
     	public static final int REQUEST_TYPE_READ 			= 8499;

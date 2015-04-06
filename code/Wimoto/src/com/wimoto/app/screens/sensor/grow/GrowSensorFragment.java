@@ -271,10 +271,22 @@ public class GrowSensorFragment extends SensorFragment {
 				} else if (GrowSensor.SENSOR_FIELD_GROW_LIGHT.equals(propertyName)) {
 					mLightTextView.setText(String.format(Locale.US, "%.01f", event.getNewValue()));
 					mLightSparkView.invalidate();
+					if(((GrowSensor)mSensor).isLightAlarmSet() && outOfRange((Float)event.getNewValue(), 
+							((GrowSensor)mSensor).getLightAlarmHigh(), ((GrowSensor)mSensor).getLightAlarmLow())) {
+						showAlert(getString(R.string.sensor_grow_alert_light));
+					}
 				} else if (GrowSensor.SENSOR_FIELD_GROW_MOISTURE.equals(propertyName)) {
 					mMoistureTextView.setText(String.format(Locale.US, "%.01f", event.getNewValue()));
+					if(((GrowSensor)mSensor).isMoistureAlarmSet() && outOfRange((Float)event.getNewValue(), 
+							((GrowSensor)mSensor).getMoistureAlarmHigh(), ((GrowSensor)mSensor).getMoistureAlarmLow())) {
+						showAlert(getString(R.string.sensor_grow_alert_moisture));
+					}
 				} else if (GrowSensor.SENSOR_FIELD_GROW_TEMPERATURE.equals(propertyName)) {
 					mTemperatureTextView.setText(String.format(Locale.US, "%.01f", event.getNewValue()));
+					if(((GrowSensor)mSensor).isTemperatureAlarmSet() && outOfRange((Float)event.getNewValue(), 
+							((GrowSensor)mSensor).getTemperatureAlarmHigh(), ((GrowSensor)mSensor).getTemperatureAlarmLow())) {
+						showAlert(getString(R.string.sensor_grow_alert_temperature));
+					}
 				} else if (GrowSensor.SENSOR_FIELD_GROW_LIGHT_ALARM_SET.equals(propertyName)) {
 					mLightSwitch.setChecked(((Boolean)event.getNewValue()).booleanValue());
 				} else if (GrowSensor.SENSOR_FIELD_GROW_LIGHT_ALARM_LOW.equals(propertyName)) {

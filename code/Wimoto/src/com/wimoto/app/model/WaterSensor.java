@@ -9,7 +9,6 @@ import android.bluetooth.BluetoothGattCharacteristic;
 import com.couchbase.lite.Document;
 import com.wimoto.app.R;
 import com.wimoto.app.bluetooth.BluetoothConnection;
-import com.wimoto.app.bluetooth.BluetoothConnection.WimotoProfile;
 import com.wimoto.app.utils.AppContext;
 
 public class WaterSensor extends Sensor {
@@ -89,8 +88,8 @@ public class WaterSensor extends Sensor {
 		}
 	}
 	
-	public WimotoProfile getType() {
-		return WimotoProfile.WATER;
+	public SensorProfile getType() {
+		return SensorProfile.WATER;
 	}
 	
 	public float getContact() {

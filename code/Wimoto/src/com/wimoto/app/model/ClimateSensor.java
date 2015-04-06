@@ -9,7 +9,6 @@ import android.bluetooth.BluetoothGattCharacteristic;
 import com.couchbase.lite.Document;
 import com.wimoto.app.R;
 import com.wimoto.app.bluetooth.BluetoothConnection;
-import com.wimoto.app.bluetooth.BluetoothConnection.WimotoProfile;
 import com.wimoto.app.utils.AppContext;
 
 public class ClimateSensor extends Sensor {
@@ -121,8 +120,8 @@ public class ClimateSensor extends Sensor {
 		}
 	}
 	
-	public WimotoProfile getType() {
-		return WimotoProfile.CLIMATE;
+	public SensorProfile getType() {
+		return SensorProfile.CLIMATE;
 	}
 	
 	public float getTemperature() {

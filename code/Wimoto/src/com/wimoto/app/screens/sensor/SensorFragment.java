@@ -6,7 +6,6 @@ import java.beans.PropertyChangeListener;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,6 +23,8 @@ import com.wimoto.app.model.Sensor;
 import com.wimoto.app.model.SentrySensor;
 import com.wimoto.app.model.ThermoSensor;
 import com.wimoto.app.model.WaterSensor;
+import com.wimoto.app.model.demosensors.ClimateDemoSensor;
+import com.wimoto.app.model.demosensors.ThermoDemoSensor;
 import com.wimoto.app.screens.sensor.climate.ClimateDemoSensorFragment;
 import com.wimoto.app.screens.sensor.climate.ClimateSensorFragment;
 import com.wimoto.app.screens.sensor.grow.GrowSensorFragment;
@@ -53,25 +54,21 @@ public abstract class SensorFragment extends PageFragment implements PropertyCha
 	public static SensorFragment createSensorFragment(Sensor sensor) {
 		SensorFragment fragment = null;
 		
-		if (sensor instanceof ClimateSensor) {
-			if (sensor.isDemoSensor()) {
-				fragment = new ClimateDemoSensorFragment();
-			} else {
-				fragment = new ClimateSensorFragment();
-			}
+		if (sensor instanceof ClimateDemoSensor) {
+			fragment = new ClimateDemoSensorFragment();
+		} else if (sensor instanceof ThermoDemoSensor) {
+			fragment = new ThermoDemoSensorFragment();
+		} else if (sensor instanceof ClimateSensor) {
+			fragment = new ClimateSensorFragment();
 		} else if (sensor instanceof GrowSensor) {
 			fragment = new GrowSensorFragment();
 		} else if (sensor instanceof SentrySensor) {
 			fragment = new SentrySensorFragment();
 		} else if (sensor instanceof ThermoSensor) {
-			if (sensor.isDemoSensor()) {
-				fragment = new ThermoDemoSensorFragment();
-			} else {
-				fragment = new ThermoSensorFragment();
-			}
+			fragment = new ThermoSensorFragment();
 		} else if (sensor instanceof WaterSensor) {
 			fragment = new WaterSensorFragment();
-		} 
+		}
 		
 		if (fragment != null) {
 			fragment.mSensor = sensor;
@@ -91,27 +88,9 @@ public abstract class SensorFragment extends PageFragment implements PropertyCha
 		
 		setSensor(mSensor);
 		
-		if (mSensor.isDemoSensor()) {
-			Log.e("SensorFragment", "run demo " + mSensor.getClass().getName());
-			runDemo();
-		}
-		
 		return mView;
 	}
-	
-	protected void runDemo() {}
-	protected void stopDemo() {}
-	
-	@Override
-	public void onStop() {
-		if (mSensor.isDemoSensor()) {
-			Log.e("SensorFragment", "stop demo " + mSensor.getClass().getName());
-			stopDemo();
-		}
 		
-		super.onStop();
-	}
-	
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
@@ -247,5 +226,53 @@ public abstract class SensorFragment extends PageFragment implements PropertyCha
 	@Override
 	public void onRightMenuClicked() {
 		((SlidingFragmentActivity) getActivity()).showSecondaryMenu();		
+	}
+	
+	@Override
+	public void onResume() {
+		super.onResume();
+		if(mDialog != null && !mDialog.isShowing()) {
+			mDialog.show();
+		}
+	}
+
+	@Override
+	public void onPause() {
+		if(mDialog != null && mDialog.isShowing()) {
+			mDialog.dismiss();
+		}
+		super.onPause();
+	}
+	
+	protected boolean outOfRange(float currentValue, float maxValue, float minValue) {
+		if(currentValue > maxValue || currentValue < minValue) {
+			return true;
+		}
+		return false;
+	}
+	
+	private AlertDialog mDialog;
+	private long mLastShowTimeStamp;
+	protected void showAlert(String message) {
+		long currentShowTimeStamp = System.currentTimeMillis();
+		if(mLastShowTimeStamp + 30 * 1000 > currentShowTimeStamp) {
+			return;
+		}
+		mLastShowTimeStamp = currentShowTimeStamp;
+		if(mDialog != null && mDialog.isShowing()) {
+			mDialog.dismiss();
+		}
+		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+		builder.setMessage(message);
+		builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {		
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				mDialog.dismiss();
+				mDialog = null;
+			}
+		});
+		builder.setCancelable(false);
+		mDialog = builder.create();
+		mDialog.show();
 	}
 }

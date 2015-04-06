@@ -205,8 +205,16 @@ public class ThermoSensorFragment extends SensorFragment {
 				} else if (ThermoSensor.SENSOR_FIELD_THERMO_TEMPERATURE.equals(propertyName)) {
 					mTemperatureTextView.setText(String.format(Locale.US, "%.01f", event.getNewValue()));
 					mTemperatureSparkView.invalidate();
+					if(((ThermoSensor)mSensor).isTemperatureAlarmSet() && outOfRange((Float)event.getNewValue(),
+							((ThermoSensor)mSensor).getTemperatureAlarmHigh(), ((ThermoSensor)mSensor).getTemperatureAlarmLow())) {
+						showAlert(getString(R.string.sensor_thermo_alert_temperature));
+					}
 				} else if (ThermoSensor.SENSOR_FIELD_THERMO_PROBE.equals(propertyName)) {
-					mProbeTextView.setText(String.format(Locale.US, "%.01f", event.getNewValue()));
+					mProbeTextView.setText(String.format(Locale.US, "%.01f", event.getNewValue()));	
+					if(((ThermoSensor)mSensor).isProbeAlarmSet() && outOfRange((Float)event.getNewValue(), 
+							((ThermoSensor)mSensor).getProbeAlarmHigh(), ((ThermoSensor)mSensor).getProbeAlarmLow())) {
+						showAlert(getString(R.string.sensor_thermo_alert_probe));
+					}
 				}  else if (ThermoSensor.SENSOR_FIELD_THERMO_TEMPERATURE_ALARM_SET.equals(propertyName)) {
 					mTemperatureSwitch.setChecked(((Boolean)event.getNewValue()).booleanValue());
 				} else if (ThermoSensor.SENSOR_FIELD_THERMO_TEMPERATURE_ALARM_LOW.equals(propertyName)) {

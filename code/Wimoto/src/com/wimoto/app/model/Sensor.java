@@ -24,7 +24,6 @@ import com.couchbase.lite.View;
 import com.mobitexoft.utils.SHA256Hash;
 import com.mobitexoft.utils.propertyobserver.PropertyObservable;
 import com.wimoto.app.bluetooth.BluetoothConnection;
-import com.wimoto.app.bluetooth.BluetoothConnection.WimotoProfile;
 import com.wimoto.app.model.demosensors.ClimateDemoSensor;
 import com.wimoto.app.model.demosensors.ThermoDemoSensor;
 
@@ -35,8 +34,6 @@ public class Sensor extends PropertyObservable implements Observer {
 	public static final String SENSOR_FIELD_CONNECTION					= "mConnection";
 	public static final String SENSOR_FIELD_BATTERY_LEVEL				= "batteryLevel";
 	public static final String SENSOR_FIELD_RSSI						= "rssi";
-	
-	public static final String SENSOR_FIELD_IS_DEMO						= "is_demo";
 	
 	private static final String BLE_GENERIC_SERVICE_UUID_BATTERY		 	= "0000180F-0000-1000-8000-00805F9B34FB";
 	private static final String BLE_GENERIC_CHAR_UUID_BATTERY_LEVEL			= "00002A19-0000-1000-8000-00805F9B34FB";
@@ -53,38 +50,26 @@ public class Sensor extends PropertyObservable implements Observer {
 	
 	protected Map<String, LinkedList<Float>> mSensorValues;
 	
-	protected boolean mIsDemoSensor;
-	
 	public static Sensor getSensorFromDocument(Document document) {
 		Sensor sensor = null;
 		
 		Integer property = (Integer)document.getProperty("sensor_type");
 		
-		Boolean isDemo = (Boolean)document.getProperty(Sensor.SENSOR_FIELD_IS_DEMO);
-		
-		WimotoProfile wimotoProfile = WimotoProfile.values()[property.intValue()];
-		if (wimotoProfile == WimotoProfile.CLIMATE) {
-			if (!isDemo) {
-				Log.e("sensor", "climate");
-				sensor = new ClimateSensor();
-			} else {
-				Log.e("sensor", "climatedemo");
-				sensor = new ClimateDemoSensor();
-			}	
-		} else if (wimotoProfile == WimotoProfile.GROW) {
+		SensorProfile sensorProfile = SensorProfile.values()[property.intValue()];
+		if (sensorProfile == SensorProfile.CLIMATE) {
+			sensor = new ClimateSensor();
+		} else if (sensorProfile == SensorProfile.GROW) {
 			sensor = new GrowSensor();
-		} else if (wimotoProfile == WimotoProfile.SENTRY) {
+		} else if (sensorProfile == SensorProfile.SENTRY) {
 			sensor = new SentrySensor();
-		} else if (wimotoProfile == WimotoProfile.THERMO) {
-			if (!isDemo) {
-				Log.e("sensor", "thermo");
-				sensor = new ThermoSensor();
-			} else {
-				Log.e("sensor", "thermodemo");
-				sensor = new ThermoDemoSensor();
-			}	
-		} else if (wimotoProfile == WimotoProfile.WATER) {
+		} else if (sensorProfile == SensorProfile.THERMO) {
+			sensor = new ThermoSensor();
+		} else if (sensorProfile == SensorProfile.WATER) {
 			sensor = new WaterSensor();
+		} else if (sensorProfile == SensorProfile.CLIMATE_DEMO) {
+			sensor = new ClimateDemoSensor();
+		} else if (sensorProfile == SensorProfile.THERMO_DEMO) {
+			sensor = new ThermoDemoSensor();
 		} else {
 			return null;
 		}
@@ -94,15 +79,15 @@ public class Sensor extends PropertyObservable implements Observer {
 	}
 
 	public static Sensor getSensorFromConnection(BluetoothConnection connection) {
-		if (connection.getWimotoProfile() == WimotoProfile.CLIMATE) {
+		if (connection.getSensorProfile() == SensorProfile.CLIMATE) {
 			return new ClimateSensor(connection);
-		} else if (connection.getWimotoProfile() == WimotoProfile.GROW) {
+		} else if (connection.getSensorProfile() == SensorProfile.GROW) {
 			return new GrowSensor(connection);
-		} else if (connection.getWimotoProfile() == WimotoProfile.SENTRY) {
+		} else if (connection.getSensorProfile() == SensorProfile.SENTRY) {
 			return new SentrySensor(connection);
-		} else if (connection.getWimotoProfile() == WimotoProfile.THERMO) {
+		} else if (connection.getSensorProfile() == SensorProfile.THERMO) {
 			return new ThermoSensor(connection);
-		} else if (connection.getWimotoProfile() == WimotoProfile.WATER) {
+		} else if (connection.getSensorProfile() == SensorProfile.WATER) {
 			return new WaterSensor(connection);
 		}
 		
@@ -185,8 +170,8 @@ public class Sensor extends PropertyObservable implements Observer {
 		}		
 	}
 	
-	public WimotoProfile getType() {
-		return WimotoProfile.UNDEFINED;
+	public SensorProfile getType() {
+		return SensorProfile.UNDEFINED;
 	}
 
 	public float getBatteryLevel() {
@@ -218,7 +203,6 @@ public class Sensor extends PropertyObservable implements Observer {
 		if (mDocument != null) {
 			mId 		= (String) mDocument.getProperty(SENSOR_FIELD_ID);
 			mTitle 	= (String) mDocument.getProperty(SENSOR_FIELD_TITLE);			
-			mIsDemoSensor = (Boolean) mDocument.getProperty(SENSOR_FIELD_IS_DEMO);
 			
 			Database database = mDocument.getDatabase(); 
 			
@@ -338,10 +322,6 @@ public class Sensor extends PropertyObservable implements Observer {
 	
 	public LinkedList<Float> getLastValues(String valueType) {
 		return mSensorValues.get(valueType);
-	}
-	
-	public boolean isDemoSensor() {
-		return mIsDemoSensor;
 	}
 	
 	public static float fahrToCels(float fahrValue) {

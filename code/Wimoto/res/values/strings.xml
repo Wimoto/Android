@@ -42,6 +42,20 @@
      <string name="sensor_thermo_demo">Wimoto_Thermo_Demo</string> 
      <string name="sensor_water">Wimoto_Water</string> 
      
+     <!-- Sensor alerts -->
+     <string name="sensor_climate_alert_temperature">Current temperature is out of range.</string>
+     <string name="sensor_climate_alert_humidity">Current humidity is out of range.</string>
+     <string name="sensor_climate_alert_light">Current light is out of range.</string>    
+     <string name="sensor_thermo_alert_temperature">Current temperature is out of range.</string>
+     <string name="sensor_thermo_alert_probe">Current probe temperature is out of range.</string>       
+     <string name="sensor_grow_alert_light">Current light is out of range.</string>
+     <string name="sensor_grow_alert_moisture">Current moisture is out of range.</string>
+     <string name="sensor_grow_alert_temperature">Current temperature is out of range.</string>     
+     <string name="sensor_sentry_alert_accelerometer">Accelerometer is detected a motion.</string>
+     <string name="sensor_sentry_alert_infrared">Infrafer sensor is detected a motion.</string>     
+     <string name="sensor_water_alert_contact">Contact sensor is detected a water.</string>
+     <string name="sensor_water_alert_level">Current water level is out of range.</string>
+     
      <!-- Found sensor screen -->
      <string name="sensors_found">Sensors Found</string>
      

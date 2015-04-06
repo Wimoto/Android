@@ -121,8 +121,14 @@ public class SentrySensorFragment extends SensorFragment {
 				} else if (SentrySensor.SENSOR_FIELD_SENTRY_ACCELEROMETER.equals(propertyName)) {
 					//mAccelerometerTextView.setText(String.format("%.01f", event.getNewValue()));
 					mAccelerometerSparkView.invalidate();
+					if(((SentrySensor)mSensor).isAccelerometerAlarmSet()) {
+						showAlert(getString(R.string.sensor_sentry_alert_accelerometer));
+					}
 				} else if (SentrySensor.SENSOR_FIELD_SENTRY_PASSIVE_INFRARED.equals(propertyName)) {
 					mInfraredTextView.setText(String.format(Locale.US, "%.01f", event.getNewValue()));
+					if(((SentrySensor)mSensor).isInfraredAlarmSet()) {
+						showAlert(getString(R.string.sensor_sentry_alert_infrared));
+					}
 				} else if (SentrySensor.SENSOR_FIELD_SENTRY_ACCELEROMETER_ALARM_SET.equals(propertyName)) {
 					mAccelerometerSwitch.setChecked(((Boolean)event.getNewValue()).booleanValue());
 				} else if (SentrySensor.SENSOR_FIELD_SENTRY_PASSIVE_INFRARED_ALARM_SET.equals(propertyName)) {
