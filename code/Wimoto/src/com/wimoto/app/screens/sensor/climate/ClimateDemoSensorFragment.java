@@ -27,7 +27,6 @@ public class ClimateDemoSensorFragment extends ClimateSensorFragment {
 	}
 	
 	protected void runDemo() {
-		Log.e("", "ClimateDemoSensorFragment runDemo()");
 		((ClimateDemoSensor)mSensor).runDemo();
 	}
 

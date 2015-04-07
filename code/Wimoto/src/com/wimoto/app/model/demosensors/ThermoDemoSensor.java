@@ -58,25 +58,21 @@ public class ThermoDemoSensor extends ThermoSensor {
 		
 		int temperatureStep = 2 - random.nextInt(5);
 		if (mTemperature + temperatureStep < -5) {
-			mTemperature += 2.0;
+			setTemperature(mTemperature + 2.0f);
 		} else if (mTemperature + temperatureStep > 50) {
-			mTemperature -= 2.0;
+			setTemperature(mTemperature - 2.0f);
 		} else {
-			mTemperature += temperatureStep;
+			setTemperature(mTemperature + temperatureStep);
 		}
 		
-		notifyObservers(SENSOR_FIELD_THERMO_TEMPERATURE, mTemperature, mTemperature);
-
 		int probeStep = 2 - random.nextInt(5);
 		if (mProbe + probeStep < -5) {
-			mProbe += 2.0;
+			setProbe(mProbe + 2.0f);
 		} else if (mProbe + probeStep > 70) {
-			mProbe -= 2.0;
+			setProbe(mProbe - 2.0f);
 		} else {
-			mProbe += probeStep;
-		}
-		
-		notifyObservers(SENSOR_FIELD_THERMO_PROBE, mProbe, mProbe);
+			setProbe(mProbe + probeStep);
+		}		
 	}
 	
 	public SensorProfile getType() {

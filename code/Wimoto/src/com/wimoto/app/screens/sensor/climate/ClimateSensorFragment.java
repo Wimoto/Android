@@ -108,7 +108,10 @@ public class ClimateSensorFragment extends SensorFragment {
 		});
 		
 		mTemperatureAlarmLowTextView = (TextView) mView.findViewById(R.id.temperatureLowTextView);
+		mTemperatureAlarmLowTextView.setText(String.format(Locale.US, "%.01f", ((ClimateSensor)mSensor).getTemperatureAlarmLow()));
+
 		mTemperatureAlarmHighTextView = (TextView) mView.findViewById(R.id.temperatureHighTextView);
+		mTemperatureAlarmHighTextView.setText(String.format(Locale.US, "%.01f", ((ClimateSensor)mSensor).getTemperatureAlarmHigh()));
 		
 		mHumiditySparkView = (LineSparkView) mView.findViewById(R.id.humiditySparkView);
 		mHumiditySparkView.setValues(mSensor.getLastValues(ClimateSensor.SENSOR_FIELD_CLIMATE_HUMIDITY));
@@ -155,8 +158,11 @@ public class ClimateSensorFragment extends SensorFragment {
 			}
 		});
 		
-		mHumidityAlarmLowTextView = (TextView) mView.findViewById(R.id.humidityLowTextView);		
+		mHumidityAlarmLowTextView = (TextView) mView.findViewById(R.id.humidityLowTextView);	
+		mHumidityAlarmLowTextView.setText(String.format(Locale.US, "%.01f", ((ClimateSensor)mSensor).getHumidityAlarmLow()));
+		
 		mHumidityAlarmHighTextView = (TextView) mView.findViewById(R.id.humidityHighTextView);
+		mHumidityAlarmHighTextView.setText(String.format(Locale.US, "%.01f", ((ClimateSensor)mSensor).getHumidityAlarmHigh()));
 		
 		mLightSparkView = (LineSparkView) mView.findViewById(R.id.lightSparkView);
 		mLightSparkView.setValues(mSensor.getLastValues(ClimateSensor.SENSOR_FIELD_CLIMATE_LIGHT));
@@ -201,8 +207,11 @@ public class ClimateSensorFragment extends SensorFragment {
 			}
 		});
 		
-		mLightAlarmLowTextView = (TextView) mView.findViewById(R.id.lightLowTextView);		
+		mLightAlarmLowTextView = (TextView) mView.findViewById(R.id.lightLowTextView);
+		mLightAlarmLowTextView.setText(String.format(Locale.US, "%.01f", ((ClimateSensor)mSensor).getLightAlarmLow()));
+
 		mLightAlarmHighTextView = (TextView) mView.findViewById(R.id.lightHighTextView);
+		mLightAlarmHighTextView.setText(String.format(Locale.US, "%.01f", ((ClimateSensor)mSensor).getLightAlarmHigh()));
 		
 		getSensorFooterView().setLogo(R.drawable.climate_logo);
 	}
@@ -266,12 +275,14 @@ public class ClimateSensorFragment extends SensorFragment {
 						}
 					} else if (ClimateSensor.SENSOR_FIELD_CLIMATE_HUMIDITY.equals(propertyName)) {
 						mHumidityTextView.setText(String.format(Locale.US, "%.01f", event.getNewValue()));
+						mHumiditySparkView.invalidate();
 						if(((ClimateSensor)mSensor).isHumidityAlarmSet() && outOfRange((Float)event.getNewValue(), 
 								((ClimateSensor)mSensor).getHumidityAlarmHigh(), ((ClimateSensor)mSensor).getHumidityAlarmLow())) {
 							showAlert(getString(R.string.sensor_climate_alert_humidity));
 						}
 					} else if (ClimateSensor.SENSOR_FIELD_CLIMATE_LIGHT.equals(propertyName)) {
 						mLightTextView.setText(String.format(Locale.US, "%.01f", event.getNewValue()));
+						mLightSparkView.invalidate();
 						if(((ClimateSensor)mSensor).isLightAlarmSet() && outOfRange((Float)event.getNewValue(), 
 								((ClimateSensor)mSensor).getLightAlarmHigh(), ((ClimateSensor)mSensor).getLightAlarmLow())) {
 							showAlert(getString(R.string.sensor_climate_alert_light));
@@ -294,48 +305,12 @@ public class ClimateSensorFragment extends SensorFragment {
 						mLightAlarmLowTextView.setText(String.format(Locale.US, "%.01f", event.getNewValue()));
 					} else if (ClimateSensor.SENSOR_FIELD_CLIMATE_LIGHT_ALARM_HIGH.equals(propertyName)) {
 						mLightAlarmHighTextView.setText(String.format(Locale.US, "%.01f", event.getNewValue()));
-					}
-					
-					//String propertyString = ((ClimateSensor)mSensor).getPropertyString(propertyName);
-                    //String alarmMessage = ((ClimateSensor)mSensor).getAlarmMessage(propertyString);
-                     
-                    //showAlert(propertyString, alarmMessage);
+					}					
 				}
 			}
 		});
 	}
-	
-	private void showAlert(String propertyString, String alarmMessage) {
-//		if (propertyString.equals(ClimateSensor.SENSOR_FIELD_TEMPERATURE)) {
-//			if (mIsShowTemperatureAlert) {
-//				return;
-//			}
-//			
-//			if (!alarmMessage.isEmpty()) {
-//				mIsShowTemperatureAlert = true;
-//				showAlarmMessage(mSensor, propertyString, alarmMessage);
-//			}
-//		} else if (propertyString.equals(ClimateSensor.SENSOR_FIELD_HUMIDITY)) {
-//			if (mIsShowHumidityAlert) {
-//				return;
-//			}
-//			
-//			if (!alarmMessage.isEmpty()) {
-//				mIsShowHumidityAlert = true;
-//				showAlarmMessage(mSensor, propertyString, alarmMessage);
-//			}
-//		} else if (propertyString.equals(ClimateSensor.SENSOR_FIELD_LIGHT)) {
-//			if (mIsShowLightAlert) {
-//				return;
-//			}
-//			
-//			if (!alarmMessage.isEmpty()) {
-//				mIsShowLightAlert = true;
-//				showAlarmMessage(mSensor, propertyString, alarmMessage);
-//			}
-//		}
-	}
-	
+		
 	private void showTemperaturePickerView() {
 		mView.addView(mAlarmTemperaturePickerView);
 
@@ -363,49 +338,4 @@ public class ClimateSensorFragment extends SensorFragment {
 		mAlarmLightPickerView.show();
 	}
 	
-//	@Override
-//	public void onButtonTapped(AlarmPickerView view, boolean needSave) {
-//		mView.removeView(view);
-////		ClimateSensor climateSensor = (ClimateSensor) mSensor;
-////
-////		String sensorCharacteristic = view.getSensorCharacteristic();
-////		if (ClimateSensor.SENSOR_FIELD_CLIMATE_TEMPERATURE.equals(sensorCharacteristic)) {
-////			mIsShowTemperatureAlert = false;
-////			climateSensor.setTemperatureAlarmSet(needSave);	
-////			
-////			//climateSensor.setTemperatureAlarmLow(view.getSelectedMinValue());
-////			//climateSensor.setTemperatureAlarmHigh(view.getSelectedMaxValue());
-////		} else if (ClimateSensor.SENSOR_FIELD_CLIMATE_HUMIDITY.equals(sensorCharacteristic)) {
-////			mIsShowHumidityAlert = false;
-////			climateSensor.setHumidityAlarmSet(needSave);
-////			
-////			//climateSensor.setHumidityAlarmLow(view.getSelectedMinValue());
-////			//climateSensor.setHumidityAlarmHigh(view.getSelectedMaxValue());	
-////		} else if (ClimateSensor.SENSOR_FIELD_CLIMATE_LIGHT.equals(sensorCharacteristic)) {
-////			mIsShowLightAlert = false;
-////			climateSensor.setLightAlarmSet(needSave);
-////			
-////			//climateSensor.setLightAlarmLow(view.getSelectedMinValue());
-////			//climateSensor.setLightAlarmHigh(view.getSelectedMaxValue());	
-////		}
-////		
-//////		if (!needSave) {
-//////			animationSwitch.setChecked(false);
-//////		}
-////		
-////		enableSwitches();
-//	}
-	
-	protected void switchOffAlarm(String propertyString) {
-//		if (ClimateSensor.SENSOR_FIELD_TEMPERATURE.equals(propertyString)) {
-//			mTemperatureSwitch.setChecked(false);
-//			mIsShowTemperatureAlert = false;
-//		} else if (ClimateSensor.SENSOR_FIELD_HUMIDITY.equals(propertyString)) {
-//			mHumiditySwitch.setChecked(false);
-//			mIsShowHumidityAlert = false;
-//		} else if (ClimateSensor.SENSOR_FIELD_LIGHT.equals(propertyString)) {
-//			mLightSwitch.setChecked(false);
-//			mIsShowLightAlert = false;
-//		}
-	}
 }

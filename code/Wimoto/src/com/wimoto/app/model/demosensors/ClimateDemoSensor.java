@@ -63,36 +63,31 @@ public class ClimateDemoSensor extends ClimateSensor {
 		
 		int temperatureStep = 2 - random.nextInt(5);
 		if (mTemperature + temperatureStep < -5) {
-			mTemperature += 2.0;
+			setTemperature(mTemperature + 2.0f);
 		} else if (mTemperature + temperatureStep > 50) {
-			mTemperature -= 2.0;
+			setTemperature(mTemperature - 2.0f);
 		} else {
-			mTemperature += temperatureStep;
+			setTemperature(mTemperature + temperatureStep);
 		}
 		
-		notifyObservers(SENSOR_FIELD_CLIMATE_TEMPERATURE, mTemperature, mTemperature);
-
 		int humidityStep = 2 - random.nextInt(5);
 		if (mHumidity + humidityStep < 0) {
-			mHumidity += 2.0;
+			setHumidity(mHumidity + 2.0f);
 		} else if (mHumidity + humidityStep > 100) {
-			mHumidity -= 2.0;
+			setHumidity(mHumidity - 2.0f);
 		} else {
-			mHumidity += humidityStep;
+			setHumidity(mHumidity + humidityStep);
 		}
-		
-		notifyObservers(SENSOR_FIELD_CLIMATE_HUMIDITY, mHumidity, mHumidity);
-		
+				
 		int lightStep = 2 - random.nextInt(5);
 		if (mLight + lightStep < 0) {
-			mLight += 2.0;
+			setLight(mLight + 2.0f);
 		} else if (mLight + lightStep > 200) {
-			mLight -= 2.0;
+			setLight(mLight - 2.0f);
 		} else {
-			mLight += lightStep;
+			setLight(mLight + lightStep);
 		}
 		
-		notifyObservers(SENSOR_FIELD_CLIMATE_LIGHT, mLight, mLight);
 	}
 	
 	public SensorProfile getType() {

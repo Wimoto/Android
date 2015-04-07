@@ -12,6 +12,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.wimoto.app.R;
+import com.wimoto.app.model.ClimateSensor;
 import com.wimoto.app.model.Sensor;
 import com.wimoto.app.model.ThermoSensor;
 import com.wimoto.app.screens.sensor.SensorFragment;
@@ -101,10 +102,10 @@ public class ThermoSensorFragment extends SensorFragment {
 		});
 		
 		mTemperatureAlarmLowTextView = (TextView) mView.findViewById(R.id.temperatureLowTextView);
-		mTemperatureAlarmLowTextView.setText(Float.toString(((ThermoSensor)mSensor).getTemperatureAlarmLow()));
+		mTemperatureAlarmLowTextView.setText(String.format(Locale.US, "%.01f", ((ThermoSensor)mSensor).getTemperatureAlarmLow()));
 		
 		mTemperatureAlarmHighTextView = (TextView) mView.findViewById(R.id.temperatureHighTextView);
-		mTemperatureAlarmHighTextView.setText(Float.toString(((ThermoSensor)mSensor).getTemperatureAlarmHigh()));
+		mTemperatureAlarmHighTextView.setText(String.format(Locale.US, "%.01f", ((ThermoSensor)mSensor).getTemperatureAlarmHigh()));
 		
 		mProbeSparkView = (LineSparkView) mView.findViewById(R.id.probeSparkView);
 		mProbeSparkView.setValues(mSensor.getLastValues(ThermoSensor.SENSOR_FIELD_THERMO_PROBE));
@@ -153,10 +154,10 @@ public class ThermoSensorFragment extends SensorFragment {
 		});
 		
 		mProbeAlarmLowTextView = (TextView) mView.findViewById(R.id.probeLowTextView);
-		mProbeAlarmLowTextView.setText(Float.toString(((ThermoSensor)mSensor).getProbeAlarmLow()));
+		mProbeAlarmLowTextView.setText(String.format(Locale.US, "%.01f", ((ThermoSensor)mSensor).getProbeAlarmLow()));
 		
 		mProbeAlarmHighTextView = (TextView) mView.findViewById(R.id.probeHighTextView);
-		mProbeAlarmHighTextView.setText(Float.toString(((ThermoSensor)mSensor).getProbeAlarmHigh()));
+		mProbeAlarmHighTextView.setText(String.format(Locale.US, "%.01f", ((ThermoSensor)mSensor).getProbeAlarmHigh()));
 		
 		getSensorFooterView().setLogo(R.drawable.thermo_logo);
 	}
@@ -168,13 +169,13 @@ public class ThermoSensorFragment extends SensorFragment {
 		if (mSensor != null) {
 			mSensor.addChangeListener(this, ThermoSensor.SENSOR_FIELD_THERMO_TEMPERATURE);
 			mSensor.addChangeListener(this, ThermoSensor.SENSOR_FIELD_THERMO_TEMPERATURE_ALARM_SET);
-			mSensor.addChangeListener(this, ThermoSensor.SENSOR_FIELD_THERMO_TEMPERATURE_ALARM_LOW);
-			mSensor.addChangeListener(this, ThermoSensor.SENSOR_FIELD_THERMO_TEMPERATURE_ALARM_HIGH);
+			mSensor.addChangeListener(this, ThermoSensor.SENSOR_FIELD_THERMO_TEMPERATURE_ALARM_LOW, true);
+			mSensor.addChangeListener(this, ThermoSensor.SENSOR_FIELD_THERMO_TEMPERATURE_ALARM_HIGH, true);
 			
 			mSensor.addChangeListener(this, ThermoSensor.SENSOR_FIELD_THERMO_PROBE);
 			mSensor.addChangeListener(this, ThermoSensor.SENSOR_FIELD_THERMO_PROBE_ALARM_SET);
-			mSensor.addChangeListener(this, ThermoSensor.SENSOR_FIELD_THERMO_PROBE_ALARM_LOW);
-			mSensor.addChangeListener(this, ThermoSensor.SENSOR_FIELD_THERMO_PROBE_ALARM_HIGH);
+			mSensor.addChangeListener(this, ThermoSensor.SENSOR_FIELD_THERMO_PROBE_ALARM_LOW, true);
+			mSensor.addChangeListener(this, ThermoSensor.SENSOR_FIELD_THERMO_PROBE_ALARM_HIGH, true);
 		}
 	}
 	
@@ -211,6 +212,7 @@ public class ThermoSensorFragment extends SensorFragment {
 					}
 				} else if (ThermoSensor.SENSOR_FIELD_THERMO_PROBE.equals(propertyName)) {
 					mProbeTextView.setText(String.format(Locale.US, "%.01f", event.getNewValue()));	
+					mProbeSparkView.invalidate();
 					if(((ThermoSensor)mSensor).isProbeAlarmSet() && outOfRange((Float)event.getNewValue(), 
 							((ThermoSensor)mSensor).getProbeAlarmHigh(), ((ThermoSensor)mSensor).getProbeAlarmLow())) {
 						showAlert(getString(R.string.sensor_thermo_alert_probe));
