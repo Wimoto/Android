@@ -3,6 +3,7 @@ package com.wimoto.app.screens.searchsensor;
 import java.util.ArrayList;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -60,6 +61,7 @@ public class SearchSensorFragment extends PageFragment implements SensorsManager
 	}
 	
 	private void registerSensor(Sensor sensor) {
+		Log.e("", "registerSensor " + sensor);
 		((MainActivity)getActivity()).getSensorsManager().registerSensor(sensor);
 	}
 	

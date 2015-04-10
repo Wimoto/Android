@@ -18,6 +18,7 @@ public class ClimateDemoSensor extends ClimateSensor {
 	private Handler mHandler;
 	
 	public ClimateDemoSensor() {
+		Log.e("", "ClimateDemoSensor()");
 		mTitle = AppContext.getContext().getString(R.string.sensor_climate_demo);
 		mId = SENSOR_CLIMATE_DEMO;
 		
@@ -42,6 +43,8 @@ public class ClimateDemoSensor extends ClimateSensor {
 	}
 
 	public void runDemo() {
+		Log.e("", "runDemo()");
+		
 		notifyObservers(SENSOR_FIELD_CONNECTION, 0, 0);
 		mRunnable.run();
 	}

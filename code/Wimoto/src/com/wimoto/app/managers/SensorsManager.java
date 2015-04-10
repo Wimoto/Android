@@ -85,7 +85,7 @@ public class SensorsManager implements BluetoothServiceListener {
 	}
 	
 	public void startScan() {
-		mBluetoothService.scanLeDevices(true);
+		//mBluetoothService.scanLeDevices(true);
 	}
 	
 	public void stopScan() {
