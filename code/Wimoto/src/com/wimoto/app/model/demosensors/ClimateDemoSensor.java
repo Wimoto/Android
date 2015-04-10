@@ -4,6 +4,7 @@ import java.util.LinkedList;
 import java.util.Random;
 
 import android.os.Handler;
+import android.util.Log;
 
 import com.wimoto.app.R;
 import com.wimoto.app.model.ClimateSensor;
@@ -59,6 +60,7 @@ public class ClimateDemoSensor extends ClimateSensor {
 	};
 	
 	public void demoUpdate() {
+		Log.e("", "demoUpdate()");
 		Random random = new Random(); 
 		
 		int temperatureStep = 2 - random.nextInt(5);
