@@ -14,10 +14,10 @@
     <color name="color_sparkline_background">#48FFFFFF</color>
     
     <!--  Sensor Screens Background -->
-	<color name="color_sensor_climate">#FFDB3C</color>
+	<color name="color_sensor_climate">#66CCFF</color>
 	<color name="color_sensor_grow">#79BD2F</color>
 	<color name="color_sensor_sentry">#34509F</color>
-	<color name="color_sensor_thermo">#E4001C</color>
+	<color name="color_sensor_thermo">#FF9F11</color>
 	<color name="color_sensor_water">#6CADDC</color>
 	
 	<color name="color_sensor_background">#E6E6E6</color>

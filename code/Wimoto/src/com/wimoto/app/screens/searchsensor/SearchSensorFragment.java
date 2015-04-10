@@ -61,8 +61,9 @@ public class SearchSensorFragment extends PageFragment implements SensorsManager
 	}
 	
 	private void registerSensor(Sensor sensor) {
-		Log.e("", "registerSensor " + sensor);
-		((MainActivity)getActivity()).getSensorsManager().registerSensor(sensor);
+		MainActivity activity = (MainActivity)getActivity();
+		activity.getSensorsManager().registerSensor(sensor);
+		activity.showSensorDetails(sensor);
 	}
 	
 }
