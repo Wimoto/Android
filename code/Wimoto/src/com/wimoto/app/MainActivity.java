@@ -73,14 +73,7 @@ public class MainActivity extends SlidingFragmentActivity implements SensorsMana
 	@Override
 	protected void onStart() {
 		super.onStart();
-					
-		if (mSensorsManager.isBluetoothEnabled()) {
-			mSensorsManager.startScan();
-		} else {
-			Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-		    startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
-		}
-		
+							
 		mSensorsManager.addListenerForRegisteredSensors(this);
 	}
 
@@ -88,7 +81,7 @@ public class MainActivity extends SlidingFragmentActivity implements SensorsMana
 	protected void onStop() {
 		super.onStop();
 		
-		mSensorsManager.stopScan();
+		stopScan();
 	}
 	
 	@Override
@@ -107,7 +100,7 @@ public class MainActivity extends SlidingFragmentActivity implements SensorsMana
 		Log.e("", "Main Activity onDestroy");
 		
 		mSensorsManager.removeListenerForRegisteredSensors(this);
-		mSensorsManager.stopScan();
+		stopScan();
 		mSensorsManager.disconnectGatts();
 	}
 
@@ -124,6 +117,19 @@ public class MainActivity extends SlidingFragmentActivity implements SensorsMana
 		return mSensorsManager;
 	}
 
+	public void startScan() {
+		if (mSensorsManager.isBluetoothEnabled()) {
+			mSensorsManager.startScan();
+		} else {
+			Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+		    startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
+		}
+	}
+	
+	public void stopScan() {
+		mSensorsManager.stopScan();
+	}
+	
 	public void searchSensorAction() {
 		mLeftMenuFragment.onMenuItemSelected(MenuItem.SEARCH);
 	}

@@ -52,9 +52,18 @@ public class SearchSensorFragment extends PageFragment implements SensorsManager
 			}
 		});
 		
+		((MainActivity) getActivity()).startScan();
+		
 		return view;
 	}
-	
+
+	@Override
+	public void onStop() {
+		super.onStop();
+		
+		((MainActivity) getActivity()).stopScan();
+	}
+
 	@Override
 	public void didUpdateSensors(ArrayList<Sensor> sensors) {
 		mAdapter.updateSensors(sensors);

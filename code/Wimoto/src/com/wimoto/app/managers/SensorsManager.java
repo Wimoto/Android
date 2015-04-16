@@ -56,6 +56,8 @@ public class SensorsManager implements BluetoothServiceListener {
 		mRegisteredSensorListeners = new HashSet<SensorsManagerListener> ();
 
 		try {
+			mBluetoothService = new BluetoothService(this);
+			
 			Manager manager = new Manager(AppContext.getContext().getFilesDir(), Manager.DEFAULT_OPTIONS);
 			mDatabase = manager.getDatabase(WIMOTO_DB);
 			
@@ -67,9 +69,8 @@ public class SensorsManager implements BluetoothServiceListener {
 				Sensor sensor = Sensor.getSensorFromDocument(doc);
 
 				mSensors.put(sensor.getId(), sensor);
+				mBluetoothService.registerConnection(sensor.getId());
 			}
-			
-			mBluetoothService = new BluetoothService(this);
 			
 			Log.e("Loaded Sensors Count", Integer.toString(mSensors.size()));	
 			
@@ -85,7 +86,7 @@ public class SensorsManager implements BluetoothServiceListener {
 	}
 	
 	public void startScan() {
-		//mBluetoothService.scanLeDevices(true);
+		mBluetoothService.scanLeDevices(true);
 	}
 	
 	public void stopScan() {

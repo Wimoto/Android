@@ -35,6 +35,18 @@ public class BluetoothService implements BluetoothConnectionStateListener {
 		mManagedConnections = new HashMap<String, BluetoothConnection>();		
 	}
 	
+	public void registerConnection(String address) {
+    	BluetoothConnection connection = mManagedConnections.get(address);
+    	if (connection == null) {
+    		BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(address);
+    		
+	    	connection = BluetoothConnection.createConnection(BluetoothService.this, device);
+	    	if (connection != null) {
+	    		mManagedConnections.put(device.getAddress(), connection);
+	    	}		    	
+    	}
+	}
+	
 	public boolean isBluetoothEnabled() {
 		if ((mBluetoothAdapter == null) || (!mBluetoothAdapter.isEnabled())) {
 			return false;
@@ -57,6 +69,7 @@ public class BluetoothService implements BluetoothConnectionStateListener {
 	}
 	
 	public void scanLeDevices(boolean enable) {
+		Log.e("", "scanLeDevices " + enable);
 		if (enable) {
 			mBluetoothAdapter.startLeScan(mLeScanCallback);
 		} else {
@@ -73,7 +86,7 @@ public class BluetoothService implements BluetoothConnectionStateListener {
 	    	
 	    	BluetoothConnection connection = mManagedConnections.get(device.getAddress());
 	    	if (connection == null) {
-		    	connection = BluetoothConnection.createConnection(getCurrentService(), device, scanRecord);
+		    	connection = BluetoothConnection.createConnection(BluetoothService.this, device, scanRecord);
 	    		
 		    	if (connection != null) {
 		    		mManagedConnections.put(device.getAddress(), connection);
@@ -82,10 +95,6 @@ public class BluetoothService implements BluetoothConnectionStateListener {
 	   }
 	};
 	
-	private BluetoothService getCurrentService() {
-		return this;
-	}
-
 	@Override
 	public void didConnectionStateChanged(BluetoothConnection connection) {
 		int state = mBluetoothManager.getConnectionState(connection.getBluetoothDevice(), BluetoothProfile.GATT);

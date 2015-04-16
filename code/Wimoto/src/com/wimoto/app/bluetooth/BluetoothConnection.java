@@ -46,6 +46,12 @@ public class BluetoothConnection extends Observable {
 	
 	private BluetoothConnectionStateListener mBluetoothConnectionStateListener;
 	
+	public static BluetoothConnection createConnection(BluetoothConnectionStateListener listener, BluetoothDevice device) {
+		BluetoothConnection connection = new BluetoothConnection(listener, device);
+		connection.connect();
+		return connection;
+	}
+	
 	public static BluetoothConnection createConnection(BluetoothConnectionStateListener listener, BluetoothDevice device,
             byte[] scanRecord) {
 		BluetoothConnection connection = new BluetoothConnection(listener, device, scanRecord);
@@ -58,16 +64,17 @@ public class BluetoothConnection extends Observable {
 		}
 	}
 	
+	private BluetoothConnection(BluetoothConnectionStateListener listener, BluetoothDevice device) {
+		mBluetoothConnectionStateListener = listener;
+		mBluetoothDevice = device;
+		mRequests = new LinkedList<BluetoothConnection.CharacteristicRequest>();
+	}
+	
 	private BluetoothConnection(BluetoothConnectionStateListener listener, BluetoothDevice device,
             byte[] scanRecord) {
-		
-		mBluetoothConnectionStateListener = listener;
-		
+		this(listener, device);
+
 		mSensorProfile = defineProfile(scanRecord);
-		
-		mBluetoothDevice = device;
-		
-		mRequests = new LinkedList<BluetoothConnection.CharacteristicRequest>();
 	}
 	
 	private BluetoothConnection getConnection() {
