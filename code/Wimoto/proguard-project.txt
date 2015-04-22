@@ -1,14 +1,16 @@
 -injars      bin/classes
 -outjars     bin/classes-processed.jar
 -libraryjars libs/android-support-v4.jar
--libraryjars libs/CBLite-1.0.0-beta2.jar
--libraryjars libs/CBLiteJavascript-1.0.0-beta2.jar
--libraryjars libs/CBLiteListener-1.0.0-beta2.jar
 -libraryjars libs/commons-io-2.0.1.jar
+-libraryjars libs/couchbase-lite-android-1.0.4.jar
+-libraryjars libs/couchbase-lite-java-core-1.0.4.jar
+-libraryjars libs/couchbase-lite-java-javascript-1.0.4.jar
+-libraryjars libs/couchbase-lite-java-listener-1.0.4.jar
 -libraryjars libs/jackson-core-asl-1.9.2.jar
 -libraryjars libs/jackson-mapper-asl-1.9.2.jar
 -libraryjars libs/rhino-1.7R3.jar
 -libraryjars libs/servlet-2-3.jar
+-libraryjars libs/stateless4j-2.4.0.jar
 -libraryjars libs/webserver-2-3.jar
 
 -dontpreverify
