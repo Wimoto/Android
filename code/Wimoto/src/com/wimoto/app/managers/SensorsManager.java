@@ -15,10 +15,12 @@ import com.couchbase.lite.Database;
 import com.couchbase.lite.Document;
 import com.couchbase.lite.Emitter;
 import com.couchbase.lite.Manager;
+import com.couchbase.lite.ManagerOptions;
 import com.couchbase.lite.Mapper;
 import com.couchbase.lite.Query;
 import com.couchbase.lite.QueryEnumerator;
 import com.couchbase.lite.View;
+import com.couchbase.lite.android.AndroidContext;
 import com.couchbase.lite.util.Log;
 import com.wimoto.app.MainActivity;
 import com.wimoto.app.bluetooth.BluetoothConnection;
@@ -58,7 +60,8 @@ public class SensorsManager implements BluetoothServiceListener {
 		try {
 			mBluetoothService = new BluetoothService(this);
 			
-			Manager manager = new Manager(AppContext.getContext().getFilesDir(), Manager.DEFAULT_OPTIONS);
+			Manager manager = new Manager(new AndroidContext(AppContext.getContext()), Manager.DEFAULT_OPTIONS);
+			
 			mDatabase = manager.getDatabase(WIMOTO_DB);
 			
 			QueryEnumerator enumerator = getQuery().run();
