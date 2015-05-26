@@ -5,7 +5,6 @@ import java.lang.reflect.Field;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.Animation;
@@ -34,44 +33,11 @@ public class AlarmPickerView extends RelativeLayout {
 	private NumberPicker mMinIntegerPicker, mMinFractPicker;
 	private NumberPicker mMaxIntegerPicker, mMaxFractPicker;
 	
-	private float mMinValue, mMaxValue;
+	protected float mMinValue, mMaxValue;
 	public int mMinusZero;
 	
 	private int mPickerMinValue;
 	private int mPickerMaxValue;
-	
-	public AlarmPickerView(Context context, AttributeSet attrs) {
-		super(context, attrs);
-		
-		mContext = context;
-		
-		LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        inflater.inflate(R.layout.alarm_picker_view, this);
-
-        mMinIntegerPicker = (NumberPicker) findViewById(R.id.alarmMinIntegerNumberPicker);
-        mMinFractPicker = (NumberPicker) findViewById(R.id.alarmMinFractNumberPicker);
-        setNumberPickerTextColor(mMinFractPicker, Color.RED);
-
-        mMaxIntegerPicker = (NumberPicker) findViewById(R.id.alarmMaxIntegerNumberPicker);
-        mMaxFractPicker = (NumberPicker) findViewById(R.id.alarmMaxFractNumberPicker);
-        setNumberPickerTextColor(mMaxFractPicker, Color.RED);
-        
-        Button cancelButton = (Button) findViewById(R.id.alarmCancelButton);
-        cancelButton.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				//save(false);
-			}	
-        });
-        
-        Button saveButton = (Button) findViewById(R.id.alarmSaveButton);
-        saveButton.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				//save(true);
-			}	
-        });
-	}
 	
 	public AlarmPickerView(Context context, String sensorCharacteristic, int absoluteMinValue, int absoluteMaxValue, final AlarmPickerListener listener) {
 		super(context);
@@ -113,7 +79,7 @@ public class AlarmPickerView extends RelativeLayout {
 			public void onClick(View v) {
 				if (listener != null) {
 					checkValues();
-					listener.onSave(mMinValue, mMaxValue);
+					listener.onSave(getMinValue(), getMaxValue());
 				}				
 			}	
         });
@@ -206,6 +172,14 @@ public class AlarmPickerView extends RelativeLayout {
 		mMinValue = temp;
 	}
 
+	protected float getMinValue() {
+		return mMinValue;
+	}
+	
+	protected float getMaxValue() {
+		return mMaxValue;
+	}
+	
 	public float getSelectedMinValue() {
 		return mMinValue;
 	}

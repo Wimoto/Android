@@ -1,7 +1,6 @@
 package com.wimoto.app.screens.sensor.thermo;
 
 import java.beans.PropertyChangeEvent;
-import java.util.Locale;
 
 import android.graphics.Color;
 import android.os.Bundle;
@@ -9,23 +8,23 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import com.wimoto.app.R;
-import com.wimoto.app.model.ClimateSensor;
 import com.wimoto.app.model.Sensor;
 import com.wimoto.app.model.ThermoSensor;
 import com.wimoto.app.screens.sensor.SensorFragment;
-import com.wimoto.app.widgets.AlarmPickerView;
+import com.wimoto.app.widgets.AlarmPickerTemperatureView;
 import com.wimoto.app.widgets.AlarmPickerView.AlarmPickerListener;
 import com.wimoto.app.widgets.AnimationSwitch;
 import com.wimoto.app.widgets.AnimationSwitch.OnCheckedChangeListener;
 import com.wimoto.app.widgets.sparkline.LineSparkView;
+import com.wimoto.app.widgets.temperature.TemperatureValueTextView;
+import com.wimoto.app.widgets.temperature.TemperatureValueView;
 
 public class ThermoSensorFragment extends SensorFragment {
 	
-	private TextView mTemperatureTextView;
-	private TextView mProbeTextView;
+	private TemperatureValueView mTemperatureTextView;
+	private TemperatureValueView mProbeTextView;
 	
 	private LineSparkView mTemperatureSparkView;
 	private LineSparkView mProbeSparkView;
@@ -36,14 +35,14 @@ public class ThermoSensorFragment extends SensorFragment {
 	private AnimationSwitch mTemperatureSwitch;
 	private AnimationSwitch mProbeSwitch;
 	
-	private TextView mTemperatureAlarmLowTextView;
-	private TextView mTemperatureAlarmHighTextView;	
+	private TemperatureValueTextView mTemperatureAlarmLowTextView;
+	private TemperatureValueTextView mTemperatureAlarmHighTextView;	
 
-	private TextView mProbeAlarmLowTextView;
-	private TextView mProbeAlarmHighTextView;
+	private TemperatureValueTextView mProbeAlarmLowTextView;
+	private TemperatureValueTextView mProbeAlarmHighTextView;
 	
-	private AlarmPickerView mAlarmTemperaturePickerView;
-	private AlarmPickerView mAlarmProbePickerView;
+	private AlarmPickerTemperatureView mAlarmTemperaturePickerView;
+	private AlarmPickerTemperatureView mAlarmProbePickerView;
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -60,12 +59,12 @@ public class ThermoSensorFragment extends SensorFragment {
 		mTemperatureSparkView.setBackgroundColor(Color.TRANSPARENT);
 		mTemperatureSparkView.setLineColor(Color.WHITE);
 		
-		mTemperatureTextView = (TextView) mView.findViewById(R.id.temperatureTextView);
+		mTemperatureTextView = (TemperatureValueView) mView.findViewById(R.id.temperatureTextView);
 		mTemperatureTextView.setText(Float.toString(((ThermoSensor)mSensor).getTemperature()));
 		
 		mTemperatureAlarmLayout = (LinearLayout) mView.findViewById(R.id.temperatureAlarmLayout);
 		
-		mAlarmTemperaturePickerView = new AlarmPickerView(getActivity(), ThermoSensor.SENSOR_FIELD_THERMO_TEMPERATURE, -60, 130, 
+		mAlarmTemperaturePickerView = new AlarmPickerTemperatureView(getActivity(), ThermoSensor.SENSOR_FIELD_THERMO_TEMPERATURE, -60, 130, 
 				new AlarmPickerListener() {
 			@Override
 			public void onSave(float lowerValue, float upperValue) {
@@ -101,23 +100,23 @@ public class ThermoSensorFragment extends SensorFragment {
 			}
 		});
 		
-		mTemperatureAlarmLowTextView = (TextView) mView.findViewById(R.id.temperatureLowTextView);
-		mTemperatureAlarmLowTextView.setText(String.format(Locale.US, "%.01f", ((ThermoSensor)mSensor).getTemperatureAlarmLow()));
+		mTemperatureAlarmLowTextView = (TemperatureValueTextView) mView.findViewById(R.id.temperatureLowTextView);
+		mTemperatureAlarmLowTextView.setTemperature(((ThermoSensor)mSensor).getTemperatureAlarmLow());
 		
-		mTemperatureAlarmHighTextView = (TextView) mView.findViewById(R.id.temperatureHighTextView);
-		mTemperatureAlarmHighTextView.setText(String.format(Locale.US, "%.01f", ((ThermoSensor)mSensor).getTemperatureAlarmHigh()));
+		mTemperatureAlarmHighTextView = (TemperatureValueTextView) mView.findViewById(R.id.temperatureHighTextView);
+		mTemperatureAlarmHighTextView.setTemperature(((ThermoSensor)mSensor).getTemperatureAlarmHigh());
 		
 		mProbeSparkView = (LineSparkView) mView.findViewById(R.id.probeSparkView);
 		mProbeSparkView.setValues(mSensor.getLastValues(ThermoSensor.SENSOR_FIELD_THERMO_PROBE));
 		mProbeSparkView.setBackgroundColor(Color.TRANSPARENT);
 		mProbeSparkView.setLineColor(Color.WHITE);
 		
-		mProbeTextView = (TextView) mView.findViewById(R.id.probeTextView);
+		mProbeTextView = (TemperatureValueView) mView.findViewById(R.id.probeTextView);
 		mProbeTextView.setText(Float.toString(((ThermoSensor)mSensor).getProbe()));
 		
 		mProbeAlarmLayout = (LinearLayout) mView.findViewById(R.id.probeAlarmLayout);
 		
-		mAlarmProbePickerView = new AlarmPickerView(getActivity(), ThermoSensor.SENSOR_FIELD_THERMO_TEMPERATURE, 10, 50, 
+		mAlarmProbePickerView = new AlarmPickerTemperatureView(getActivity(), ThermoSensor.SENSOR_FIELD_THERMO_TEMPERATURE, 10, 50, 
 				new AlarmPickerListener() {
 			@Override
 			public void onSave(float lowerValue, float upperValue) {
@@ -153,11 +152,11 @@ public class ThermoSensorFragment extends SensorFragment {
 			}
 		});
 		
-		mProbeAlarmLowTextView = (TextView) mView.findViewById(R.id.probeLowTextView);
-		mProbeAlarmLowTextView.setText(String.format(Locale.US, "%.01f", ((ThermoSensor)mSensor).getProbeAlarmLow()));
+		mProbeAlarmLowTextView = (TemperatureValueTextView) mView.findViewById(R.id.probeLowTextView);
+		mProbeAlarmLowTextView.setTemperature(((ThermoSensor)mSensor).getProbeAlarmLow());
 		
-		mProbeAlarmHighTextView = (TextView) mView.findViewById(R.id.probeHighTextView);
-		mProbeAlarmHighTextView.setText(String.format(Locale.US, "%.01f", ((ThermoSensor)mSensor).getProbeAlarmHigh()));
+		mProbeAlarmHighTextView = (TemperatureValueTextView) mView.findViewById(R.id.probeHighTextView);
+		mProbeAlarmHighTextView.setTemperature(((ThermoSensor)mSensor).getProbeAlarmHigh());
 		
 		getSensorFooterView().setLogo(R.drawable.thermo_logo);
 	}
@@ -204,14 +203,14 @@ public class ThermoSensorFragment extends SensorFragment {
 	        			mProbeAlarmLayout.setVisibility(View.VISIBLE);
 					}
 				} else if (ThermoSensor.SENSOR_FIELD_THERMO_TEMPERATURE.equals(propertyName)) {
-					mTemperatureTextView.setText(String.format(Locale.US, "%.01f", event.getNewValue()));
+					mTemperatureTextView.setTemperature((Float)event.getNewValue());
 					mTemperatureSparkView.invalidate();
 					if(((ThermoSensor)mSensor).isTemperatureAlarmSet() && outOfRange((Float)event.getNewValue(),
 							((ThermoSensor)mSensor).getTemperatureAlarmHigh(), ((ThermoSensor)mSensor).getTemperatureAlarmLow())) {
 						showAlert(getString(R.string.sensor_thermo_alert_temperature));
 					}
 				} else if (ThermoSensor.SENSOR_FIELD_THERMO_PROBE.equals(propertyName)) {
-					mProbeTextView.setText(String.format(Locale.US, "%.01f", event.getNewValue()));	
+					mProbeTextView.setTemperature((Float)event.getNewValue());
 					mProbeSparkView.invalidate();
 					if(((ThermoSensor)mSensor).isProbeAlarmSet() && outOfRange((Float)event.getNewValue(), 
 							((ThermoSensor)mSensor).getProbeAlarmHigh(), ((ThermoSensor)mSensor).getProbeAlarmLow())) {
@@ -220,15 +219,15 @@ public class ThermoSensorFragment extends SensorFragment {
 				}  else if (ThermoSensor.SENSOR_FIELD_THERMO_TEMPERATURE_ALARM_SET.equals(propertyName)) {
 					mTemperatureSwitch.setChecked(((Boolean)event.getNewValue()).booleanValue());
 				} else if (ThermoSensor.SENSOR_FIELD_THERMO_TEMPERATURE_ALARM_LOW.equals(propertyName)) {
-					mTemperatureAlarmLowTextView.setText(String.format(Locale.US, "%.01f", event.getNewValue()));
+					mTemperatureAlarmLowTextView.setTemperature((Float)event.getNewValue());
 				} else if (ThermoSensor.SENSOR_FIELD_THERMO_TEMPERATURE_ALARM_HIGH.equals(propertyName)) {
-					mTemperatureAlarmHighTextView.setText(String.format(Locale.US, "%.01f", event.getNewValue()));
+					mTemperatureAlarmHighTextView.setTemperature((Float)event.getNewValue());
 				} else if (ThermoSensor.SENSOR_FIELD_THERMO_PROBE_ALARM_SET.equals(propertyName)) {
 					mProbeSwitch.setChecked(((Boolean)event.getNewValue()).booleanValue());
 				} else if (ThermoSensor.SENSOR_FIELD_THERMO_PROBE_ALARM_LOW.equals(propertyName)) {
-					mProbeAlarmLowTextView.setText(String.format(Locale.US, "%.01f", event.getNewValue()));
+					mProbeAlarmLowTextView.setTemperature((Float)event.getNewValue());
 				} else if (ThermoSensor.SENSOR_FIELD_THERMO_PROBE_ALARM_HIGH.equals(propertyName)) {
-					mProbeAlarmHighTextView.setText(String.format(Locale.US, "%.01f", event.getNewValue()));
+					mProbeAlarmHighTextView.setTemperature((Float)event.getNewValue());
 				} 
 			}
 		});

@@ -61,7 +61,7 @@
                         android:layout_weight="1"
                         android:orientation="horizontal" >
 
-                        <TextView
+                        <com.wimoto.app.widgets.temperature.TemperatureValueView
                             android:id="@+id/temperatureTextView"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
@@ -71,7 +71,7 @@
                             android:textColor="@color/color_white"
                             android:textSize="42sp" />
 
-                        <TextView
+                        <com.wimoto.app.widgets.temperature.TemperatureSignTextView
                             android:layout_width="35dp"
                             android:layout_height="match_parent"
                             android:layout_marginLeft="5dp"
@@ -105,7 +105,7 @@
                         android:checked="false"
                         android:clickable="true" />
 
-                    <TextView
+                    <com.wimoto.app.widgets.temperature.TemperatureValueTextView
                         android:id="@+id/temperatureLowTextView"
                         android:layout_width="50dp"
                         android:layout_height="wrap_content"
@@ -116,7 +116,7 @@
                         android:textColor="@color/color_white"
                         android:textSize="17sp" />
 
-                    <TextView
+                    <com.wimoto.app.widgets.temperature.TemperatureValueTextView
                         android:id="@+id/temperatureHighTextView"
                         android:layout_width="50dp"
                         android:layout_height="wrap_content"

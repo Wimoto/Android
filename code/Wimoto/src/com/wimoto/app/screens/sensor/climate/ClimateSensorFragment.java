@@ -15,42 +15,45 @@ import com.wimoto.app.R;
 import com.wimoto.app.model.ClimateSensor;
 import com.wimoto.app.model.Sensor;
 import com.wimoto.app.screens.sensor.SensorFragment;
+import com.wimoto.app.widgets.AlarmPickerTemperatureView;
 import com.wimoto.app.widgets.AlarmPickerView;
 import com.wimoto.app.widgets.AlarmPickerView.AlarmPickerListener;
 import com.wimoto.app.widgets.AnimationSwitch;
 import com.wimoto.app.widgets.AnimationSwitch.OnCheckedChangeListener;
 import com.wimoto.app.widgets.sparkline.LineSparkView;
+import com.wimoto.app.widgets.temperature.TemperatureValueTextView;
+import com.wimoto.app.widgets.temperature.TemperatureValueView;
 
 public class ClimateSensorFragment extends SensorFragment {
 	
-	private TextView mTemperatureTextView;
-	private TextView mHumidityTextView;
-	private TextView mLightTextView;
+	protected TemperatureValueView mTemperatureTextView;
+	protected TextView mHumidityTextView;
+	protected TextView mLightTextView;
 	
-	private LineSparkView mTemperatureSparkView;
-	private LineSparkView mHumiditySparkView;
-	private LineSparkView mLightSparkView;
+	protected LineSparkView mTemperatureSparkView;
+	protected LineSparkView mHumiditySparkView;
+	protected LineSparkView mLightSparkView;
 	
-	private LinearLayout mTemperatureAlarmLayout;
-	private LinearLayout mHumidityAlarmLayout;
-	private LinearLayout mLightAlarmLayout;
+	protected LinearLayout mTemperatureAlarmLayout;
+	protected LinearLayout mHumidityAlarmLayout;
+	protected LinearLayout mLightAlarmLayout;
 	
-	private AnimationSwitch mTemperatureSwitch;
-	private AnimationSwitch mHumiditySwitch;
-	private AnimationSwitch mLightSwitch;
+	protected AnimationSwitch mTemperatureSwitch;
+	protected AnimationSwitch mHumiditySwitch;
+	protected AnimationSwitch mLightSwitch;
 	
-	private TextView mTemperatureAlarmLowTextView;
-	private TextView mTemperatureAlarmHighTextView;	
+	protected TemperatureValueTextView mTemperatureAlarmLowTextView;
+	protected TemperatureValueTextView mTemperatureAlarmHighTextView;	
 
-	private TextView mHumidityAlarmLowTextView;
-	private TextView mHumidityAlarmHighTextView;	
+	protected TextView mHumidityAlarmLowTextView;
+	protected TextView mHumidityAlarmHighTextView;	
 	
-	private TextView mLightAlarmLowTextView;
-	private TextView mLightAlarmHighTextView;
+	protected TextView mLightAlarmLowTextView;
+	protected TextView mLightAlarmHighTextView;
 	
-	private AlarmPickerView mAlarmTemperaturePickerView;
-	private AlarmPickerView mAlarmHumidityPickerView;
-	private AlarmPickerView mAlarmLightPickerView;
+	protected AlarmPickerTemperatureView mAlarmTemperaturePickerView;
+	protected AlarmPickerView mAlarmHumidityPickerView;
+	protected AlarmPickerView mAlarmLightPickerView;
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -67,11 +70,11 @@ public class ClimateSensorFragment extends SensorFragment {
 		mTemperatureSparkView.setBackgroundColor(Color.TRANSPARENT);
 		mTemperatureSparkView.setLineColor(Color.WHITE);
 		
-		mTemperatureTextView = (TextView) mView.findViewById(R.id.temperatureTextView);
+		mTemperatureTextView = (TemperatureValueView) mView.findViewById(R.id.temperatureTextView);
 		
 		mTemperatureAlarmLayout = (LinearLayout) mView.findViewById(R.id.temperatureAlarmLayout);
 		
-		mAlarmTemperaturePickerView = new AlarmPickerView(getActivity(), ClimateSensor.SENSOR_FIELD_CLIMATE_TEMPERATURE, -60, 130, 
+		mAlarmTemperaturePickerView = new AlarmPickerTemperatureView(getActivity(), ClimateSensor.SENSOR_FIELD_CLIMATE_TEMPERATURE, -60, 130, 
 				new AlarmPickerListener() {
 			@Override
 			public void onSave(float lowerValue, float upperValue) {
@@ -107,11 +110,11 @@ public class ClimateSensorFragment extends SensorFragment {
 			}
 		});
 		
-		mTemperatureAlarmLowTextView = (TextView) mView.findViewById(R.id.temperatureLowTextView);
-		mTemperatureAlarmLowTextView.setText(String.format(Locale.US, "%.01f", ((ClimateSensor)mSensor).getTemperatureAlarmLow()));
+		mTemperatureAlarmLowTextView = (TemperatureValueTextView) mView.findViewById(R.id.temperatureLowTextView);
+		mTemperatureAlarmLowTextView.setTemperature(((ClimateSensor)mSensor).getTemperatureAlarmLow());
 
-		mTemperatureAlarmHighTextView = (TextView) mView.findViewById(R.id.temperatureHighTextView);
-		mTemperatureAlarmHighTextView.setText(String.format(Locale.US, "%.01f", ((ClimateSensor)mSensor).getTemperatureAlarmHigh()));
+		mTemperatureAlarmHighTextView = (TemperatureValueTextView) mView.findViewById(R.id.temperatureHighTextView);
+		mTemperatureAlarmHighTextView.setTemperature(((ClimateSensor)mSensor).getTemperatureAlarmHigh());
 		
 		mHumiditySparkView = (LineSparkView) mView.findViewById(R.id.humiditySparkView);
 		mHumiditySparkView.setValues(mSensor.getLastValues(ClimateSensor.SENSOR_FIELD_CLIMATE_HUMIDITY));
@@ -267,7 +270,7 @@ public class ClimateSensorFragment extends SensorFragment {
 					}
 				} else {
 					if (ClimateSensor.SENSOR_FIELD_CLIMATE_TEMPERATURE.equals(propertyName)) {
-						mTemperatureTextView.setText(String.format(Locale.US, "%.01f", event.getNewValue()));
+						mTemperatureTextView.setTemperature((Float)event.getNewValue());
 						mTemperatureSparkView.invalidate();
 						if(((ClimateSensor)mSensor).isTemperatureAlarmSet() && outOfRange((Float)event.getNewValue(), 
 								((ClimateSensor)mSensor).getTemperatureAlarmHigh(), ((ClimateSensor)mSensor).getTemperatureAlarmLow())) {
@@ -290,9 +293,9 @@ public class ClimateSensorFragment extends SensorFragment {
 					} else if (ClimateSensor.SENSOR_FIELD_CLIMATE_TEMPERATURE_ALARM_SET.equals(propertyName)) {
 						mTemperatureSwitch.setChecked(((Boolean)event.getNewValue()).booleanValue());
 					} else if (ClimateSensor.SENSOR_FIELD_CLIMATE_TEMPERATURE_ALARM_LOW.equals(propertyName)) {
-						mTemperatureAlarmLowTextView.setText(String.format(Locale.US, "%.01f", event.getNewValue()));
+						mTemperatureAlarmLowTextView.setTemperature((Float)event.getNewValue());
 					} else if (ClimateSensor.SENSOR_FIELD_CLIMATE_TEMPERATURE_ALARM_HIGH.equals(propertyName)) {
-						mTemperatureAlarmHighTextView.setText(String.format(Locale.US, "%.01f", event.getNewValue()));
+						mTemperatureAlarmHighTextView.setTemperature((Float)event.getNewValue());
 					} else if (ClimateSensor.SENSOR_FIELD_CLIMATE_HUMIDITY_ALARM_SET.equals(propertyName)) {
 						mHumiditySwitch.setChecked(((Boolean)event.getNewValue()).booleanValue());
 					} else if (ClimateSensor.SENSOR_FIELD_CLIMATE_HUMIDITY_ALARM_LOW.equals(propertyName)) {
