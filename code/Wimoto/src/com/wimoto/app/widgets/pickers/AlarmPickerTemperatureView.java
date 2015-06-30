@@ -1,4 +1,4 @@
-package com.wimoto.app.widgets;
+package com.wimoto.app.widgets.pickers;
 
 import android.content.Context;
 import android.content.SharedPreferences;

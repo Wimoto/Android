@@ -13,10 +13,10 @@ import com.wimoto.app.R;
 import com.wimoto.app.model.Sensor;
 import com.wimoto.app.model.ThermoSensor;
 import com.wimoto.app.screens.sensor.SensorFragment;
-import com.wimoto.app.widgets.AlarmPickerTemperatureView;
-import com.wimoto.app.widgets.AlarmPickerView.AlarmPickerListener;
 import com.wimoto.app.widgets.AnimationSwitch;
 import com.wimoto.app.widgets.AnimationSwitch.OnCheckedChangeListener;
+import com.wimoto.app.widgets.pickers.AlarmPickerTemperatureView;
+import com.wimoto.app.widgets.pickers.AlarmPickerView.AlarmPickerListener;
 import com.wimoto.app.widgets.sparkline.LineSparkView;
 import com.wimoto.app.widgets.temperature.TemperatureValueTextView;
 import com.wimoto.app.widgets.temperature.TemperatureValueView;
@@ -131,7 +131,7 @@ public class ThermoSensorFragment extends SensorFragment {
 			
 			@Override
 			public void onCancel() {
-				mView.removeView(mAlarmTemperaturePickerView);
+				mView.removeView(mAlarmProbePickerView);
 				
 				ThermoSensor thermoSensor = (ThermoSensor) mSensor;
 				thermoSensor.setProbeAlarmSet(false);	

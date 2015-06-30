@@ -15,10 +15,10 @@ import com.wimoto.app.R;
 import com.wimoto.app.model.GrowSensor;
 import com.wimoto.app.model.Sensor;
 import com.wimoto.app.screens.sensor.SensorFragment;
-import com.wimoto.app.widgets.AlarmPickerView;
-import com.wimoto.app.widgets.AlarmPickerView.AlarmPickerListener;
 import com.wimoto.app.widgets.AnimationSwitch;
 import com.wimoto.app.widgets.AnimationSwitch.OnCheckedChangeListener;
+import com.wimoto.app.widgets.pickers.AlarmPickerView;
+import com.wimoto.app.widgets.pickers.AlarmPickerView.AlarmPickerListener;
 import com.wimoto.app.widgets.sparkline.LineSparkView;
 
 public class GrowSensorFragment extends SensorFragment {

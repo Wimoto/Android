@@ -1,6 +1,7 @@
 package com.wimoto.app.screens.sensor.sentry;
 
 import java.beans.PropertyChangeEvent;
+import java.util.Calendar;
 import java.util.Locale;
 
 import android.graphics.Color;
@@ -17,6 +18,8 @@ import com.wimoto.app.model.SentrySensor;
 import com.wimoto.app.screens.sensor.SensorFragment;
 import com.wimoto.app.widgets.AnimationSwitch;
 import com.wimoto.app.widgets.AnimationSwitch.OnCheckedChangeListener;
+import com.wimoto.app.widgets.pickers.DatePickerView;
+import com.wimoto.app.widgets.pickers.DatePickerView.DatePickerListener;
 import com.wimoto.app.widgets.sparkline.LineSparkView;
 
 public class SentrySensorFragment extends SensorFragment {
@@ -32,6 +35,9 @@ public class SentrySensorFragment extends SensorFragment {
 	
 	private AnimationSwitch mAccelerometerSwitch;
 	private AnimationSwitch mInfraredSwitch;
+	
+	private DatePickerView mAccelerometerDatePickerView;
+	private DatePickerView mInfraredDatePickerView;
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -52,11 +58,33 @@ public class SentrySensorFragment extends SensorFragment {
 		
 		mAccelerometerAlarmLayout = (LinearLayout) mView.findViewById(R.id.accelerometerAlarmLayout);
 		
+		mAccelerometerDatePickerView = new DatePickerView(getActivity(), SentrySensor.SENSOR_FIELD_SENTRY_ACCELEROMETER, 
+				new DatePickerListener() {
+
+					@Override
+					public void onSave(Calendar calendar) {
+						mView.removeView(mAccelerometerDatePickerView);
+					}
+
+					@Override
+					public void onCancel() {
+						mView.removeView(mAccelerometerDatePickerView);
+						
+						((SentrySensor)mSensor).setAccelerometerAlarmSet(false);
+					}
+		});
+		
 		mAccelerometerSwitch = (AnimationSwitch)mView.findViewById(R.id.accelerometer_switch);
 		mAccelerometerSwitch.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 			@Override
 			public void onCheckedChanged(AnimationSwitch view, boolean isChecked) {
-				((SentrySensor)mSensor).setAccelerometerAlarmSet(isChecked);
+				if (isChecked) {
+					showAccelerometerDatePickerView();
+				} else {
+					mView.removeView(mAccelerometerDatePickerView);
+					
+					((SentrySensor)mSensor).setAccelerometerAlarmSet(false);
+				}	
 			}
 		});
 		
@@ -69,14 +97,37 @@ public class SentrySensorFragment extends SensorFragment {
 		mInfraredTextView.setText(Float.toString(((SentrySensor)mSensor).getInfrared()));
 		
 		mInfraredAlarmLayout = (LinearLayout) mView.findViewById(R.id.infraredAlarmLayout);
+		
+		mInfraredDatePickerView = new DatePickerView(getActivity(), SentrySensor.SENSOR_FIELD_SENTRY_ACCELEROMETER, 
+				new DatePickerListener() {
+
+					@Override
+					public void onSave(Calendar calendar) {
+						mView.removeView(mInfraredDatePickerView);
+					}
+
+					@Override
+					public void onCancel() {
+						mView.removeView(mInfraredDatePickerView);
+						
+						((SentrySensor)mSensor).setInfraredAlarmSet(false);
+					}
+		});
+		
 		mInfraredSwitch = (AnimationSwitch)mView.findViewById(R.id.infrared_switch);
 		mInfraredSwitch.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 			@Override
 			public void onCheckedChanged(AnimationSwitch view, boolean isChecked) {
-				((SentrySensor)mSensor).setInfraredAlarmSet(isChecked);
+				if (isChecked) {
+					showInfraredDatePickerView();
+				} else {
+					mView.removeView(mInfraredDatePickerView);
+					
+					((SentrySensor)mSensor).setInfraredAlarmSet(false);
+				}	
 			}
 		});
-		
+
 		getSensorFooterView().setLogo(R.drawable.sentry_logo);
 	}
 	
@@ -136,5 +187,23 @@ public class SentrySensorFragment extends SensorFragment {
 				} 
 			}
 		});
+	}
+	
+	private void showAccelerometerDatePickerView() {
+		Calendar testCalendar = Calendar.getInstance();
+		mAccelerometerDatePickerView.setSelectedCalendar(testCalendar);
+		
+		mView.addView(mAccelerometerDatePickerView);
+
+		mAccelerometerDatePickerView.show();
+	}
+	
+	private void showInfraredDatePickerView() {
+		Calendar testCalendar = Calendar.getInstance();
+		mInfraredDatePickerView.setSelectedCalendar(testCalendar);
+		
+		mView.addView(mInfraredDatePickerView);
+
+		mInfraredDatePickerView.show();
 	}
 }

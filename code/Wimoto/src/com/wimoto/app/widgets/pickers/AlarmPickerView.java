@@ -1,4 +1,4 @@
-package com.wimoto.app.widgets;
+package com.wimoto.app.widgets.pickers;
 
 import java.lang.reflect.Field;
 
@@ -7,28 +7,20 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.Animation.AnimationListener;
-import android.view.animation.AnimationUtils;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.NumberPicker;
 import android.widget.NumberPicker.OnValueChangeListener;
-import android.widget.RelativeLayout;
 
 import com.wimoto.app.R;
 
-public class AlarmPickerView extends RelativeLayout {
+public class AlarmPickerView extends BasePickerView {
 
 	public interface AlarmPickerListener {
 		void onSave(float lowerValue, float upperValue);
 		void onCancel();
 	}
 	
-	private Context mContext;
-	private boolean mIsShown;
-
-	private String mSensorCharacteristic;
+	private AlarmPickerListener mListener;
 	
 	private NumberPicker mMinIntegerPicker, mMinFractPicker;
 	private NumberPicker mMaxIntegerPicker, mMaxFractPicker;
@@ -40,20 +32,14 @@ public class AlarmPickerView extends RelativeLayout {
 	private int mPickerMaxValue;
 	
 	public AlarmPickerView(Context context, String sensorCharacteristic, int absoluteMinValue, int absoluteMaxValue, final AlarmPickerListener listener) {
-		super(context);
+		super(context, sensorCharacteristic);
 		
-		mContext = context;
+		mListener = listener;
 		
 		LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         inflater.inflate(R.layout.alarm_picker_view, this);
         
-        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(
-		        RelativeLayout.LayoutParams.WRAP_CONTENT,
-		        RelativeLayout.LayoutParams.WRAP_CONTENT);
-		layoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
-		setLayoutParams(layoutParams);
-        
-        mSensorCharacteristic = sensorCharacteristic;
+        initButtons();
 
         mMinIntegerPicker = (NumberPicker) findViewById(R.id.alarmMinIntegerNumberPicker);
         mMinFractPicker = (NumberPicker) findViewById(R.id.alarmMinFractNumberPicker);
@@ -62,28 +48,7 @@ public class AlarmPickerView extends RelativeLayout {
         mMaxIntegerPicker = (NumberPicker) findViewById(R.id.alarmMaxIntegerNumberPicker);
         mMaxFractPicker = (NumberPicker) findViewById(R.id.alarmMaxFractNumberPicker);
         setNumberPickerTextColor(mMaxFractPicker, Color.RED);
-        
-        Button cancelButton = (Button) findViewById(R.id.alarmCancelButton);
-        cancelButton.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				if (listener != null) {
-					listener.onCancel();
-				}
-			}	
-        });
-        
-        Button saveButton = (Button) findViewById(R.id.alarmSaveButton);
-        saveButton.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				if (listener != null) {
-					checkValues();
-					listener.onSave(getMinValue(), getMaxValue());
-				}				
-			}	
-        });
-		
+
         mPickerMinValue = absoluteMinValue;
         mPickerMaxValue = absoluteMaxValue;
         
@@ -145,9 +110,21 @@ public class AlarmPickerView extends RelativeLayout {
         mMaxFractPicker.setMinValue(0);
         mMaxFractPicker.setMaxValue(9);        
 	}
+	
 
-	public String getSensorCharacteristic() {
-		return mSensorCharacteristic;
+	@Override
+	void cancel() {
+		if (mListener != null) {
+			mListener.onCancel();
+		}
+	}
+
+	@Override
+	void save() {
+		if (mListener != null) {
+			checkValues();
+			mListener.onSave(getMinValue(), getMaxValue());
+		}	
 	}
 	
 	private void checkValues() {
@@ -216,48 +193,6 @@ public class AlarmPickerView extends RelativeLayout {
 		mMaxFractPicker.setValue(fractValue);
 	}
 	
-	public void show() {
-		if (mIsShown) {
-			return;
-		}
-		
-		 Animation animation = AnimationUtils.loadAnimation(mContext, R.anim.alarm_in);
-		 startAnimation(animation);
-		 
-		 setVisibility(View.VISIBLE);
-		 
-		 mIsShown = true;
-	}
-	
-	public void hide() {
-		if (!mIsShown) {
-			return;
-		}
-		
-		 Animation animation = AnimationUtils.loadAnimation(mContext, R.anim.alarm_out);
-		 animation.setAnimationListener(new AnimationListener() {
-
-			@Override
-			public void onAnimationStart(Animation animation) {
-
-			}
-
-			@Override
-			public void onAnimationEnd(Animation animation) {
-				setVisibility(View.GONE);
-			}
-
-			@Override
-			public void onAnimationRepeat(Animation animation) {
-
-			}
-			 
-		 });
-		 
-		 startAnimation(animation);
-		 mIsShown = false;
-	}
-	
 	private void setNumberPickerTextColor(NumberPicker numberPicker, int color)
 	{
 	    final int count = numberPicker.getChildCount();
@@ -283,4 +218,5 @@ public class AlarmPickerView extends RelativeLayout {
 	        }
 	    }
 	}
+
 }
