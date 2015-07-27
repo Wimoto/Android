@@ -4,7 +4,6 @@ import java.util.LinkedList;
 import java.util.Random;
 
 import android.os.Handler;
-import android.util.Log;
 
 import com.wimoto.app.R;
 import com.wimoto.app.model.ClimateSensor;
@@ -18,7 +17,6 @@ public class ClimateDemoSensor extends ClimateSensor {
 	private Handler mHandler;
 	
 	public ClimateDemoSensor() {
-		Log.e("", "ClimateDemoSensor()");
 		mTitle = AppContext.getContext().getString(R.string.sensor_climate_demo);
 		mId = SENSOR_CLIMATE_DEMO;
 		
@@ -43,8 +41,6 @@ public class ClimateDemoSensor extends ClimateSensor {
 	}
 
 	public void runDemo() {
-		Log.e("", "runDemo()");
-		
 		notifyObservers(SENSOR_FIELD_CONNECTION, 0, 0);
 		mRunnable.run();
 	}
@@ -63,7 +59,6 @@ public class ClimateDemoSensor extends ClimateSensor {
 	};
 	
 	public void demoUpdate() {
-		Log.e("", "demoUpdate()");
 		Random random = new Random(); 
 		
 		int temperatureStep = 2 - random.nextInt(5);

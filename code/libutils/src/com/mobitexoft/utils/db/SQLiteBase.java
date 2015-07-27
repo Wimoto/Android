@@ -311,4 +311,19 @@ public class SQLiteBase {
 			throw new SQLiteBaseException(e);
 		}
 	}
+	
+	public void clean() {
+		ArrayList<String> tables = getTablesList();
+		for (String tableName : tables) {
+			try {
+				mDatabase.beginTransaction();
+				mDatabase.delete(tableName, null, null);
+				mDatabase.setTransactionSuccessful();
+			} catch (Exception e) {
+				e.printStackTrace();
+			} finally {
+		    	mDatabase.endTransaction();
+			}
+		}
+	}
 }

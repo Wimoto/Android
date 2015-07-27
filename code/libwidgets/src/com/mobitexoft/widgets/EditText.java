@@ -39,7 +39,12 @@ public class EditText extends android.widget.EditText {
 	@Override
 	public void setInputType(int type) {
 		super.setInputType(type);
-		setTypeface(Typeface.createFromAsset(mContext.getAssets(), mFontFamily + ".ttf"));
+		
+		try {
+			setTypeface(Typeface.createFromAsset(mContext.getAssets(), mFontFamily + ".ttf"));
+		} catch (Exception e) {
+			// we need catch to just prevent application from crashing
+		} 
 	}
 	
 	@Override

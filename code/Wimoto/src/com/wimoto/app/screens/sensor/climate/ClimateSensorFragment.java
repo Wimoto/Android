@@ -1,10 +1,12 @@
 package com.wimoto.app.screens.sensor.climate;
 
 import java.beans.PropertyChangeEvent;
+import java.util.Date;
 import java.util.Locale;
 
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +22,8 @@ import com.wimoto.app.widgets.AnimationSwitch.OnCheckedChangeListener;
 import com.wimoto.app.widgets.pickers.AlarmPickerTemperatureView;
 import com.wimoto.app.widgets.pickers.AlarmPickerView;
 import com.wimoto.app.widgets.pickers.AlarmPickerView.AlarmPickerListener;
+import com.wimoto.app.widgets.pickers.TimePickerView;
+import com.wimoto.app.widgets.pickers.TimePickerView.TimePickerListener;
 import com.wimoto.app.widgets.sparkline.LineSparkView;
 import com.wimoto.app.widgets.temperature.TemperatureValueTextView;
 import com.wimoto.app.widgets.temperature.TemperatureValueView;
@@ -54,6 +58,8 @@ public class ClimateSensorFragment extends SensorFragment {
 	protected AlarmPickerTemperatureView mAlarmTemperaturePickerView;
 	protected AlarmPickerView mAlarmHumidityPickerView;
 	protected AlarmPickerView mAlarmLightPickerView;
+	
+	private TimePickerView mTemperaturePickerView;
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -94,6 +100,25 @@ public class ClimateSensorFragment extends SensorFragment {
 				ClimateSensor climateSensor = (ClimateSensor) mSensor;
 				climateSensor.setTemperatureAlarmSet(false);	
 			}
+		});
+		
+		mTemperaturePickerView = new TimePickerView(getActivity(), ClimateSensor.SENSOR_FIELD_CLIMATE_TEMPERATURE, 
+				new TimePickerListener() {
+
+					@Override
+					public void onSave(Date lowerDate, Date upperDate) {
+						mView.removeView(mTemperaturePickerView);
+						
+						Log.e("lower", lowerDate.toString());
+						Log.e("upper", upperDate.toString());
+					}
+
+					@Override
+					public void onCancel() {
+						mView.removeView(mTemperaturePickerView);
+						
+						((ClimateSensor)mSensor).setTemperatureAlarmSet(false);
+					}
 		});
 		
 		mTemperatureSwitch = (AnimationSwitch) mView.findViewById(R.id.temperature_switch);
@@ -315,12 +340,20 @@ public class ClimateSensorFragment extends SensorFragment {
 	}
 		
 	private void showTemperaturePickerView() {
-		mView.addView(mAlarmTemperaturePickerView);
-
-		mAlarmTemperaturePickerView.setSelectedMinValue(((ClimateSensor)mSensor).getTemperatureAlarmLow());
-		mAlarmTemperaturePickerView.setSelectedMaxValue(((ClimateSensor)mSensor).getTemperatureAlarmHigh());
+//		mView.addView(mAlarmTemperaturePickerView);
+//
+//		mAlarmTemperaturePickerView.setSelectedMinValue(((ClimateSensor)mSensor).getTemperatureAlarmLow());
+//		mAlarmTemperaturePickerView.setSelectedMaxValue(((ClimateSensor)mSensor).getTemperatureAlarmHigh());
+//		
+//		mAlarmTemperaturePickerView.show();
 		
-		mAlarmTemperaturePickerView.show();
+		
+		Date date = new Date();
+		mTemperaturePickerView.setMinMaxDate(date, date);
+		
+		mView.addView(mTemperaturePickerView);
+
+		mTemperaturePickerView.show();
 	}
 	
 	private void showHumidityPickerView() {

@@ -1,7 +1,7 @@
 package com.wimoto.app.screens.sensor.sentry;
 
 import java.beans.PropertyChangeEvent;
-import java.util.Calendar;
+import java.util.Date;
 import java.util.Locale;
 
 import android.graphics.Color;
@@ -18,8 +18,8 @@ import com.wimoto.app.model.SentrySensor;
 import com.wimoto.app.screens.sensor.SensorFragment;
 import com.wimoto.app.widgets.AnimationSwitch;
 import com.wimoto.app.widgets.AnimationSwitch.OnCheckedChangeListener;
-import com.wimoto.app.widgets.pickers.DatePickerView;
-import com.wimoto.app.widgets.pickers.DatePickerView.DatePickerListener;
+import com.wimoto.app.widgets.pickers.TimePickerView;
+import com.wimoto.app.widgets.pickers.TimePickerView.TimePickerListener;
 import com.wimoto.app.widgets.sparkline.LineSparkView;
 
 public class SentrySensorFragment extends SensorFragment {
@@ -36,8 +36,8 @@ public class SentrySensorFragment extends SensorFragment {
 	private AnimationSwitch mAccelerometerSwitch;
 	private AnimationSwitch mInfraredSwitch;
 	
-	private DatePickerView mAccelerometerDatePickerView;
-	private DatePickerView mInfraredDatePickerView;
+	private TimePickerView mAccelerometerDatePickerView;
+	private TimePickerView mInfraredDatePickerView;
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -58,11 +58,11 @@ public class SentrySensorFragment extends SensorFragment {
 		
 		mAccelerometerAlarmLayout = (LinearLayout) mView.findViewById(R.id.accelerometerAlarmLayout);
 		
-		mAccelerometerDatePickerView = new DatePickerView(getActivity(), SentrySensor.SENSOR_FIELD_SENTRY_ACCELEROMETER, 
-				new DatePickerListener() {
+		mAccelerometerDatePickerView = new TimePickerView(getActivity(), SentrySensor.SENSOR_FIELD_SENTRY_ACCELEROMETER, 
+				new TimePickerListener() {
 
 					@Override
-					public void onSave(Calendar calendar) {
+					public void onSave(Date lowerDate, Date upperDate) {
 						mView.removeView(mAccelerometerDatePickerView);
 					}
 
@@ -98,11 +98,11 @@ public class SentrySensorFragment extends SensorFragment {
 		
 		mInfraredAlarmLayout = (LinearLayout) mView.findViewById(R.id.infraredAlarmLayout);
 		
-		mInfraredDatePickerView = new DatePickerView(getActivity(), SentrySensor.SENSOR_FIELD_SENTRY_ACCELEROMETER, 
-				new DatePickerListener() {
+		mInfraredDatePickerView = new TimePickerView(getActivity(), SentrySensor.SENSOR_FIELD_SENTRY_ACCELEROMETER, 
+				new TimePickerListener() {
 
 					@Override
-					public void onSave(Calendar calendar) {
+					public void onSave(Date lowerDate, Date upperDate) {
 						mView.removeView(mInfraredDatePickerView);
 					}
 
@@ -190,8 +190,8 @@ public class SentrySensorFragment extends SensorFragment {
 	}
 	
 	private void showAccelerometerDatePickerView() {
-		Calendar testCalendar = Calendar.getInstance();
-		mAccelerometerDatePickerView.setSelectedCalendar(testCalendar);
+		Date date = new Date();
+		mAccelerometerDatePickerView.setMinMaxDate(date, date);
 		
 		mView.addView(mAccelerometerDatePickerView);
 
@@ -199,8 +199,8 @@ public class SentrySensorFragment extends SensorFragment {
 	}
 	
 	private void showInfraredDatePickerView() {
-		Calendar testCalendar = Calendar.getInstance();
-		mInfraredDatePickerView.setSelectedCalendar(testCalendar);
+		Date date = new Date();
+		mInfraredDatePickerView.setMinMaxDate(date, date);
 		
 		mView.addView(mInfraredDatePickerView);
 

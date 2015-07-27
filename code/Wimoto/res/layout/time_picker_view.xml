@@ -14,22 +14,38 @@
             android:id="@+id/alarmCancelButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="30dp"
+            android:layout_marginStart="30dp"
             android:text="@string/alert_cancel" />
 
         <Button
             android:id="@+id/alarmSaveButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
             android:layout_alignParentTop="true"
-            android:layout_marginRight="30dp"
+            android:layout_marginEnd="30dp"
             android:text="@string/alert_save" />
     </RelativeLayout>
-    
-    <DatePicker
-        android:id="@+id/datePicker"
+
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="200dp" />
+        android:layout_height="wrap_content" >
+
+        <TimePicker
+            android:id="@+id/timePickerLeft"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="5dp" />
+        
+        <TimePicker
+            android:id="@+id/timePickerRight"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="5dp"/>
+
+    </LinearLayout>
 
 </LinearLayout>
