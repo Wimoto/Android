@@ -15,21 +15,21 @@ import com.couchbase.lite.Database;
 import com.couchbase.lite.Document;
 import com.couchbase.lite.Emitter;
 import com.couchbase.lite.Manager;
-import com.couchbase.lite.ManagerOptions;
 import com.couchbase.lite.Mapper;
 import com.couchbase.lite.Query;
 import com.couchbase.lite.QueryEnumerator;
 import com.couchbase.lite.View;
 import com.couchbase.lite.android.AndroidContext;
 import com.couchbase.lite.util.Log;
-import com.wimoto.app.MainActivity;
+import com.wimoto.app.AppContext;
 import com.wimoto.app.bluetooth.BluetoothConnection;
 import com.wimoto.app.bluetooth.BluetoothService;
+import com.wimoto.app.bluetooth.WimotoDevice;
 import com.wimoto.app.bluetooth.BluetoothService.BluetoothServiceListener;
+import com.wimoto.app.bluetooth.DiscoveryListener;
 import com.wimoto.app.model.Sensor;
 import com.wimoto.app.model.demosensors.ClimateDemoSensor;
 import com.wimoto.app.model.demosensors.ThermoDemoSensor;
-import com.wimoto.app.utils.AppContext;
 
 public class SensorsManager implements BluetoothServiceListener {
 
@@ -37,6 +37,8 @@ public class SensorsManager implements BluetoothServiceListener {
 	private final static String WIMOTO_SENSORS 	= "wimoto_sensors";
 	
 	private final static String DOC_TYPE		= "sensor";
+	
+	private AppContext mContext;
 	
 	private Map<String, Sensor> mSensors;
 	
@@ -51,16 +53,18 @@ public class SensorsManager implements BluetoothServiceListener {
 	private Set<SensorsManagerListener> mUnregisteredSensorListeners;
 	private Set<SensorsManagerListener> mRegisteredSensorListeners;
 		
-	public SensorsManager () {
+	public SensorsManager(AppContext context) {
+		mContext = context;
+		
 		mSensors = new HashMap<String, Sensor>();
 		
 		mUnregisteredSensorListeners = new HashSet<SensorsManagerListener> ();
 		mRegisteredSensorListeners = new HashSet<SensorsManagerListener> ();
 
 		try {
-			mBluetoothService = new BluetoothService(this);
+			mBluetoothService = new BluetoothService(mContext, this);
 			
-			Manager manager = new Manager(new AndroidContext(AppContext.getContext()), Manager.DEFAULT_OPTIONS);
+			Manager manager = new Manager(new AndroidContext(mContext), Manager.DEFAULT_OPTIONS);
 			
 			mDatabase = manager.getDatabase(WIMOTO_DB);
 			
@@ -69,15 +73,14 @@ public class SensorsManager implements BluetoothServiceListener {
 			while (enumerator.hasNext()) {
 				Document doc = enumerator.next().getDocument();
 				
-				Sensor sensor = Sensor.getSensorFromDocument(doc);
-
+				Sensor sensor = Sensor.getSensorFromDocument(mContext, doc);
+				sensor.connectDevice(mBluetoothService.getDevice(sensor.getId()));
 				mSensors.put(sensor.getId(), sensor);
-				mBluetoothService.registerConnection(sensor.getId());
 			}
 			
 			Log.e("Loaded Sensors Count", Integer.toString(mSensors.size()));	
 			
-			addDemoSensors();
+			//addDemoSensors();
 			
 		} catch (Exception e) {
 			e.printStackTrace();			
@@ -88,16 +91,21 @@ public class SensorsManager implements BluetoothServiceListener {
 		return mBluetoothService.isBluetoothEnabled();
 	}
 	
-	public void startScan() {
-		mBluetoothService.scanLeDevices(true);
+	public void startScan(DiscoveryListener discoveryListener) {		
+		mBluetoothService.startScan(discoveryListener);
 	}
 	
 	public void stopScan() {
-		mBluetoothService.scanLeDevices(false);
+		mBluetoothService.stopScan();
 	}
 	
 	public void disconnectGatts() {
 		mBluetoothService.disconnectGatts();
+		
+		Collection<Sensor> values = mSensors.values();
+		for (Sensor sensor: values) {
+			sensor.disconnect();
+		}
 	}
 	
 	public Query getQuery() {
@@ -121,39 +129,39 @@ public class SensorsManager implements BluetoothServiceListener {
 	
 	private void addDemoSensors() {
 		if (!mSensors.containsKey(ClimateDemoSensor.SENSOR_CLIMATE_DEMO)) {
-			mSensors.put(ClimateDemoSensor.SENSOR_CLIMATE_DEMO, new ClimateDemoSensor());
+			mSensors.put(ClimateDemoSensor.SENSOR_CLIMATE_DEMO, new ClimateDemoSensor(mContext));
 		}
 		
 		if (!mSensors.containsKey(ThermoDemoSensor.SENSOR_THERMO_DEMO)) {
-			mSensors.put(ThermoDemoSensor.SENSOR_THERMO_DEMO, new ThermoDemoSensor());
+			mSensors.put(ThermoDemoSensor.SENSOR_THERMO_DEMO, new ThermoDemoSensor(mContext));
 		}
 		
 		Log.e("Total Count with demo", Integer.toString(mSensors.size()));
 	}
 	
-	public void registerSensor(Sensor newSensor) {
-		SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-	    Calendar calendar = GregorianCalendar.getInstance();
-	    String currentTimeString = dateFormatter.format(calendar.getTime());
-		
-		Map<String, Object> properties = new HashMap<String, Object>();
-		
-		properties.put("type", DOC_TYPE);
-		properties.put("title", newSensor.getTitle());
-		properties.put("id", newSensor.getId());
-		properties.put("sensor_type", newSensor.getType().getValue());
-		properties.put("created_at", currentTimeString);
-
+	public void registerDevice(WimotoDevice device) {
 		try {
+			SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+		    Calendar calendar = GregorianCalendar.getInstance();
+		    String currentTimeString = dateFormatter.format(calendar.getTime());
+			
+			Map<String, Object> properties = new HashMap<String, Object>();
+			
+			properties.put("type", DOC_TYPE);
+			properties.put("title", device.getName());
+			properties.put("id", device.getId());
+			properties.put("sensor_type", device.getProfile().getValue());
+			properties.put("created_at", currentTimeString);
+
 			Document document = mDatabase.createDocument();
 			document.putProperties(properties);
 			
-			newSensor.setDocument(document);
+			Sensor sensor = Sensor.getSensorFromDocument(mContext, document);
+			sensor.connectDevice(device);
 			
+			mSensors.put(sensor.getId(), sensor);
 			notifyRegisteredSensorObservers();
-			notifyUnregisteredSensorObservers();
-			
-		} catch (CouchbaseLiteException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		} 
 	}
@@ -163,9 +171,9 @@ public class SensorsManager implements BluetoothServiceListener {
 			sensor.getDocument().delete();
 			sensor.setDocument(null);
 			
-			if (!sensor.isConnected()) {
-				mSensors.remove(sensor.getId());
-			}
+//			if (!sensor.isConnected()) {
+//				mSensors.remove(sensor.getId());
+//			}
 			
 			notifyRegisteredSensorObservers();
 			notifyUnregisteredSensorObservers();
@@ -218,10 +226,9 @@ public class SensorsManager implements BluetoothServiceListener {
 		return resultList;
 	}
 	
-	private void notifyRegisteredSensorObservers() {
-		ArrayList<Sensor> sensors = getRegisteredSensors();
+	private void notifyRegisteredSensorObservers() {		
 		for (SensorsManagerListener observer: mRegisteredSensorListeners) {
-			observer.didUpdateSensors(sensors);
+			observer.didUpdateSensors(new ArrayList<Sensor>(mSensors.values()));
 		}
 	}
 	
@@ -231,40 +238,58 @@ public class SensorsManager implements BluetoothServiceListener {
 			observer.didUpdateSensors(sensors);
 		}
 	}
-					
+		
+//	@Override
+//	public void onWimotoDeviceDiscovered(BluetoothConnection connection) {
+//		Log.e("", "onConnectionDiscovered " + connection.getName());
+//		Sensor sensor = mSensors.get(connection.getId());
+//		if (sensor == null) {
+//			mSensors.put(connection.getId(), Sensor.getSensorFromConnection(mContext, connection));
+//			
+//			mContext.runOnUiThread(new Runnable() {
+//				@Override
+//				public void run() {
+//					notifyUnregisteredSensorObservers();
+//				}
+//			});
+//		} else {
+//			sensor.setConnection(connection);
+//		}
+//	}
+	
 	@Override
 	public void connectionEstablished(BluetoothConnection connection) {
-		Sensor sensor = mSensors.get(connection.getId());
-		if (sensor == null) {
-			mSensors.put(connection.getId(), Sensor.getSensorFromConnection(connection));
-			
-			((MainActivity)AppContext.getContext()).runOnUiThread(new Runnable() {
-				@Override
-				public void run() {
-					notifyUnregisteredSensorObservers();
-				}
-			});
-		} else {
-			sensor.setConnection(connection);
-		}		
+//		Sensor sensor = mSensors.get(connection.getId());
+//		if (sensor == null) {
+//			mSensors.put(connection.getId(), Sensor.getSensorFromConnection(mContext, connection));
+//			
+//			mContext.runOnUiThread(new Runnable() {
+//				@Override
+//				public void run() {
+//					notifyUnregisteredSensorObservers();
+//				}
+//			});
+//		} else {
+//			sensor.setConnection(connection);
+//		}		
 	}
 
 	@Override
 	public void connectionAborted(BluetoothConnection connection) {
-		Sensor sensor = mSensors.get(connection.getId());
-		if (sensor != null) { 
-			sensor.setConnection(null);
-			
-			if (sensor.getDocument() == null) {
-				mSensors.remove(connection.getId());
-				
-				((MainActivity)AppContext.getContext()).runOnUiThread(new Runnable() {
-					@Override
-					public void run() {
-						notifyUnregisteredSensorObservers();
-					}
-				});
-			}
-		}
+//		Sensor sensor = mSensors.get(connection.getId());
+//		if (sensor != null) { 
+//			sensor.setConnection(null);
+//			
+//			if (sensor.getDocument() == null) {
+//				mSensors.remove(connection.getId());
+//				
+//				mContext.runOnUiThread(new Runnable() {
+//					@Override
+//					public void run() {
+//						notifyUnregisteredSensorObservers();
+//					}
+//				});
+//			}
+//		}
 	}
 }

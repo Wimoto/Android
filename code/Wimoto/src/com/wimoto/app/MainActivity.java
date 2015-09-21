@@ -2,9 +2,6 @@ package com.wimoto.app;
 
 import java.util.ArrayList;
 
-import android.app.Activity;
-import android.bluetooth.BluetoothAdapter;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -12,8 +9,8 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.jeremyfeinstein.slidingmenu.lib.SlidingMenu;
-import com.jeremyfeinstein.slidingmenu.lib.app.SlidingFragmentActivity;
-import com.wimoto.app.R;
+import com.mobitexoft.leftmenu.PageFragment;
+import com.mobitexoft.navigation.NavigationFragment;
 import com.wimoto.app.managers.SensorsManager;
 import com.wimoto.app.managers.SensorsManager.SensorsManagerListener;
 import com.wimoto.app.menu.left.LeftMenuFragment;
@@ -22,11 +19,8 @@ import com.wimoto.app.menu.right.RightMenuFragment;
 import com.wimoto.app.model.Sensor;
 import com.wimoto.app.screens.sensor.NoSensorFragment;
 import com.wimoto.app.screens.sensor.SensorFragment;
-import com.wimoto.app.utils.AppContext;
-import com.mobitexoft.leftmenu.PageFragment;
-import com.mobitexoft.navigation.NavigationFragment;
 
-public class MainActivity extends SlidingFragmentActivity implements SensorsManagerListener {
+public class MainActivity extends AppContext implements SensorsManagerListener {
 	
 	private static final String TAG_NO_SENSOR = "no_sensor_tag";
 	
@@ -36,8 +30,6 @@ public class MainActivity extends SlidingFragmentActivity implements SensorsMana
 	private RightMenuFragment mRightMenuFragment;
 	
 	private Fragment mCurrentFragment;
-	
-	private SensorsManager mSensorsManager;
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -49,9 +41,7 @@ public class MainActivity extends SlidingFragmentActivity implements SensorsMana
         	finish();
         }
         
-        AppContext.setContext(this);
-        
-        mSensorsManager = new SensorsManager();
+        mSensorsManager = new SensorsManager(this);
         
         setMenuMode(SlidingMenu.LEFT_RIGHT);
         
@@ -81,17 +71,17 @@ public class MainActivity extends SlidingFragmentActivity implements SensorsMana
 	protected void onStop() {
 		super.onStop();
 		
-		stopScan();
+		//stopScan();
 	}
 	
-	@Override
-	public void onActivityResult(int requestCode, int resultCode, Intent data) {
-		super.onActivityResult(requestCode, resultCode, data);
-
-		if ((requestCode == REQUEST_ENABLE_BT) && (resultCode == Activity.RESULT_OK)) {
-			mSensorsManager.startScan();
-		}		
-	}
+//	@Override
+//	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+//		super.onActivityResult(requestCode, resultCode, data);
+//
+//		if ((requestCode == REQUEST_ENABLE_BT) && (resultCode == Activity.RESULT_OK)) {
+//			mSensorsManager.startScan();
+//		}		
+//	}
 	
 	@Override
 	protected void onDestroy() {
@@ -100,7 +90,7 @@ public class MainActivity extends SlidingFragmentActivity implements SensorsMana
 		Log.e("", "Main Activity onDestroy");
 		
 		mSensorsManager.removeListenerForRegisteredSensors(this);
-		stopScan();
+		//stopScan();
 		mSensorsManager.disconnectGatts();
 	}
 
@@ -113,22 +103,18 @@ public class MainActivity extends SlidingFragmentActivity implements SensorsMana
 		}
 	}
 
-	public SensorsManager getSensorsManager() {
-		return mSensorsManager;
-	}
-
-	public void startScan() {
-		if (mSensorsManager.isBluetoothEnabled()) {
-			mSensorsManager.startScan();
-		} else {
-			Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-		    startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
-		}
-	}
+//	public void startScan() {
+//		if (mSensorsManager.isBluetoothEnabled()) {
+//			mSensorsManager.startScan();
+//		} else {
+//			Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+//		    startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
+//		}
+//	}
 	
-	public void stopScan() {
-		mSensorsManager.stopScan();
-	}
+//	public void stopScan() {
+//		mSensorsManager.stopScan();
+//	}
 	
 	public void searchSensorAction() {
 		mLeftMenuFragment.onMenuItemSelected(MenuItem.SEARCH);

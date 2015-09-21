@@ -7,9 +7,10 @@ import java.util.Observable;
 import android.bluetooth.BluetoothGattCharacteristic;
 
 import com.couchbase.lite.Document;
+import com.wimoto.app.AppContext;
 import com.wimoto.app.R;
 import com.wimoto.app.bluetooth.BluetoothConnection;
-import com.wimoto.app.utils.AppContext;
+import com.wimoto.app.bluetooth.WimotoDevice;
 
 public class GrowSensor extends Sensor {
 
@@ -28,12 +29,16 @@ public class GrowSensor extends Sensor {
 	public static final String SENSOR_FIELD_GROW_TEMPERATURE_ALARM_LOW		= "GrowTemperatureAlarmLow";
 	public static final String SENSOR_FIELD_GROW_TEMPERATURE_ALARM_HIGH		= "GrowTemperatureAlarmHigh";
 	
-	private static final String BLE_GROW_SERVICE_UUID_LIGHT		 			= "DAF4470C-BFB0-4DD8-9293-62AF5F545E31";
+	public static final String BLE_GROW_AD_SERVICE_UUID_LIGHT 				= "0000470C-0000-1000-8000-00805F9B34FB";
+	
+	public static final String BLE_GROW_SERVICE_UUID_LIGHT		 			= "DAF4470C-BFB0-4DD8-9293-62AF5F545E31";
 	private static final String BLE_GROW_CHAR_UUID_LIGHT_CURRENT 			= "DAF4470D-BFB0-4DD8-9293-62AF5F545E31";
 	private static final String BLE_GROW_CHAR_UUID_LIGHT_ALARM_LOW			= "DAF4470E-BFB0-4DD8-9293-62AF5F545E31";
 	private static final String BLE_GROW_CHAR_UUID_LIGHT_ALARM_HIGH			= "DAF4470F-BFB0-4DD8-9293-62AF5F545E31";
 	private static final String BLE_GROW_CHAR_UUID_LIGHT_ALARM_SET			= "DAF44710-BFB0-4DD8-9293-62AF5F545E31";
 	private static final String BLE_GROW_CHAR_UUID_LIGHT_ALARM				= "DAF44711-BFB0-4DD8-9293-62AF5F545E31";
+	
+	public static final String BLE_GROW_AD_SERVICE_UUID_MOISTURE 			= "00004712-0000-1000-8000-00805F9B34FB";
 	
 	private static final String BLE_GROW_SERVICE_UUID_MOISTURE 				= "DAF44712-BFB0-4DD8-9293-62AF5F545E31";
 	private static final String BLE_GROW_CHAR_UUID_MOISTURE_CURRENT	 		= "DAF44713-BFB0-4DD8-9293-62AF5F545E31";
@@ -41,6 +46,8 @@ public class GrowSensor extends Sensor {
 	private static final String BLE_GROW_CHAR_UUID_MOISTURE_ALARM_HIGH		= "DAF44715-BFB0-4DD8-9293-62AF5F545E31";
 	private static final String BLE_GROW_CHAR_UUID_MOISTURE_ALARM_SET		= "DAF44716-BFB0-4DD8-9293-62AF5F545E31";
 	private static final String BLE_GROW_CHAR_UUID_MOISTURE_ALARM			= "DAF44717-BFB0-4DD8-9293-62AF5F545E31";
+	
+	public static final String BLE_GROW_AD_SERVICE_UUID_TEMPERATURE 		= "00004706-0000-1000-8000-00805F9B34FB";
 	
 	private static final String BLE_GROW_SERVICE_UUID_TEMPERATURE 			= "DAF44706-BFB0-4DD8-9293-62AF5F545E31";
 	private static final String BLE_GROW_CHAR_UUID_TEMPERATURE_CURRENT		= "DAF44707-BFB0-4DD8-9293-62AF5F545E31";
@@ -65,27 +72,31 @@ public class GrowSensor extends Sensor {
 	private float mTemperatureAlarmLow;
 	private float mTemperatureAlarmHigh;
 	
-	public GrowSensor() {
-		super();
+	public GrowSensor(AppContext context) {
+		super(context);
 		
-		mTitle = AppContext.getContext().getString(R.string.sensor_grow);
+		mTitle = mContext.getString(R.string.sensor_grow);
 		
 		mSensorValues.put(SENSOR_FIELD_GROW_LIGHT, new LinkedList<Float>());
 		mSensorValues.put(SENSOR_FIELD_GROW_MOISTURE, new LinkedList<Float>());
 		mSensorValues.put(SENSOR_FIELD_GROW_TEMPERATURE, new LinkedList<Float>());
 	}
 
-	public GrowSensor(BluetoothConnection connection) {
-		this();
-		
-		setConnection(connection);
+	public WimotoDevice.Profile getProfile() {
+		return WimotoDevice.Profile.GROW;
 	}
 	
-	public void setConnection(BluetoothConnection connection) {
-		super.setConnection(connection);
-		
-		initiateSensorCharacteristics();		
-	}
+//	public GrowSensor(AppContext context, BluetoothConnection connection) {
+//		this(context);
+//		
+//		setConnection(connection);
+//	}
+	
+//	public void setConnection(BluetoothConnection connection) {
+//		super.setConnection(connection);
+//		
+//		initiateSensorCharacteristics();		
+//	}
 	
 	@Override
 	public void setDocument(Document document) {
@@ -98,29 +109,25 @@ public class GrowSensor extends Sensor {
 	protected void initiateSensorCharacteristics() {
 		super.initiateSensorCharacteristics();
 		
-		if ((mConnection != null) && (mDocument != null)) {
-			mConnection.readCharacteristic(BLE_GROW_SERVICE_UUID_LIGHT, BLE_GROW_CHAR_UUID_LIGHT_ALARM_SET);
-			mConnection.readCharacteristic(BLE_GROW_SERVICE_UUID_LIGHT, BLE_GROW_CHAR_UUID_LIGHT_ALARM_LOW);
-			mConnection.readCharacteristic(BLE_GROW_SERVICE_UUID_LIGHT, BLE_GROW_CHAR_UUID_LIGHT_ALARM_HIGH);			
-			mConnection.enableChangesNotification(BLE_GROW_SERVICE_UUID_LIGHT, BLE_GROW_CHAR_UUID_LIGHT_ALARM);
-			mConnection.enableChangesNotification(BLE_GROW_SERVICE_UUID_LIGHT, BLE_GROW_CHAR_UUID_LIGHT_CURRENT);
-			
-			mConnection.readCharacteristic(BLE_GROW_SERVICE_UUID_MOISTURE, BLE_GROW_CHAR_UUID_MOISTURE_ALARM_SET);
-			mConnection.readCharacteristic(BLE_GROW_SERVICE_UUID_MOISTURE, BLE_GROW_CHAR_UUID_MOISTURE_ALARM_LOW);
-			mConnection.readCharacteristic(BLE_GROW_SERVICE_UUID_MOISTURE, BLE_GROW_CHAR_UUID_MOISTURE_ALARM_HIGH);			
-			mConnection.enableChangesNotification(BLE_GROW_SERVICE_UUID_MOISTURE, BLE_GROW_CHAR_UUID_MOISTURE_ALARM);
-			mConnection.enableChangesNotification(BLE_GROW_SERVICE_UUID_MOISTURE, BLE_GROW_CHAR_UUID_MOISTURE_CURRENT);
-			
-			mConnection.readCharacteristic(BLE_GROW_SERVICE_UUID_TEMPERATURE, BLE_GROW_CHAR_UUID_TEMPERATURE_ALARM_SET);
-			mConnection.readCharacteristic(BLE_GROW_SERVICE_UUID_TEMPERATURE, BLE_GROW_CHAR_UUID_TEMPERATURE_ALARM_LOW);
-			mConnection.readCharacteristic(BLE_GROW_SERVICE_UUID_TEMPERATURE, BLE_GROW_CHAR_UUID_TEMPERATURE_ALARM_HIGH);			
-			mConnection.enableChangesNotification(BLE_GROW_SERVICE_UUID_TEMPERATURE, BLE_GROW_CHAR_UUID_TEMPERATURE_ALARM);
-			mConnection.enableChangesNotification(BLE_GROW_SERVICE_UUID_TEMPERATURE, BLE_GROW_CHAR_UUID_TEMPERATURE_CURRENT);
-		}
-	}
-	
-	public SensorProfile getType() {
-		return SensorProfile.GROW;
+//		if ((mConnection != null) && (mDocument != null)) {
+//			mConnection.readCharacteristic(BLE_GROW_SERVICE_UUID_LIGHT, BLE_GROW_CHAR_UUID_LIGHT_ALARM_SET);
+//			mConnection.readCharacteristic(BLE_GROW_SERVICE_UUID_LIGHT, BLE_GROW_CHAR_UUID_LIGHT_ALARM_LOW);
+//			mConnection.readCharacteristic(BLE_GROW_SERVICE_UUID_LIGHT, BLE_GROW_CHAR_UUID_LIGHT_ALARM_HIGH);			
+//			mConnection.enableChangesNotification(BLE_GROW_SERVICE_UUID_LIGHT, BLE_GROW_CHAR_UUID_LIGHT_ALARM);
+//			mConnection.enableChangesNotification(BLE_GROW_SERVICE_UUID_LIGHT, BLE_GROW_CHAR_UUID_LIGHT_CURRENT);
+//			
+//			mConnection.readCharacteristic(BLE_GROW_SERVICE_UUID_MOISTURE, BLE_GROW_CHAR_UUID_MOISTURE_ALARM_SET);
+//			mConnection.readCharacteristic(BLE_GROW_SERVICE_UUID_MOISTURE, BLE_GROW_CHAR_UUID_MOISTURE_ALARM_LOW);
+//			mConnection.readCharacteristic(BLE_GROW_SERVICE_UUID_MOISTURE, BLE_GROW_CHAR_UUID_MOISTURE_ALARM_HIGH);			
+//			mConnection.enableChangesNotification(BLE_GROW_SERVICE_UUID_MOISTURE, BLE_GROW_CHAR_UUID_MOISTURE_ALARM);
+//			mConnection.enableChangesNotification(BLE_GROW_SERVICE_UUID_MOISTURE, BLE_GROW_CHAR_UUID_MOISTURE_CURRENT);
+//			
+//			mConnection.readCharacteristic(BLE_GROW_SERVICE_UUID_TEMPERATURE, BLE_GROW_CHAR_UUID_TEMPERATURE_ALARM_SET);
+//			mConnection.readCharacteristic(BLE_GROW_SERVICE_UUID_TEMPERATURE, BLE_GROW_CHAR_UUID_TEMPERATURE_ALARM_LOW);
+//			mConnection.readCharacteristic(BLE_GROW_SERVICE_UUID_TEMPERATURE, BLE_GROW_CHAR_UUID_TEMPERATURE_ALARM_HIGH);			
+//			mConnection.enableChangesNotification(BLE_GROW_SERVICE_UUID_TEMPERATURE, BLE_GROW_CHAR_UUID_TEMPERATURE_ALARM);
+//			mConnection.enableChangesNotification(BLE_GROW_SERVICE_UUID_TEMPERATURE, BLE_GROW_CHAR_UUID_TEMPERATURE_CURRENT);
+//		}
 	}
 	
 	public float getLight() {

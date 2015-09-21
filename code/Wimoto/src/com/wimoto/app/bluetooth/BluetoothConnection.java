@@ -14,24 +14,16 @@ import android.bluetooth.BluetoothGattService;
 import android.bluetooth.BluetoothProfile;
 import android.util.Log;
 
-import com.wimoto.app.model.SensorProfile;
-import com.wimoto.app.utils.AppContext;
+import com.wimoto.app.AppContext;
 
 public class BluetoothConnection extends Observable {
 	
 	private static String BLE_GENERIC_SERVICE_UUID_DEVICE 			= "0000180A-0000-1000-8000-00805F9B34FB";
 	private static String BLE_GENERIC_CHAR_UUID_SYSTEM_ID 			= "00002A23-0000-1000-8000-00805F9B34FB";
-	
-	private static String BLE_CLIMATE_AD_SERVICE_UUID 	= "EC484ED09F3B5419C00A94FD";
-	private static String BLE_GROW_AD_SERVICE_UUID 		= "BFB04DD8929362AF5F545E31";
-	private static String BLE_SENTRY_AD_SERVICE_UUID 	= "E433442083D8CDAACCD2E312";
-	private static String BLE_THERMO_AD_SERVICE_UUID 	= "B61E4F828FE9B12CF2497338";
-	private static String BLE_WATER_AD_SERVICE_UUID 	= "9D7843C2AB2E0E48CAC2DBDA";
-	
-	final private static char[] hexArray = {'0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f'};
+			
+	private AppContext mContext;
 	
 	private String mSystemId;
-	private SensorProfile mSensorProfile;
 	
 	private int mRssi;
 		
@@ -46,39 +38,38 @@ public class BluetoothConnection extends Observable {
 	
 	private BluetoothConnectionStateListener mBluetoothConnectionStateListener;
 	
-	public static BluetoothConnection createConnection(BluetoothConnectionStateListener listener, BluetoothDevice device) {
-		BluetoothConnection connection = new BluetoothConnection(listener, device);
-		connection.connect();
+	public static BluetoothConnection createConnection(AppContext context, BluetoothConnectionStateListener listener, BluetoothDevice device) {
+		BluetoothConnection connection = new BluetoothConnection(context, listener, device);
+		//connection.connect();
 		return connection;
 	}
 	
-	public static BluetoothConnection createConnection(BluetoothConnectionStateListener listener, BluetoothDevice device,
+	public static BluetoothConnection createConnection(AppContext context, BluetoothConnectionStateListener listener, BluetoothDevice device,
             byte[] scanRecord) {
-		BluetoothConnection connection = new BluetoothConnection(listener, device, scanRecord);
+		BluetoothConnection connection = new BluetoothConnection(context, listener, device, scanRecord);
 		
-		if (connection.getSensorProfile() == SensorProfile.UNDEFINED) {
-			return null;
-		} else {
-			connection.connect();
-			return connection;
-		}
+//		if (connection.getSensorProfile() == SensorProfile.UNDEFINED) {
+//			return null;
+//		} else {
+//			//connection.connect();
+//			return connection;
+//		}
+		return null;
 	}
 	
-	private BluetoothConnection(BluetoothConnectionStateListener listener, BluetoothDevice device) {
+	private BluetoothConnection(AppContext context, BluetoothConnectionStateListener listener, BluetoothDevice device) {
+		mContext = context;
+		
 		mBluetoothConnectionStateListener = listener;
 		mBluetoothDevice = device;
 		mRequests = new LinkedList<BluetoothConnection.CharacteristicRequest>();
 	}
 	
-	private BluetoothConnection(BluetoothConnectionStateListener listener, BluetoothDevice device,
+	private BluetoothConnection(AppContext context, BluetoothConnectionStateListener listener, BluetoothDevice device,
             byte[] scanRecord) {
-		this(listener, device);
+		this(context, listener, device);
 
-		mSensorProfile = defineProfile(scanRecord);
-	}
-	
-	private BluetoothConnection getConnection() {
-		return this;
+		//mSensorProfile = defineProfile(scanRecord);
 	}
 	
 	public BluetoothDevice getBluetoothDevice() {
@@ -114,41 +105,13 @@ public class BluetoothConnection extends Observable {
 		}
 	}
 	
-	public SensorProfile getSensorProfile() {
-		return mSensorProfile;
-	}
-	
 	public void setSystemId(String systemId) {
 		mSystemId = systemId;
 	}
 
-	private SensorProfile defineProfile(byte[] bytes) {
-        char[] hexChars = new char[bytes.length * 2];
-        int v;
-        for ( int j = 0; j < bytes.length; j++ ) {
-            v = bytes[j] & 0xFF;
-            hexChars[j * 2] = hexArray[v >>> 4];
-            hexChars[j * 2 + 1] = hexArray[v & 0x0F];
-        }
-		
-		String scanString = new String(hexChars).toUpperCase();
-		if (scanString.contains(BLE_CLIMATE_AD_SERVICE_UUID)) {
-			return SensorProfile.CLIMATE;
-		} else if (scanString.contains(BLE_GROW_AD_SERVICE_UUID)) {
-			return SensorProfile.GROW;
-		} else if (scanString.contains(BLE_SENTRY_AD_SERVICE_UUID)) {
-			return SensorProfile.SENTRY;
-		} else if (scanString.contains(BLE_THERMO_AD_SERVICE_UUID)) {
-			return SensorProfile.THERMO;
-		} else if (scanString.contains(BLE_WATER_AD_SERVICE_UUID)) {
-			return SensorProfile.WATER;
-		}
-		
-		return SensorProfile.UNDEFINED;
-	}
 
 	public void connect() {
-		mBluetoothGatt = mBluetoothDevice.connectGatt(AppContext.getContext(), false, mGattCallback);
+		mBluetoothGatt = mBluetoothDevice.connectGatt(mContext, false, mGattCallback);
 	}
 	
 	public void disconnect() {
@@ -237,9 +200,9 @@ public class BluetoothConnection extends Observable {
                 		gatt.discoverServices());                
             } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
                 Log.i("", "Disconnected from GATT server."); 
-                if (mBluetoothConnectionStateListener != null) {
-                	mBluetoothConnectionStateListener.didConnectionStateChanged(getConnection());
-                }
+                
+    			setChanged();
+    			notifyObservers(newState);
             }
         }
 
@@ -261,11 +224,7 @@ public class BluetoothConnection extends Observable {
         	Log.e("", "Fvalue " + characteristic.getUuid());
         	    
         	if (characteristic.getUuid().equals(UUID.fromString(BLE_GENERIC_CHAR_UUID_SYSTEM_ID))) {
-        		mSystemId = new BigInteger(characteristic.getValue()).toString();
-        		
-                if (mBluetoothConnectionStateListener != null) {
-                	mBluetoothConnectionStateListener.didConnectionStateChanged(getConnection());
-                }
+        		mSystemId = new BigInteger(characteristic.getValue()).toString();        		
         	} else {
     			setChanged();
     			notifyObservers(characteristic);

@@ -1,19 +1,23 @@
 package com.wimoto.app.screens.searchsensor;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
+import java.util.Observable;
+import java.util.Observer;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.wimoto.app.AppContext;
 import com.wimoto.app.R;
-import com.wimoto.app.model.Sensor;
+import com.wimoto.app.bluetooth.BluetoothConnection;
+import com.wimoto.app.bluetooth.WimotoDevice;
 
-public class SensorView extends LinearLayout implements PropertyChangeListener {
+public class SensorView extends LinearLayout implements Observer {
 	
-	private Sensor mSensor;
+	private WimotoDevice mDevice;
 	private TextView mRssiTextView;
 	
 	public SensorView(Context context) {
@@ -25,48 +29,43 @@ public class SensorView extends LinearLayout implements PropertyChangeListener {
         mRssiTextView = (TextView)findViewById(R.id.sensor_rssi);
 	}
 
-	public void setSensor(Sensor sensor) {
-		if (mSensor != null) {
-			if (mSensor.equals(sensor)) {
+	public void setWimotoDevice(WimotoDevice device) {
+		if (mDevice != null) {
+			if (mDevice.equals(device)) {
 				return;
 			}
 			
-			mSensor.removeChangeListener(this);
+			//mDevice.deleteObserver(this);
 		}
 		
-		mSensor = sensor;
-		mSensor.addChangeListener(this, Sensor.SENSOR_FIELD_RSSI);
+		mDevice = device;
+		//mConnection.addObserver(this);
 		
 		TextView titleView = (TextView)findViewById(R.id.sensor_title);
-		titleView.setText(mSensor.getTitle());
+		titleView.setText(mDevice.getName());
 		
 		TextView idView = (TextView)findViewById(R.id.sensor_id);
-		idView.setText(mSensor.getId());		
+		idView.setText(mDevice.getId());		
 	}
 
-//	@Override
-//	public void update(Observable observable, Object data) {		
-//		((MainActivity) getContext()).runOnUiThread(new Runnable() {
-//			@Override
-//			public void run() {
-//				int rssiLevel = 0;
-//				if (mSensor != null) {
-//					rssiLevel = mSensor.getRssi();
-//				}
-//				
-//				if (rssiLevel == 0) {
-//					mRssiTextView.setVisibility(View.INVISIBLE);
-//				} else {
-//					mRssiTextView.setVisibility(View.VISIBLE);
-//					mRssiTextView.setText(rssiLevel + "dB");
-//				}				
-//			}
-//		});
-//	}
-
 	@Override
-	public void propertyChange(PropertyChangeEvent event) {
-		// TODO Auto-generated method stub
+	public void update(Observable observable, final Object data) {
+		Log.e("", "RSSFFE " + data.getClass());
 		
+		if (data instanceof Integer) {
+			((AppContext) getContext()).runOnUiThread(new Runnable() {
+				@Override
+				public void run() {
+					int rssiLevel = ((Integer) data).intValue();
+					
+					if (rssiLevel == 0) {
+						mRssiTextView.setVisibility(View.INVISIBLE);
+					} else {
+						mRssiTextView.setVisibility(View.VISIBLE);
+						mRssiTextView.setText(rssiLevel + "dB");
+					}				
+				}
+			});
+		}
 	}
 }

@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 
 import com.jeremyfeinstein.slidingmenu.lib.app.SlidingFragmentActivity;
+import com.wimoto.app.AppContext;
 import com.wimoto.app.R;
 import com.wimoto.app.screens.help.HelpFragment;
 import com.wimoto.app.screens.searchsensor.SearchSensorFragment;
@@ -32,7 +33,7 @@ public class LeftMenuFragment extends ListFragment {
 		
 		mSlidingFragmentActivity = (SlidingFragmentActivity)getActivity();
 		
-		mLeftMenuAdapter = new LeftMenuAdapter();
+		mLeftMenuAdapter = new LeftMenuAdapter((AppContext) getActivity());
 		setListAdapter(mLeftMenuAdapter);
 	}
 	

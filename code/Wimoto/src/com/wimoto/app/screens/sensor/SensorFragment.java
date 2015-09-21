@@ -4,8 +4,10 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
 import android.app.AlertDialog;
+import android.bluetooth.BluetoothProfile;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -127,6 +129,7 @@ public abstract class SensorFragment extends PageFragment implements PropertyCha
 		
 		mSensor = sensor;
 		if (mSensor != null) {
+			mSensor.addChangeListener(this, Sensor.SENSOR_FIELD_STATE, true);
 			mSensor.addChangeListener(this, Sensor.SENSOR_FIELD_CONNECTION, true);
 			mSensor.addChangeListener(this, Sensor.SENSOR_FIELD_BATTERY_LEVEL);
 			mSensor.addChangeListener(this, Sensor.SENSOR_FIELD_RSSI);
@@ -169,17 +172,21 @@ public abstract class SensorFragment extends PageFragment implements PropertyCha
 			@Override
 			public void run() {
 				String propertyName = event.getPropertyName();
-				if (Sensor.SENSOR_FIELD_CONNECTION.equals(propertyName)) {
-					if (event.getNewValue() == null) {
-						mView.setBackgroundColor(getResources().getColor(R.color.color_light_gray));
-						mBatteryImageView.setVisibility(View.INVISIBLE);
-						mRssiTextView.setVisibility(View.INVISIBLE);
-						mSensorFooterView.showConnectionSensitiveButtons(false);
-					} else {
+				if (Sensor.SENSOR_FIELD_STATE.equals(propertyName)) {
+					int state = 0;
+					if ((event.getNewValue() !=null) && (event.getNewValue() instanceof Integer)) {
+						state = ((Integer) event.getNewValue()).intValue();
+					}
+					if (state == BluetoothProfile.STATE_CONNECTED) {
 						mView.setBackgroundColor(getResources().getColor(getBackgroundColorRes()));
 						mBatteryImageView.setVisibility(View.VISIBLE);
 						mRssiTextView.setVisibility(View.VISIBLE);
 						mSensorFooterView.showConnectionSensitiveButtons(true);
+					} else {
+						mView.setBackgroundColor(getResources().getColor(R.color.color_light_gray));
+						mBatteryImageView.setVisibility(View.INVISIBLE);
+						mRssiTextView.setVisibility(View.INVISIBLE);
+						mSensorFooterView.showConnectionSensitiveButtons(false);
 					}
 				} else if (Sensor.SENSOR_FIELD_BATTERY_LEVEL.equals(propertyName)) {
 					updateBateryLevel((Integer)event.getNewValue());

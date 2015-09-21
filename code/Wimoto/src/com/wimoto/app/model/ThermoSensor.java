@@ -7,9 +7,10 @@ import java.util.Observable;
 import android.bluetooth.BluetoothGattCharacteristic;
 
 import com.couchbase.lite.Document;
+import com.wimoto.app.AppContext;
 import com.wimoto.app.R;
 import com.wimoto.app.bluetooth.BluetoothConnection;
-import com.wimoto.app.utils.AppContext;
+import com.wimoto.app.bluetooth.WimotoDevice;
 
 public class ThermoSensor extends Sensor {
 
@@ -22,6 +23,8 @@ public class ThermoSensor extends Sensor {
 	public static final String SENSOR_FIELD_THERMO_PROBE_ALARM_SET				= "ThermoProbeAlarmSet";
 	public static final String SENSOR_FIELD_THERMO_PROBE_ALARM_LOW				= "ThermoProbeAlarmLow";
 	public static final String SENSOR_FIELD_THERMO_PROBE_ALARM_HIGH				= "ThermoProbeAlarmHigh";
+
+	public static final String BLE_THERMO_AD_SERVICE_UUID_TEMPERATURE 			= "00008E4E-0000-1000-8000-00805F9B34FB";
 	
 	private static final String BLE_THERMO_SERVICE_UUID_TEMPERATURE 			= "497B8E4E-B61E-4F82-8FE9-B12CF2497338";
 	private static final String BLE_THERMO_CHAR_UUID_TEMPERATURE_CURRENT 		= "497B8E4F-B61E-4F82-8FE9-B12CF2497338";
@@ -29,6 +32,8 @@ public class ThermoSensor extends Sensor {
 	private static final String BLE_THERMO_CHAR_UUID_TEMPERATURE_ALARM_HIGH		= "497B8E51-B61E-4F82-8FE9-B12CF2497338";
 	private static final String BLE_THERMO_CHAR_UUID_TEMPERATURE_ALARM_SET		= "497B8E52-B61E-4F82-8FE9-B12CF2497338";
 	private static final String BLE_THERMO_CHAR_UUID_TEMPERATURE_ALARM			= "497B8E53-B61E-4F82-8FE9-B12CF2497338";
+
+	public static final String BLE_THERMO_AD_SERVICE_UUID_PROBE		 			= "00008E54-0000-1000-8000-00805F9B34FB";
 	
 	private static final String BLE_THERMO_SERVICE_UUID_PROBE 					= "497B8E54-B61E-4F82-8FE9-B12CF2497338";
 	private static final String BLE_THERMO_CHAR_UUID_PROBE_CURRENT		 		= "497B8E55-B61E-4F82-8FE9-B12CF2497338";
@@ -48,27 +53,31 @@ public class ThermoSensor extends Sensor {
 	protected float mProbeAlarmLow;
 	protected float mProbeAlarmHigh;
 	
-	public ThermoSensor() {
-		super();
+	public ThermoSensor(AppContext context) {
+		super(context);
 
-		mTitle = AppContext.getContext().getString(R.string.sensor_thermo);
+		mTitle = mContext.getString(R.string.sensor_thermo);
 		
 		mSensorValues.put(SENSOR_FIELD_THERMO_TEMPERATURE, new LinkedList<Float>());
 		mSensorValues.put(SENSOR_FIELD_THERMO_PROBE, new LinkedList<Float>());
 	}
 
-	public ThermoSensor(BluetoothConnection connection) {
-		this();
+	public ThermoSensor(AppContext context, BluetoothConnection connection) {
+		this(context);
 		
-		setConnection(connection);
+		//setConnection(connection);
 	}
 	
-	@Override
-	public void setConnection(BluetoothConnection connection) {
-		super.setConnection(connection);
-		
-		initiateSensorCharacteristics();
+	public WimotoDevice.Profile getProfile() {
+		return WimotoDevice.Profile.THERMO;
 	}
+	
+//	@Override
+//	public void setConnection(BluetoothConnection connection) {
+//		super.setConnection(connection);
+//		
+//		initiateSensorCharacteristics();
+//	}
 	
 	@Override
 	public void setDocument(Document document) {
@@ -81,24 +90,20 @@ public class ThermoSensor extends Sensor {
 	protected void initiateSensorCharacteristics() {
 		super.initiateSensorCharacteristics();
 		
-		if ((mConnection != null) && (mDocument != null)) {
-			mConnection.readCharacteristic(BLE_THERMO_SERVICE_UUID_TEMPERATURE, BLE_THERMO_CHAR_UUID_TEMPERATURE_ALARM_SET);
-			mConnection.readCharacteristic(BLE_THERMO_SERVICE_UUID_TEMPERATURE, BLE_THERMO_CHAR_UUID_TEMPERATURE_ALARM_LOW);
-			mConnection.readCharacteristic(BLE_THERMO_SERVICE_UUID_TEMPERATURE, BLE_THERMO_CHAR_UUID_TEMPERATURE_ALARM_HIGH);			
-			mConnection.enableChangesNotification(BLE_THERMO_SERVICE_UUID_TEMPERATURE, BLE_THERMO_CHAR_UUID_TEMPERATURE_ALARM);
-			mConnection.enableChangesNotification(BLE_THERMO_SERVICE_UUID_TEMPERATURE, BLE_THERMO_CHAR_UUID_TEMPERATURE_CURRENT);
-			
-			mConnection.readCharacteristic(BLE_THERMO_SERVICE_UUID_PROBE, BLE_THERMO_CHAR_UUID_PROBE_ALARM_SET);
-			mConnection.readCharacteristic(BLE_THERMO_SERVICE_UUID_PROBE, BLE_THERMO_CHAR_UUID_PROBE_ALARM_LOW);
-			mConnection.readCharacteristic(BLE_THERMO_SERVICE_UUID_PROBE, BLE_THERMO_CHAR_UUID_PROBE_ALARM_HIGH);			
-			mConnection.enableChangesNotification(BLE_THERMO_SERVICE_UUID_PROBE, BLE_THERMO_CHAR_UUID_PROBE_ALARM);
-			mConnection.enableChangesNotification(BLE_THERMO_SERVICE_UUID_PROBE, BLE_THERMO_CHAR_UUID_PROBE_CURRENT);
-		}
+//		if ((mConnection != null) && (mDocument != null)) {
+//			mConnection.readCharacteristic(BLE_THERMO_SERVICE_UUID_TEMPERATURE, BLE_THERMO_CHAR_UUID_TEMPERATURE_ALARM_SET);
+//			mConnection.readCharacteristic(BLE_THERMO_SERVICE_UUID_TEMPERATURE, BLE_THERMO_CHAR_UUID_TEMPERATURE_ALARM_LOW);
+//			mConnection.readCharacteristic(BLE_THERMO_SERVICE_UUID_TEMPERATURE, BLE_THERMO_CHAR_UUID_TEMPERATURE_ALARM_HIGH);			
+//			mConnection.enableChangesNotification(BLE_THERMO_SERVICE_UUID_TEMPERATURE, BLE_THERMO_CHAR_UUID_TEMPERATURE_ALARM);
+//			mConnection.enableChangesNotification(BLE_THERMO_SERVICE_UUID_TEMPERATURE, BLE_THERMO_CHAR_UUID_TEMPERATURE_CURRENT);
+//			
+//			mConnection.readCharacteristic(BLE_THERMO_SERVICE_UUID_PROBE, BLE_THERMO_CHAR_UUID_PROBE_ALARM_SET);
+//			mConnection.readCharacteristic(BLE_THERMO_SERVICE_UUID_PROBE, BLE_THERMO_CHAR_UUID_PROBE_ALARM_LOW);
+//			mConnection.readCharacteristic(BLE_THERMO_SERVICE_UUID_PROBE, BLE_THERMO_CHAR_UUID_PROBE_ALARM_HIGH);			
+//			mConnection.enableChangesNotification(BLE_THERMO_SERVICE_UUID_PROBE, BLE_THERMO_CHAR_UUID_PROBE_ALARM);
+//			mConnection.enableChangesNotification(BLE_THERMO_SERVICE_UUID_PROBE, BLE_THERMO_CHAR_UUID_PROBE_CURRENT);
+//		}
 	}	
-	
-	public SensorProfile getType() {
-		return SensorProfile.THERMO;
-	}
 	
 	public float getTemperature() {
 		return mTemperature;

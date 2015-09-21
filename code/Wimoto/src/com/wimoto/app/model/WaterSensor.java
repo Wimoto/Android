@@ -7,9 +7,10 @@ import java.util.Observable;
 import android.bluetooth.BluetoothGattCharacteristic;
 
 import com.couchbase.lite.Document;
+import com.wimoto.app.AppContext;
 import com.wimoto.app.R;
 import com.wimoto.app.bluetooth.BluetoothConnection;
-import com.wimoto.app.utils.AppContext;
+import com.wimoto.app.bluetooth.WimotoDevice;
 
 public class WaterSensor extends Sensor {
 	
@@ -21,10 +22,14 @@ public class WaterSensor extends Sensor {
 	public static final String SENSOR_FIELD_WATER_LEVEL_ALARM_LOW			= "WaterLevelAlarmLow";
 	public static final String SENSOR_FIELD_WATER_LEVEL_ALARM_HIGH			= "WaterLevelAlarmHigh";
 	
+	public static final String BLE_WATER_AD_SERVICE_UUID_CONTACT		 	= "0000C7DB-0000-1000-8000-00805F9B34FB";
+	
 	private static final String BLE_WATER_SERVICE_UUID_CONTACT	 			= "35D8C7DB-9D78-43C2-AB2E-0E48CAC2DBDA";
 	private static final String BLE_WATER_CHAR_UUID_CONTACT_CURRENT 		= "35D8C7DC-9D78-43C2-AB2E-0E48CAC2DBDA";
 	private static final String BLE_WATER_CHAR_UUID_CONTACT_ALARM_SET		= "35D8C7DD-9D78-43C2-AB2E-0E48CAC2DBDA";
 	private static final String BLE_WATER_CHAR_UUID_CONTACT_ALARM			= "35D8C7DE-9D78-43C2-AB2E-0E48CAC2DBDA";
+	
+	public static final String BLE_WATER_AD_SERVICE_UUID_LEVEL			 	= "0000C7DF-0000-1000-8000-00805F9B34FB";
 	
 	private static final String BLE_WATER_SERVICE_UUID_LEVEL 				= "35D8C7DF-9D78-43C2-AB2E-0E48CAC2DBDA";
 	private static final String BLE_WATER_CHAR_UUID_LEVEL_CURRENT		 	= "35D8C7E0-9D78-43C2-AB2E-0E48CAC2DBDA";
@@ -42,27 +47,31 @@ public class WaterSensor extends Sensor {
 	private float mLevelAlarmLow;
 	private float mLevelAlarmHigh;
 	
-	public WaterSensor() {
-		super();
+	public WaterSensor(AppContext context) {
+		super(context);
 		
-		mTitle = AppContext.getContext().getString(R.string.sensor_water);
+		mTitle = mContext.getString(R.string.sensor_water);
 		
 		mSensorValues.put(SENSOR_FIELD_WATER_CONTACT, new LinkedList<Float>());
 		mSensorValues.put(SENSOR_FIELD_WATER_LEVEL, new LinkedList<Float>());
 	}
 
-	public WaterSensor(BluetoothConnection connection) {
-		this();
+	public WaterSensor(AppContext context, BluetoothConnection connection) {
+		this(context);
 		
-		setConnection(connection);
+		//setConnection(connection);
 	}
 	
-	@Override
-	public void setConnection(BluetoothConnection connection) {
-		super.setConnection(connection);
-		
-		initiateSensorCharacteristics();
+	public WimotoDevice.Profile getProfile() {
+		return WimotoDevice.Profile.WATER;
 	}
+	
+//	@Override
+//	public void setConnection(BluetoothConnection connection) {
+//		super.setConnection(connection);
+//		
+//		initiateSensorCharacteristics();
+//	}
 	
 	@Override
 	public void setDocument(Document document) {
@@ -75,21 +84,17 @@ public class WaterSensor extends Sensor {
 	protected void initiateSensorCharacteristics() {
 		super.initiateSensorCharacteristics();
 		
-		if ((mConnection != null) && (mDocument != null)) {
-			mConnection.readCharacteristic(BLE_WATER_SERVICE_UUID_CONTACT, BLE_WATER_CHAR_UUID_CONTACT_ALARM_SET);
-			mConnection.enableChangesNotification(BLE_WATER_SERVICE_UUID_CONTACT, BLE_WATER_CHAR_UUID_CONTACT_ALARM);
-			mConnection.enableChangesNotification(BLE_WATER_SERVICE_UUID_CONTACT, BLE_WATER_CHAR_UUID_CONTACT_CURRENT);
-			
-			mConnection.readCharacteristic(BLE_WATER_SERVICE_UUID_LEVEL, BLE_WATER_CHAR_UUID_LEVEL_ALARM_SET);
-			mConnection.readCharacteristic(BLE_WATER_SERVICE_UUID_LEVEL, BLE_WATER_CHAR_UUID_LEVEL_ALARM_LOW);
-			mConnection.readCharacteristic(BLE_WATER_SERVICE_UUID_LEVEL, BLE_WATER_CHAR_UUID_LEVEL_ALARM_HIGH);
-			mConnection.enableChangesNotification(BLE_WATER_SERVICE_UUID_LEVEL, BLE_WATER_CHAR_UUID_LEVEL_ALARM);
-			mConnection.enableChangesNotification(BLE_WATER_SERVICE_UUID_LEVEL, BLE_WATER_CHAR_UUID_LEVEL_CURRENT);
-		}
-	}
-	
-	public SensorProfile getType() {
-		return SensorProfile.WATER;
+//		if ((mConnection != null) && (mDocument != null)) {
+//			mConnection.readCharacteristic(BLE_WATER_SERVICE_UUID_CONTACT, BLE_WATER_CHAR_UUID_CONTACT_ALARM_SET);
+//			mConnection.enableChangesNotification(BLE_WATER_SERVICE_UUID_CONTACT, BLE_WATER_CHAR_UUID_CONTACT_ALARM);
+//			mConnection.enableChangesNotification(BLE_WATER_SERVICE_UUID_CONTACT, BLE_WATER_CHAR_UUID_CONTACT_CURRENT);
+//			
+//			mConnection.readCharacteristic(BLE_WATER_SERVICE_UUID_LEVEL, BLE_WATER_CHAR_UUID_LEVEL_ALARM_SET);
+//			mConnection.readCharacteristic(BLE_WATER_SERVICE_UUID_LEVEL, BLE_WATER_CHAR_UUID_LEVEL_ALARM_LOW);
+//			mConnection.readCharacteristic(BLE_WATER_SERVICE_UUID_LEVEL, BLE_WATER_CHAR_UUID_LEVEL_ALARM_HIGH);
+//			mConnection.enableChangesNotification(BLE_WATER_SERVICE_UUID_LEVEL, BLE_WATER_CHAR_UUID_LEVEL_ALARM);
+//			mConnection.enableChangesNotification(BLE_WATER_SERVICE_UUID_LEVEL, BLE_WATER_CHAR_UUID_LEVEL_CURRENT);
+//		}
 	}
 	
 	public float getContact() {

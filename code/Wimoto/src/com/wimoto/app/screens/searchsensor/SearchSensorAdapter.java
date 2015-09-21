@@ -2,88 +2,38 @@ package com.wimoto.app.screens.searchsensor;
 
 import java.util.ArrayList;
 
+import android.database.DataSetObserver;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 
-import com.wimoto.app.model.Sensor;
-import com.wimoto.app.utils.AppContext;
+import com.wimoto.app.AppContext;
+import com.wimoto.app.bluetooth.DiscoveryListener;
+import com.wimoto.app.bluetooth.WimotoDevice;
 
-public class SearchSensorAdapter extends BaseAdapter {
+public class SearchSensorAdapter extends BaseAdapter implements DiscoveryListener {
 	
-	private ArrayList<Sensor> mSensors;
+	private AppContext mContext;
+	private ArrayList<WimotoDevice> mDevices;
 	
-	public SearchSensorAdapter() {
-		mSensors = new ArrayList<Sensor> ();
-		
-//		initSensors();
-//		removeAlreadyRegisteredSensors();
+	public SearchSensorAdapter(AppContext context) {
+		mContext = context;
+		mDevices = new ArrayList<WimotoDevice>();		
 	}
 	
-	public void updateSensors(ArrayList<Sensor> sensors) {
-		mSensors.clear();
-		mSensors.addAll(sensors);
-		
+	public void refresh() {
+		mDevices.clear();
 		notifyDataSetChanged();
 	}
 	
-//	private void initSensors() {
-//		
-//		
-//		GrowSensor growSensor = new GrowSensor();
-//		growSensor.setId("ABCDEF-GHIJKL-MNOPQR-STUVWX-YZ");
-//		growSensor.setRssi("-37dB");
-//		mSensors.add(growSensor);
-//		
-//		ThermoSensor thermoSensor = new ThermoSensor();
-//		thermoSensor.setId("123456-GHIJKL-765432-STUVWX-42");
-//		thermoSensor.setRssi("-42dB");
-//		mSensors.add(thermoSensor);
-//		
-//		ClimateSensor climateSensor = new ClimateSensor();
-//		climateSensor.setId("xxxxxx-yyyyyy-zzzzzz-STUVWX-00");
-//		climateSensor.setRssi("-11dB");
-//		mSensors.add(climateSensor);
-//		
-//		GrowSensor growSensor2 = new GrowSensor();
-//		growSensor2.setId("ABC123-456JKL-MNO789-STUVWX-00");
-//		growSensor2.setRssi("-666dB");
-//		mSensors.add(growSensor2);
-//	}
-//	
-//	private void removeAlreadyRegisteredSensors() {
-//		for (Sensor sensor:mSensors) {
-//			for (Sensor registeredSensor:SensorsManager.getManager().getSensors()) {
-//				if (sensor.getId().equals(registeredSensor.getId())) {
-//					sensor.setRegistered(true);
-//				}
-//			}
-//		}
-//		
-//		Iterator<Sensor> iterator = mSensors.iterator();
-//		while (iterator.hasNext()) {
-//			Sensor sensor = iterator.next();
-//			
-//			if (sensor.isRegistered()) {
-//				iterator.remove();
-//			}
-//		}
-//	}
-//	
-//	public void updateUnregisteredSensors() {
-//		initSensors();
-//		removeAlreadyRegisteredSensors();
-//		notifyDataSetChanged();
-//	}
-
 	@Override
 	public int getCount() {
-		return mSensors.size();
+		return mDevices.size();
 	}
 
 	@Override
-	public Sensor getItem(int position) {
-		return mSensors.get(position);
+	public WimotoDevice getItem(int position) {
+		return mDevices.get(position);
 	}
 
 	@Override
@@ -95,14 +45,39 @@ public class SearchSensorAdapter extends BaseAdapter {
 	public View getView(int position, View convertView, ViewGroup parent) {
 		SensorView sensorView = null;
 		if (convertView == null) {
-			sensorView = new SensorView(AppContext.getContext());
+			sensorView = new SensorView(mContext);
 		} else {
 			sensorView = (SensorView)convertView;
 		}
 		
-		sensorView.setSensor(mSensors.get(position));
+		sensorView.setWimotoDevice(mDevices.get(position));
 		
 		return sensorView;
 	}
+	
+	@Override
+	public void registerDataSetObserver(DataSetObserver observer) {
+		super.registerDataSetObserver(observer);
+		
+		mContext.getSensorsManager().startScan(this);
+	}
 
+	@Override
+	public void unregisterDataSetObserver(DataSetObserver observer) {
+		super.unregisterDataSetObserver(observer);
+		
+		mContext.getSensorsManager().stopScan();		
+	}
+
+	@Override
+	public void onWimotoDeviceDiscovered(WimotoDevice wimotoDevice) {
+		mDevices.add(wimotoDevice);
+		
+		mContext.runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				notifyDataSetChanged();
+			}
+		});
+	}
 }

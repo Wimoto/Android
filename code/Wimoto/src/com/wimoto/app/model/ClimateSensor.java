@@ -5,11 +5,14 @@ import java.util.LinkedList;
 import java.util.Observable;
 
 import android.bluetooth.BluetoothGattCharacteristic;
+import android.util.Log;
 
 import com.couchbase.lite.Document;
+import com.wimoto.app.AppContext;
 import com.wimoto.app.R;
 import com.wimoto.app.bluetooth.BluetoothConnection;
-import com.wimoto.app.utils.AppContext;
+import com.wimoto.app.bluetooth.WimotoDevice;
+import com.wimoto.app.bluetooth.WimotoDevice.State;
 
 public class ClimateSensor extends Sensor {
 
@@ -27,6 +30,8 @@ public class ClimateSensor extends Sensor {
 	public static final String SENSOR_FIELD_CLIMATE_LIGHT_ALARM_SET				= "ClimateLightAlarmSet";
 	public static final String SENSOR_FIELD_CLIMATE_LIGHT_ALARM_LOW				= "ClimateLightAlarmLow";
 	public static final String SENSOR_FIELD_CLIMATE_LIGHT_ALARM_HIGH			= "ClimateLightAlarmHigh";
+
+	public static final String BLE_CLIMATE_AD_SERVICE_UUID_TEMPERATURE 			= "00005608-0000-1000-8000-00805F9B34FB";
 	
 	private static final String BLE_CLIMATE_SERVICE_UUID_TEMPERATURE 			= "E0035608-EC48-4ED0-9F3B-5419C00A94FD";
 	private static final String BLE_CLIMATE_CHAR_UUID_TEMPERATURE_CURRENT 		= "E0035609-EC48-4ED0-9F3B-5419C00A94FD";
@@ -35,12 +40,16 @@ public class ClimateSensor extends Sensor {
 	private static final String BLE_CLIMATE_CHAR_UUID_TEMPERATURE_ALARM_SET		= "E003560C-EC48-4ED0-9F3B-5419C00A94FD";
 	private static final String BLE_CLIMATE_CHAR_UUID_TEMPERATURE_ALARM			= "E003560D-EC48-4ED0-9F3B-5419C00A94FD";
 	
+	public static final String BLE_CLIMATE_AD_SERVICE_UUID_HUMIDITY 			= "00005614-0000-1000-8000-00805F9B34FB";
+	
 	private static final String BLE_CLIMATE_SERVICE_UUID_HUMIDITY 				= "E0035614-EC48-4ED0-9F3B-5419C00A94FD";
 	private static final String BLE_CLIMATE_CHAR_UUID_HUMIDITY_CURRENT	 		= "E0035615-EC48-4ED0-9F3B-5419C00A94FD";
 	private static final String BLE_CLIMATE_CHAR_UUID_HUMIDITY_ALARM_LOW		= "E0035616-EC48-4ED0-9F3B-5419C00A94FD";
 	private static final String BLE_CLIMATE_CHAR_UUID_HUMIDITY_ALARM_HIGH		= "E0035617-EC48-4ED0-9F3B-5419C00A94FD";
 	private static final String BLE_CLIMATE_CHAR_UUID_HUMIDITY_ALARM_SET		= "E0035618-EC48-4ED0-9F3B-5419C00A94FD";
 	private static final String BLE_CLIMATE_CHAR_UUID_HUMIDITY_ALARM			= "E0035619-EC48-4ED0-9F3B-5419C00A94FD";
+	
+	public static final String BLE_CLIMATE_AD_SERVICE_UUID_LIGHT	 			= "0000560E-0000-1000-8000-00805F9B34FB";
 	
 	private static final String BLE_CLIMATE_SERVICE_UUID_LIGHT 					= "E003560E-EC48-4ED0-9F3B-5419C00A94FD";
 	private static final String BLE_CLIMATE_CHAR_UUID_LIGHT_CURRENT		 		= "E003560F-EC48-4ED0-9F3B-5419C00A94FD";
@@ -65,65 +74,59 @@ public class ClimateSensor extends Sensor {
 	protected float mLightAlarmLow;
 	protected float mLightAlarmHigh;
 	
-	public ClimateSensor() {
-		super();
+	public ClimateSensor(AppContext context) {
+		super(context);
 		
-		mTitle = AppContext.getContext().getString(R.string.sensor_climate);
+		mTitle = mContext.getString(R.string.sensor_climate);
 		
 		mSensorValues.put(SENSOR_FIELD_CLIMATE_TEMPERATURE, new LinkedList<Float>());
 		mSensorValues.put(SENSOR_FIELD_CLIMATE_HUMIDITY, new LinkedList<Float>());
 		mSensorValues.put(SENSOR_FIELD_CLIMATE_LIGHT, new LinkedList<Float>());
 	}
 
-	public ClimateSensor(BluetoothConnection connection) {
-		this();
-		
-		setConnection(connection);
+	public WimotoDevice.Profile getProfile() {
+		return WimotoDevice.Profile.CLIMATE;
 	}
 	
-	@Override
-	public void setConnection(BluetoothConnection connection) {
-		super.setConnection(connection);
-		
-		initiateSensorCharacteristics();
-	}
+//	@Override
+//	public void setConnection(BluetoothConnection connection) {
+//		super.setConnection(connection);
+//		
+//		//initiateSensorCharacteristics();
+//	}
 	
 	@Override
 	public void setDocument(Document document) {
 		super.setDocument(document);
 		
-		initiateSensorCharacteristics();		
+		//initiateSensorCharacteristics();		
 	}
 
 	@Override
 	protected void initiateSensorCharacteristics() {
 		super.initiateSensorCharacteristics();
 		
-		if ((mConnection != null) && (mDocument != null)) {
-			mConnection.readCharacteristic(BLE_CLIMATE_SERVICE_UUID_TEMPERATURE, BLE_CLIMATE_CHAR_UUID_TEMPERATURE_ALARM_SET);
-			mConnection.readCharacteristic(BLE_CLIMATE_SERVICE_UUID_TEMPERATURE, BLE_CLIMATE_CHAR_UUID_TEMPERATURE_ALARM_LOW);
-			mConnection.readCharacteristic(BLE_CLIMATE_SERVICE_UUID_TEMPERATURE, BLE_CLIMATE_CHAR_UUID_TEMPERATURE_ALARM_HIGH);			
-			mConnection.enableChangesNotification(BLE_CLIMATE_SERVICE_UUID_TEMPERATURE, BLE_CLIMATE_CHAR_UUID_TEMPERATURE_ALARM);
-			mConnection.enableChangesNotification(BLE_CLIMATE_SERVICE_UUID_TEMPERATURE, BLE_CLIMATE_CHAR_UUID_TEMPERATURE_CURRENT);
-			
-			mConnection.readCharacteristic(BLE_CLIMATE_SERVICE_UUID_HUMIDITY, BLE_CLIMATE_CHAR_UUID_HUMIDITY_ALARM_SET);
-			mConnection.readCharacteristic(BLE_CLIMATE_SERVICE_UUID_HUMIDITY, BLE_CLIMATE_CHAR_UUID_HUMIDITY_ALARM_LOW);
-			mConnection.readCharacteristic(BLE_CLIMATE_SERVICE_UUID_HUMIDITY, BLE_CLIMATE_CHAR_UUID_HUMIDITY_ALARM_HIGH);			
-			mConnection.enableChangesNotification(BLE_CLIMATE_SERVICE_UUID_HUMIDITY, BLE_CLIMATE_CHAR_UUID_HUMIDITY_ALARM);
-			mConnection.enableChangesNotification(BLE_CLIMATE_SERVICE_UUID_HUMIDITY, BLE_CLIMATE_CHAR_UUID_HUMIDITY_CURRENT);
-			
-			mConnection.readCharacteristic(BLE_CLIMATE_SERVICE_UUID_LIGHT, BLE_CLIMATE_CHAR_UUID_LIGHT_ALARM_SET);
-			mConnection.readCharacteristic(BLE_CLIMATE_SERVICE_UUID_LIGHT, BLE_CLIMATE_CHAR_UUID_LIGHT_ALARM_LOW);
-			mConnection.readCharacteristic(BLE_CLIMATE_SERVICE_UUID_LIGHT, BLE_CLIMATE_CHAR_UUID_LIGHT_ALARM_HIGH);			
-			mConnection.enableChangesNotification(BLE_CLIMATE_SERVICE_UUID_LIGHT, BLE_CLIMATE_CHAR_UUID_LIGHT_ALARM);
-			mConnection.enableChangesNotification(BLE_CLIMATE_SERVICE_UUID_LIGHT, BLE_CLIMATE_CHAR_UUID_LIGHT_CURRENT);
-		}
+//		if ((mConnection != null) && (mDocument != null)) {
+//			mConnection.readCharacteristic(BLE_CLIMATE_SERVICE_UUID_TEMPERATURE, BLE_CLIMATE_CHAR_UUID_TEMPERATURE_ALARM_SET);
+//			mConnection.readCharacteristic(BLE_CLIMATE_SERVICE_UUID_TEMPERATURE, BLE_CLIMATE_CHAR_UUID_TEMPERATURE_ALARM_LOW);
+//			mConnection.readCharacteristic(BLE_CLIMATE_SERVICE_UUID_TEMPERATURE, BLE_CLIMATE_CHAR_UUID_TEMPERATURE_ALARM_HIGH);			
+//			mConnection.enableChangesNotification(BLE_CLIMATE_SERVICE_UUID_TEMPERATURE, BLE_CLIMATE_CHAR_UUID_TEMPERATURE_ALARM);
+//			mConnection.enableChangesNotification(BLE_CLIMATE_SERVICE_UUID_TEMPERATURE, BLE_CLIMATE_CHAR_UUID_TEMPERATURE_CURRENT);
+//			
+//			mConnection.readCharacteristic(BLE_CLIMATE_SERVICE_UUID_HUMIDITY, BLE_CLIMATE_CHAR_UUID_HUMIDITY_ALARM_SET);
+//			mConnection.readCharacteristic(BLE_CLIMATE_SERVICE_UUID_HUMIDITY, BLE_CLIMATE_CHAR_UUID_HUMIDITY_ALARM_LOW);
+//			mConnection.readCharacteristic(BLE_CLIMATE_SERVICE_UUID_HUMIDITY, BLE_CLIMATE_CHAR_UUID_HUMIDITY_ALARM_HIGH);			
+//			mConnection.enableChangesNotification(BLE_CLIMATE_SERVICE_UUID_HUMIDITY, BLE_CLIMATE_CHAR_UUID_HUMIDITY_ALARM);
+//			mConnection.enableChangesNotification(BLE_CLIMATE_SERVICE_UUID_HUMIDITY, BLE_CLIMATE_CHAR_UUID_HUMIDITY_CURRENT);
+//			
+//			mConnection.readCharacteristic(BLE_CLIMATE_SERVICE_UUID_LIGHT, BLE_CLIMATE_CHAR_UUID_LIGHT_ALARM_SET);
+//			mConnection.readCharacteristic(BLE_CLIMATE_SERVICE_UUID_LIGHT, BLE_CLIMATE_CHAR_UUID_LIGHT_ALARM_LOW);
+//			mConnection.readCharacteristic(BLE_CLIMATE_SERVICE_UUID_LIGHT, BLE_CLIMATE_CHAR_UUID_LIGHT_ALARM_HIGH);			
+//			mConnection.enableChangesNotification(BLE_CLIMATE_SERVICE_UUID_LIGHT, BLE_CLIMATE_CHAR_UUID_LIGHT_ALARM);
+//			mConnection.enableChangesNotification(BLE_CLIMATE_SERVICE_UUID_LIGHT, BLE_CLIMATE_CHAR_UUID_LIGHT_CURRENT);
+//		}
 	}
-	
-	public SensorProfile getType() {
-		return SensorProfile.CLIMATE;
-	}
-	
+		
 	public float getTemperature() {
 		return mTemperature;
 	}
@@ -307,5 +310,64 @@ public class ClimateSensor extends Sensor {
 	
 	private int getSensorHumidity(float humidity) {
 		return Double.valueOf(((6+humidity)*65536)/125).intValue();
+	}
+	
+	// WimotoDeviceCallback
+	@Override
+	public void onConnectionStateChange(State state) {
+		super.onConnectionStateChange(state);
+
+		mWimotoDevice.readCharacteristic(BLE_CLIMATE_SERVICE_UUID_TEMPERATURE, BLE_CLIMATE_CHAR_UUID_TEMPERATURE_CURRENT);
+		mWimotoDevice.readCharacteristic(BLE_CLIMATE_SERVICE_UUID_TEMPERATURE, BLE_CLIMATE_CHAR_UUID_TEMPERATURE_ALARM_SET);
+		mWimotoDevice.readCharacteristic(BLE_CLIMATE_SERVICE_UUID_TEMPERATURE, BLE_CLIMATE_CHAR_UUID_TEMPERATURE_ALARM_LOW);
+		mWimotoDevice.readCharacteristic(BLE_CLIMATE_SERVICE_UUID_TEMPERATURE, BLE_CLIMATE_CHAR_UUID_TEMPERATURE_ALARM_HIGH);
+
+		mWimotoDevice.readCharacteristic(BLE_CLIMATE_SERVICE_UUID_HUMIDITY, BLE_CLIMATE_CHAR_UUID_HUMIDITY_CURRENT);
+		mWimotoDevice.readCharacteristic(BLE_CLIMATE_SERVICE_UUID_HUMIDITY, BLE_CLIMATE_CHAR_UUID_HUMIDITY_ALARM_SET);
+		mWimotoDevice.readCharacteristic(BLE_CLIMATE_SERVICE_UUID_HUMIDITY, BLE_CLIMATE_CHAR_UUID_HUMIDITY_ALARM_LOW);
+		mWimotoDevice.readCharacteristic(BLE_CLIMATE_SERVICE_UUID_HUMIDITY, BLE_CLIMATE_CHAR_UUID_HUMIDITY_ALARM_HIGH);			
+
+		mWimotoDevice.readCharacteristic(BLE_CLIMATE_SERVICE_UUID_LIGHT, BLE_CLIMATE_CHAR_UUID_LIGHT_CURRENT);		
+		mWimotoDevice.readCharacteristic(BLE_CLIMATE_SERVICE_UUID_LIGHT, BLE_CLIMATE_CHAR_UUID_LIGHT_ALARM_SET);
+		mWimotoDevice.readCharacteristic(BLE_CLIMATE_SERVICE_UUID_LIGHT, BLE_CLIMATE_CHAR_UUID_LIGHT_ALARM_LOW);
+		mWimotoDevice.readCharacteristic(BLE_CLIMATE_SERVICE_UUID_LIGHT, BLE_CLIMATE_CHAR_UUID_LIGHT_ALARM_HIGH);
+		
+		mWimotoDevice.enableChangesNotification(BLE_CLIMATE_SERVICE_UUID_TEMPERATURE, BLE_CLIMATE_CHAR_UUID_TEMPERATURE_CURRENT);
+		mWimotoDevice.enableChangesNotification(BLE_CLIMATE_SERVICE_UUID_HUMIDITY, BLE_CLIMATE_CHAR_UUID_HUMIDITY_CURRENT);
+		mWimotoDevice.enableChangesNotification(BLE_CLIMATE_SERVICE_UUID_LIGHT, BLE_CLIMATE_CHAR_UUID_LIGHT_CURRENT);
+	}
+
+	@Override
+	public void onCharacteristicChanged(BluetoothGattCharacteristic characteristic) {
+		super.onCharacteristicChanged(characteristic);
+		
+		String uuid = characteristic.getUuid().toString().toUpperCase();
+		
+		BigInteger bi = new BigInteger(characteristic.getValue());
+		if (uuid.equals(BLE_CLIMATE_CHAR_UUID_TEMPERATURE_CURRENT)) {
+			setTemperature(getPhysicalTemperature(bi));				
+		} else if (uuid.equals(BLE_CLIMATE_CHAR_UUID_LIGHT_CURRENT)) {
+			setLight((float)(0.96 * bi.floatValue()));				
+		} else if (uuid.equals(BLE_CLIMATE_CHAR_UUID_HUMIDITY_CURRENT)) {
+			setHumidity(getPhysicalHumidity(bi));				
+		} else if (uuid.equals(BLE_CLIMATE_CHAR_UUID_TEMPERATURE_ALARM_SET)) {
+			setTemperatureAlarmSet((bi.floatValue() == 0) ? false:true);
+		} else if (uuid.equals(BLE_CLIMATE_CHAR_UUID_TEMPERATURE_ALARM_LOW)) {
+			setTemperatureAlarmLow(getPhysicalTemperature(bi));
+		} else if (uuid.equals(BLE_CLIMATE_CHAR_UUID_TEMPERATURE_ALARM_HIGH)) {
+			setTemperatureAlarmHigh(getPhysicalTemperature(bi));
+		} else if (uuid.equals(BLE_CLIMATE_CHAR_UUID_HUMIDITY_ALARM_SET)) {
+			setHumidityAlarmSet((bi.floatValue() == 0) ? false:true);
+		} else if (uuid.equals(BLE_CLIMATE_CHAR_UUID_HUMIDITY_ALARM_LOW)) {
+			setHumidityAlarmLow(getPhysicalHumidity(bi));
+		} else if (uuid.equals(BLE_CLIMATE_CHAR_UUID_HUMIDITY_ALARM_HIGH)) {
+			setHumidityAlarmHigh(getPhysicalHumidity(bi));
+		} else if (uuid.equals(BLE_CLIMATE_CHAR_UUID_LIGHT_ALARM_SET)) {
+			setLightAlarmSet((bi.floatValue() == 0) ? false:true);
+		} else if (uuid.equals(BLE_CLIMATE_CHAR_UUID_LIGHT_ALARM_LOW)) {
+			setLightAlarmLow(Float.valueOf(bi.floatValue()/100.0f).intValue());
+		} else if (uuid.equals(BLE_CLIMATE_CHAR_UUID_LIGHT_ALARM_HIGH)) {
+			setLightAlarmHigh(Float.valueOf(bi.floatValue()/100.0f).intValue());
+		}
 	}
 }

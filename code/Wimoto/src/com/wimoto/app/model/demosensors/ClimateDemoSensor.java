@@ -5,10 +5,9 @@ import java.util.Random;
 
 import android.os.Handler;
 
+import com.wimoto.app.AppContext;
 import com.wimoto.app.R;
 import com.wimoto.app.model.ClimateSensor;
-import com.wimoto.app.model.SensorProfile;
-import com.wimoto.app.utils.AppContext;
 
 public class ClimateDemoSensor extends ClimateSensor {
 
@@ -16,8 +15,10 @@ public class ClimateDemoSensor extends ClimateSensor {
 	
 	private Handler mHandler;
 	
-	public ClimateDemoSensor() {
-		mTitle = AppContext.getContext().getString(R.string.sensor_climate_demo);
+	public ClimateDemoSensor(AppContext context) {
+		super(context);
+		
+		mTitle = mContext.getString(R.string.sensor_climate_demo);
 		mId = SENSOR_CLIMATE_DEMO;
 		
 		mTemperature = 22.0f;
@@ -90,7 +91,4 @@ public class ClimateDemoSensor extends ClimateSensor {
 		
 	}
 	
-	public SensorProfile getType() {
-		return SensorProfile.CLIMATE_DEMO;
-	}
 }

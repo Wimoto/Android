@@ -5,10 +5,9 @@ import java.util.Random;
 
 import android.os.Handler;
 
+import com.wimoto.app.AppContext;
 import com.wimoto.app.R;
-import com.wimoto.app.model.SensorProfile;
 import com.wimoto.app.model.ThermoSensor;
-import com.wimoto.app.utils.AppContext;
 
 public class ThermoDemoSensor extends ThermoSensor {
 
@@ -16,8 +15,10 @@ public class ThermoDemoSensor extends ThermoSensor {
 	
 	private Handler mHandler;
 	
-	public ThermoDemoSensor() {
-		mTitle = AppContext.getContext().getString(R.string.sensor_thermo_demo);
+	public ThermoDemoSensor(AppContext context) {
+		super(context);
+		
+		mTitle = mContext.getString(R.string.sensor_thermo_demo);
 		mId = SENSOR_THERMO_DEMO;
 		
 		mTemperature = 22.0f;
@@ -75,7 +76,4 @@ public class ThermoDemoSensor extends ThermoSensor {
 		}		
 	}
 	
-	public SensorProfile getType() {
-		return SensorProfile.THERMO_DEMO;
-	}
 }

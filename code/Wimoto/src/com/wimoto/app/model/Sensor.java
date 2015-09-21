@@ -11,6 +11,7 @@ import java.util.Observer;
 import java.util.Set;
 import java.util.Timer;
 
+import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.util.Log;
 
@@ -23,14 +24,18 @@ import com.couchbase.lite.QueryEnumerator;
 import com.couchbase.lite.View;
 import com.mobitexoft.utils.SHA256Hash;
 import com.mobitexoft.utils.propertyobserver.PropertyObservable;
+import com.wimoto.app.AppContext;
 import com.wimoto.app.bluetooth.BluetoothConnection;
+import com.wimoto.app.bluetooth.WimotoDevice;
+import com.wimoto.app.bluetooth.WimotoDevice.State;
 import com.wimoto.app.model.demosensors.ClimateDemoSensor;
 import com.wimoto.app.model.demosensors.ThermoDemoSensor;
 
-public class Sensor extends PropertyObservable implements Observer {
+public abstract class Sensor extends PropertyObservable implements Observer, WimotoDevice.WimotoDeviceCallback {
 			
 	public static final String SENSOR_FIELD_ID							= "id";
 	public static final String SENSOR_FIELD_TITLE						= "title";
+	public static final String SENSOR_FIELD_STATE						= "mState";
 	public static final String SENSOR_FIELD_CONNECTION					= "mConnection";
 	public static final String SENSOR_FIELD_BATTERY_LEVEL				= "batteryLevel";
 	public static final String SENSOR_FIELD_RSSI						= "rssi";
@@ -38,117 +43,128 @@ public class Sensor extends PropertyObservable implements Observer {
 	private static final String BLE_GENERIC_SERVICE_UUID_BATTERY		 	= "0000180F-0000-1000-8000-00805F9B34FB";
 	private static final String BLE_GENERIC_CHAR_UUID_BATTERY_LEVEL			= "00002A19-0000-1000-8000-00805F9B34FB";
 		
+	protected AppContext mContext;
+	
 	protected Document mDocument;
+	protected WimotoDevice mWimotoDevice;
 	
 	protected String mId;
 	protected String mTitle;
-	protected BluetoothConnection mConnection;
+	protected State mState;
+	
 	private int mBatteryLevel;
 	private int mRssi;
 	
 	private Timer mRssiTimer;
 	
+	
+	
 	protected Map<String, LinkedList<Float>> mSensorValues;
 	
-	public static Sensor getSensorFromDocument(Document document) {
+	public static Sensor getSensorFromDocument(AppContext context, Document document) {
 		Sensor sensor = null;
 		
 		Integer property = (Integer)document.getProperty("sensor_type");
 		
-		SensorProfile sensorProfile = SensorProfile.values()[property.intValue()];
-		if (sensorProfile == SensorProfile.CLIMATE) {
-			sensor = new ClimateSensor();
-		} else if (sensorProfile == SensorProfile.GROW) {
-			sensor = new GrowSensor();
-		} else if (sensorProfile == SensorProfile.SENTRY) {
-			sensor = new SentrySensor();
-		} else if (sensorProfile == SensorProfile.THERMO) {
-			sensor = new ThermoSensor();
-		} else if (sensorProfile == SensorProfile.WATER) {
-			sensor = new WaterSensor();
-		} else if (sensorProfile == SensorProfile.CLIMATE_DEMO) {
-			sensor = new ClimateDemoSensor();
-		} else if (sensorProfile == SensorProfile.THERMO_DEMO) {
-			sensor = new ThermoDemoSensor();
-		} else {
-			return null;
+		WimotoDevice.Profile profile = WimotoDevice.Profile.values()[property.intValue()];
+		if (profile == WimotoDevice.Profile.CLIMATE) {
+			sensor = new ClimateSensor(context);
+		} else if (profile == WimotoDevice.Profile.GROW) {
+			sensor = new GrowSensor(context);
+		} else if (profile == WimotoDevice.Profile.SENTRY) {
+			sensor = new SentrySensor(context);
+		} else if (profile == WimotoDevice.Profile.THERMO) {
+			sensor = new ThermoSensor(context);
+		} else if (profile == WimotoDevice.Profile.WATER) {
+			sensor = new WaterSensor(context);
+		} else if (profile == WimotoDevice.Profile.CLIMATE_DEMO) {
+			sensor = new ClimateDemoSensor(context);
+		} else if (profile == WimotoDevice.Profile.THERMO_DEMO) {
+			sensor = new ThermoDemoSensor(context);
 		}
 		sensor.setDocument(document);
 		
 		return sensor;
 	}
 
-	public static Sensor getSensorFromConnection(BluetoothConnection connection) {
-		if (connection.getSensorProfile() == SensorProfile.CLIMATE) {
-			return new ClimateSensor(connection);
-		} else if (connection.getSensorProfile() == SensorProfile.GROW) {
-			return new GrowSensor(connection);
-		} else if (connection.getSensorProfile() == SensorProfile.SENTRY) {
-			return new SentrySensor(connection);
-		} else if (connection.getSensorProfile() == SensorProfile.THERMO) {
-			return new ThermoSensor(connection);
-		} else if (connection.getSensorProfile() == SensorProfile.WATER) {
-			return new WaterSensor(connection);
-		}
+	public static Sensor getSensorFromConnection(AppContext context, BluetoothConnection connection) {
+//		if (connection.getSensorProfile() == SensorProfile.CLIMATE) {
+//			return new ClimateSensor(context, connection);
+//		} else if (connection.getSensorProfile() == SensorProfile.GROW) {
+//			return new GrowSensor(context, connection);
+//		} else if (connection.getSensorProfile() == SensorProfile.SENTRY) {
+//			return new SentrySensor(context, connection);
+//		} else if (connection.getSensorProfile() == SensorProfile.THERMO) {
+//			return new ThermoSensor(context, connection);
+//		} else if (connection.getSensorProfile() == SensorProfile.WATER) {
+//			return new WaterSensor(context, connection);
+//		}
 		
 		return null;
 	}
 	
-	public Sensor() {
+	public Sensor(AppContext context) {
+		mContext = context;
+		
 		mSensorValues = new HashMap<String, LinkedList<Float>>();
 	}
 	
-	public Sensor(BluetoothConnection connection) {
-		setConnection(connection);
-	}
-		
-	public void setConnection(BluetoothConnection connection) {
-		if (mConnection != null) {
-			mConnection.deleteObserver(this);
-		}
-		
-		notifyObservers(SENSOR_FIELD_CONNECTION, mConnection, connection);
-		
-		mConnection = connection;
-		if (mConnection == null) {
-//			if (mRssiTimer != null) {
-//				mRssiTimer.cancel();
-//			}
-//			mRssiTimer = null;
-		} else {
-			mConnection.addObserver(this);
-//						
-//			if (mRssiTimer == null) {
-//				mRssiTimer = new Timer();
-//
-//				mRssiTimer.schedule(new TimerTask() {
-//					@Override
-//					public void run() {
-//		        		if (mConnection != null) {
-//		        			mConnection.readRssi();
-//		        		}
-//					}
-//				}, 0, 1000);
-//			}
-		}		
-	}
+	public abstract WimotoDevice.Profile getProfile();
+	
+//	public Sensor(BluetoothConnection connection) {
+//		setConnection(connection);
+//	}
+			
+//	public void setConnection(BluetoothConnection connection) {
+//		if (mConnection != null) {
+//			mConnection.deleteObserver(this);
+//		}
+//		
+//		notifyObservers(SENSOR_FIELD_CONNECTION, mConnection, connection);
+//		
+//		mConnection = connection;
+//		mConnection.connect();
+//		if (mConnection == null) {
+////			if (mRssiTimer != null) {
+////				mRssiTimer.cancel();
+////			}
+////			mRssiTimer = null;
+//		} else {
+//			mConnection.addObserver(this);
+////						
+////			if (mRssiTimer == null) {
+////				mRssiTimer = new Timer();
+////
+////				mRssiTimer.schedule(new TimerTask() {
+////					@Override
+////					public void run() {
+////		        		if (mConnection != null) {
+////		        			mConnection.readRssi();
+////		        		}
+////					}
+////				}, 0, 1000);
+////			}
+//		}		
+//	}
 
-	public String getTitle() {
-		if ((mDocument == null) && (mConnection != null)) {
-			return mConnection.getName();
-		}
+	public void connectDevice(WimotoDevice device) {
+		mWimotoDevice = device;
 		
-		return mTitle;
+		mWimotoDevice.connect(this);
 	}
-
+	
+	public void disconnect() {
+		mWimotoDevice.disconnect();
+	}
+	
 	public String getId() {
-		if ((mDocument == null) && (mConnection != null)) {
-			return mConnection.getId();
-		}
-		
 		return mId;
 	}
 	
+	public String getTitle() {
+		return mTitle;
+	}
+
 	public void setTitle(String title) {
 		notifyObservers(SENSOR_FIELD_TITLE, mTitle, title);
 		
@@ -170,10 +186,12 @@ public class Sensor extends PropertyObservable implements Observer {
 		}		
 	}
 	
-	public SensorProfile getType() {
-		return SensorProfile.UNDEFINED;
+	public void setState(State state) {
+		notifyObservers(SENSOR_FIELD_STATE, (mState == null) ? 0: mState.getValue(), (state == null) ? 0: state.getValue());
+		
+		mState = state;
 	}
-
+		
 	public float getBatteryLevel() {
 		return mBatteryLevel;
 	}
@@ -181,10 +199,6 @@ public class Sensor extends PropertyObservable implements Observer {
 	public void setBatteryLevel(int batteryLevel) {
 		notifyObservers(SENSOR_FIELD_BATTERY_LEVEL, mBatteryLevel, batteryLevel);
 		mBatteryLevel = batteryLevel;
-	}
-
-	public boolean isConnected() {
-		return (mConnection != null);
 	}
 
 	public int getRssi() {
@@ -258,29 +272,29 @@ public class Sensor extends PropertyObservable implements Observer {
 	}
 
 	protected void initiateSensorCharacteristics() {
-		if ((mConnection != null) && (mDocument != null)) {
-			mConnection.readCharacteristic(BLE_GENERIC_SERVICE_UUID_BATTERY, BLE_GENERIC_CHAR_UUID_BATTERY_LEVEL);
-		}
+//		if ((mConnection != null) && (mDocument != null)) {
+//			mConnection.readCharacteristic(BLE_GENERIC_SERVICE_UUID_BATTERY, BLE_GENERIC_CHAR_UUID_BATTERY_LEVEL);
+//		}
 	}
 	
 	protected void enableAlarm(boolean doEnable, String serviceUuidString, String characteristicUuidString) {
-		if (mConnection != null) {
-			if (doEnable) {
-				byte[] bytes = {(byte) 0x01};
-				mConnection.writeCharacteristic(serviceUuidString, characteristicUuidString, bytes);
-			} else {
-				byte[] bytes = {(byte) 0x00};
-				mConnection.writeCharacteristic(serviceUuidString, characteristicUuidString, bytes);
-			}
-		}
+//		if (mConnection != null) {
+//			if (doEnable) {
+//				byte[] bytes = {(byte) 0x01};
+//				mConnection.writeCharacteristic(serviceUuidString, characteristicUuidString, bytes);
+//			} else {
+//				byte[] bytes = {(byte) 0x00};
+//				mConnection.writeCharacteristic(serviceUuidString, characteristicUuidString, bytes);
+//			}
+//		}
 	}
 	
 	protected void writeAlarmValue(int alarmValue, String serviceUuidString, String characteristicUuidString) {
-		if (mConnection != null) {
-			BigInteger bigInt = BigInteger.valueOf(alarmValue); 
-			Log.e("", "writeAlarmValue _" + SHA256Hash.toHexString(bigInt.toByteArray()) + " for " + alarmValue);
-			mConnection.writeCharacteristic(serviceUuidString, characteristicUuidString, bigInt.toByteArray());
-		}
+//		if (mConnection != null) {
+//			BigInteger bigInt = BigInteger.valueOf(alarmValue); 
+//			Log.e("", "writeAlarmValue _" + SHA256Hash.toHexString(bigInt.toByteArray()) + " for " + alarmValue);
+//			mConnection.writeCharacteristic(serviceUuidString, characteristicUuidString, bigInt.toByteArray());
+//		}
 	}
 	
 	public Document getDocument() {
@@ -330,5 +344,20 @@ public class Sensor extends PropertyObservable implements Observer {
 	
 	public static float celsToFahr(float celsValue) {
 		return celsValue * 9.0f / 5.0f + 32.0f; 
+	}
+
+	
+	// WimotoDeviceCallback
+	@Override
+	public void onConnectionStateChange(State state) {
+		Log.e("", "Sensor onConnectionStateChange " + state);
+		
+		setState(state);
+	}
+	
+	@Override
+	public void onCharacteristicChanged(BluetoothGattCharacteristic characteristic) {
+		// TODO Auto-generated method stub
+		
 	}
 }
