@@ -278,23 +278,23 @@ public abstract class Sensor extends PropertyObservable implements Observer, Wim
 	}
 	
 	protected void enableAlarm(boolean doEnable, String serviceUuidString, String characteristicUuidString) {
-//		if (mConnection != null) {
-//			if (doEnable) {
-//				byte[] bytes = {(byte) 0x01};
-//				mConnection.writeCharacteristic(serviceUuidString, characteristicUuidString, bytes);
-//			} else {
-//				byte[] bytes = {(byte) 0x00};
-//				mConnection.writeCharacteristic(serviceUuidString, characteristicUuidString, bytes);
-//			}
-//		}
+		if (mWimotoDevice != null) {
+			if (doEnable) {
+				byte[] bytes = {(byte) 0x01};
+				mWimotoDevice.writeCharacteristic(serviceUuidString, characteristicUuidString, bytes);
+			} else {
+				byte[] bytes = {(byte) 0x00};
+				mWimotoDevice.writeCharacteristic(serviceUuidString, characteristicUuidString, bytes);
+			}
+		}
 	}
 	
 	protected void writeAlarmValue(int alarmValue, String serviceUuidString, String characteristicUuidString) {
-//		if (mConnection != null) {
-//			BigInteger bigInt = BigInteger.valueOf(alarmValue); 
-//			Log.e("", "writeAlarmValue _" + SHA256Hash.toHexString(bigInt.toByteArray()) + " for " + alarmValue);
-//			mConnection.writeCharacteristic(serviceUuidString, characteristicUuidString, bigInt.toByteArray());
-//		}
+		if (mWimotoDevice != null) {
+			BigInteger bigInt = BigInteger.valueOf(alarmValue); 
+			Log.e("", "writeAlarmValue _" + SHA256Hash.toHexString(bigInt.toByteArray()) + " for " + alarmValue);
+			mWimotoDevice.writeCharacteristic(serviceUuidString, characteristicUuidString, bigInt.toByteArray());
+		}
 	}
 	
 	public Document getDocument() {

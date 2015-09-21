@@ -2,15 +2,11 @@ package com.wimoto.app.model;
 
 import java.math.BigInteger;
 import java.util.LinkedList;
-import java.util.Observable;
 
 import android.bluetooth.BluetoothGattCharacteristic;
-import android.util.Log;
 
-import com.couchbase.lite.Document;
 import com.wimoto.app.AppContext;
 import com.wimoto.app.R;
-import com.wimoto.app.bluetooth.BluetoothConnection;
 import com.wimoto.app.bluetooth.WimotoDevice;
 import com.wimoto.app.bluetooth.WimotoDevice.State;
 
@@ -88,45 +84,6 @@ public class ClimateSensor extends Sensor {
 		return WimotoDevice.Profile.CLIMATE;
 	}
 	
-//	@Override
-//	public void setConnection(BluetoothConnection connection) {
-//		super.setConnection(connection);
-//		
-//		//initiateSensorCharacteristics();
-//	}
-	
-	@Override
-	public void setDocument(Document document) {
-		super.setDocument(document);
-		
-		//initiateSensorCharacteristics();		
-	}
-
-	@Override
-	protected void initiateSensorCharacteristics() {
-		super.initiateSensorCharacteristics();
-		
-//		if ((mConnection != null) && (mDocument != null)) {
-//			mConnection.readCharacteristic(BLE_CLIMATE_SERVICE_UUID_TEMPERATURE, BLE_CLIMATE_CHAR_UUID_TEMPERATURE_ALARM_SET);
-//			mConnection.readCharacteristic(BLE_CLIMATE_SERVICE_UUID_TEMPERATURE, BLE_CLIMATE_CHAR_UUID_TEMPERATURE_ALARM_LOW);
-//			mConnection.readCharacteristic(BLE_CLIMATE_SERVICE_UUID_TEMPERATURE, BLE_CLIMATE_CHAR_UUID_TEMPERATURE_ALARM_HIGH);			
-//			mConnection.enableChangesNotification(BLE_CLIMATE_SERVICE_UUID_TEMPERATURE, BLE_CLIMATE_CHAR_UUID_TEMPERATURE_ALARM);
-//			mConnection.enableChangesNotification(BLE_CLIMATE_SERVICE_UUID_TEMPERATURE, BLE_CLIMATE_CHAR_UUID_TEMPERATURE_CURRENT);
-//			
-//			mConnection.readCharacteristic(BLE_CLIMATE_SERVICE_UUID_HUMIDITY, BLE_CLIMATE_CHAR_UUID_HUMIDITY_ALARM_SET);
-//			mConnection.readCharacteristic(BLE_CLIMATE_SERVICE_UUID_HUMIDITY, BLE_CLIMATE_CHAR_UUID_HUMIDITY_ALARM_LOW);
-//			mConnection.readCharacteristic(BLE_CLIMATE_SERVICE_UUID_HUMIDITY, BLE_CLIMATE_CHAR_UUID_HUMIDITY_ALARM_HIGH);			
-//			mConnection.enableChangesNotification(BLE_CLIMATE_SERVICE_UUID_HUMIDITY, BLE_CLIMATE_CHAR_UUID_HUMIDITY_ALARM);
-//			mConnection.enableChangesNotification(BLE_CLIMATE_SERVICE_UUID_HUMIDITY, BLE_CLIMATE_CHAR_UUID_HUMIDITY_CURRENT);
-//			
-//			mConnection.readCharacteristic(BLE_CLIMATE_SERVICE_UUID_LIGHT, BLE_CLIMATE_CHAR_UUID_LIGHT_ALARM_SET);
-//			mConnection.readCharacteristic(BLE_CLIMATE_SERVICE_UUID_LIGHT, BLE_CLIMATE_CHAR_UUID_LIGHT_ALARM_LOW);
-//			mConnection.readCharacteristic(BLE_CLIMATE_SERVICE_UUID_LIGHT, BLE_CLIMATE_CHAR_UUID_LIGHT_ALARM_HIGH);			
-//			mConnection.enableChangesNotification(BLE_CLIMATE_SERVICE_UUID_LIGHT, BLE_CLIMATE_CHAR_UUID_LIGHT_ALARM);
-//			mConnection.enableChangesNotification(BLE_CLIMATE_SERVICE_UUID_LIGHT, BLE_CLIMATE_CHAR_UUID_LIGHT_CURRENT);
-//		}
-	}
-		
 	public float getTemperature() {
 		return mTemperature;
 	}
@@ -164,138 +121,120 @@ public class ClimateSensor extends Sensor {
 		return mTemperatureAlarmLow;
 	}
 
-	public void setTemperatureAlarmLow(float temperatureAlarmLow) {
+	public void setTemperatureAlarmLow(float temperatureAlarmLow, boolean doWrite) {
 		notifyObservers(SENSOR_FIELD_CLIMATE_TEMPERATURE_ALARM_LOW, mTemperatureAlarmLow, temperatureAlarmLow);
 		
 		mTemperatureAlarmLow = temperatureAlarmLow;
-		writeAlarmValue(getSensorTemperature(mTemperatureAlarmLow), ClimateSensor.BLE_CLIMATE_SERVICE_UUID_TEMPERATURE, ClimateSensor.BLE_CLIMATE_CHAR_UUID_TEMPERATURE_ALARM_LOW);
+		
+		if (doWrite) {
+			writeAlarmValue(getSensorTemperature(mTemperatureAlarmLow), ClimateSensor.BLE_CLIMATE_SERVICE_UUID_TEMPERATURE, ClimateSensor.BLE_CLIMATE_CHAR_UUID_TEMPERATURE_ALARM_LOW);
+		}
 	}
 
 	public float getTemperatureAlarmHigh() {
 		return mTemperatureAlarmHigh;
 	}
 
-	public void setTemperatureAlarmHigh(float temperatureAlarmHigh) {
+	public void setTemperatureAlarmHigh(float temperatureAlarmHigh, boolean doWrite) {
 		notifyObservers(SENSOR_FIELD_CLIMATE_TEMPERATURE_ALARM_HIGH, mTemperatureAlarmHigh, temperatureAlarmHigh);
 
 		mTemperatureAlarmHigh = temperatureAlarmHigh;
-		writeAlarmValue(getSensorTemperature(mTemperatureAlarmHigh), ClimateSensor.BLE_CLIMATE_SERVICE_UUID_TEMPERATURE, ClimateSensor.BLE_CLIMATE_CHAR_UUID_TEMPERATURE_ALARM_HIGH);
+		if (doWrite) {
+			writeAlarmValue(getSensorTemperature(mTemperatureAlarmHigh), ClimateSensor.BLE_CLIMATE_SERVICE_UUID_TEMPERATURE, ClimateSensor.BLE_CLIMATE_CHAR_UUID_TEMPERATURE_ALARM_HIGH);
+		}
 	}
 	
 	public boolean isTemperatureAlarmSet() {
 		return mTemperatureAlarmSet;
 	}
 
-	public void setTemperatureAlarmSet(boolean temperatureAlarmSet) {
+	public void setTemperatureAlarmSet(boolean temperatureAlarmSet, boolean doWrite) {
 		notifyObservers(SENSOR_FIELD_CLIMATE_TEMPERATURE_ALARM_SET, mTemperatureAlarmSet, temperatureAlarmSet);
 		
 		mTemperatureAlarmSet = temperatureAlarmSet;
-		enableAlarm(mTemperatureAlarmSet, BLE_CLIMATE_SERVICE_UUID_TEMPERATURE, BLE_CLIMATE_CHAR_UUID_TEMPERATURE_ALARM_SET);
+		if (doWrite) {
+			enableAlarm(mTemperatureAlarmSet, BLE_CLIMATE_SERVICE_UUID_TEMPERATURE, BLE_CLIMATE_CHAR_UUID_TEMPERATURE_ALARM_SET);
+		}
 	}
 
 	public boolean isHumidityAlarmSet() {
 		return mHumidityAlarmSet;
 	}
 
-	public void setHumidityAlarmSet(boolean humidityAlarmSet) {
+	public void setHumidityAlarmSet(boolean humidityAlarmSet, boolean doWrite) {
 		notifyObservers(SENSOR_FIELD_CLIMATE_HUMIDITY_ALARM_SET, mHumidityAlarmSet, humidityAlarmSet);
 		
 		mHumidityAlarmSet = humidityAlarmSet;
-		enableAlarm(mHumidityAlarmSet, BLE_CLIMATE_SERVICE_UUID_HUMIDITY, BLE_CLIMATE_CHAR_UUID_HUMIDITY_ALARM_SET);
+		if (doWrite) {
+			enableAlarm(mHumidityAlarmSet, BLE_CLIMATE_SERVICE_UUID_HUMIDITY, BLE_CLIMATE_CHAR_UUID_HUMIDITY_ALARM_SET);
+		}
 	}
 
 	public float getHumidityAlarmLow() {
 		return mHumidityAlarmLow;
 	}
 
-	public void setHumidityAlarmLow(float humidityAlarmLow) {
+	public void setHumidityAlarmLow(float humidityAlarmLow, boolean doWrite) {
 		notifyObservers(SENSOR_FIELD_CLIMATE_HUMIDITY_ALARM_LOW, mHumidityAlarmLow, humidityAlarmLow);
 		
 		mHumidityAlarmLow = humidityAlarmLow;
-		writeAlarmValue(getSensorHumidity(humidityAlarmLow), ClimateSensor.BLE_CLIMATE_SERVICE_UUID_HUMIDITY, ClimateSensor.BLE_CLIMATE_CHAR_UUID_HUMIDITY_ALARM_LOW);	}
+		if (doWrite) {
+			writeAlarmValue(getSensorHumidity(humidityAlarmLow), ClimateSensor.BLE_CLIMATE_SERVICE_UUID_HUMIDITY, ClimateSensor.BLE_CLIMATE_CHAR_UUID_HUMIDITY_ALARM_LOW);
+		}
+	}
 
 	public float getHumidityAlarmHigh() {
 		return mHumidityAlarmHigh;
 	}
 
-	public void setHumidityAlarmHigh(float humidityAlarmHigh) {
+	public void setHumidityAlarmHigh(float humidityAlarmHigh, boolean doWrite) {
 		notifyObservers(SENSOR_FIELD_CLIMATE_HUMIDITY_ALARM_HIGH, mHumidityAlarmHigh, humidityAlarmHigh);
 		
 		mHumidityAlarmHigh = humidityAlarmHigh;
-		writeAlarmValue(getSensorHumidity(humidityAlarmHigh), ClimateSensor.BLE_CLIMATE_SERVICE_UUID_HUMIDITY, ClimateSensor.BLE_CLIMATE_CHAR_UUID_HUMIDITY_ALARM_HIGH);
+		if (doWrite) {
+			writeAlarmValue(getSensorHumidity(humidityAlarmHigh), ClimateSensor.BLE_CLIMATE_SERVICE_UUID_HUMIDITY, ClimateSensor.BLE_CLIMATE_CHAR_UUID_HUMIDITY_ALARM_HIGH);
+		}
 	}
 
 	public boolean isLightAlarmSet() {
 		return mLightAlarmSet;
 	}
 
-	public void setLightAlarmSet(boolean lightAlarmSet) {
+	public void setLightAlarmSet(boolean lightAlarmSet, boolean doWrite) {
 		notifyObservers(SENSOR_FIELD_CLIMATE_LIGHT_ALARM_SET, mLightAlarmSet, lightAlarmSet);
 		
 		mLightAlarmSet = lightAlarmSet;
-		enableAlarm(mLightAlarmSet, BLE_CLIMATE_SERVICE_UUID_LIGHT, BLE_CLIMATE_CHAR_UUID_LIGHT_ALARM_SET);
+		if (doWrite) {
+			enableAlarm(mLightAlarmSet, BLE_CLIMATE_SERVICE_UUID_LIGHT, BLE_CLIMATE_CHAR_UUID_LIGHT_ALARM_SET);
+		}
 	}
 
 	public float getLightAlarmLow() {
 		return mLightAlarmLow;
 	}
 
-	public void setLightAlarmLow(float lightAlarmLow) {
+	public void setLightAlarmLow(float lightAlarmLow, boolean doWrite) {
 		notifyObservers(SENSOR_FIELD_CLIMATE_LIGHT_ALARM_LOW, mLightAlarmLow, lightAlarmLow);
 		
 		mLightAlarmLow = lightAlarmLow;
-		writeAlarmValue(Float.valueOf(mLightAlarmLow).intValue(), ClimateSensor.BLE_CLIMATE_SERVICE_UUID_LIGHT, ClimateSensor.BLE_CLIMATE_CHAR_UUID_LIGHT_ALARM_LOW);
+		if (doWrite) {
+			writeAlarmValue(Float.valueOf(mLightAlarmLow).intValue(), ClimateSensor.BLE_CLIMATE_SERVICE_UUID_LIGHT, ClimateSensor.BLE_CLIMATE_CHAR_UUID_LIGHT_ALARM_LOW);
+		}
 	}
 
 	public float getLightAlarmHigh() {
 		return mLightAlarmHigh;
 	}
 
-	public void setLightAlarmHigh(float lightAlarmHigh) {
+	public void setLightAlarmHigh(float lightAlarmHigh, boolean doWrite) {
 		notifyObservers(SENSOR_FIELD_CLIMATE_LIGHT_ALARM_HIGH, mLightAlarmHigh, lightAlarmHigh);
 		
 		mLightAlarmHigh = lightAlarmHigh;
-		writeAlarmValue(Float.valueOf(mLightAlarmHigh).intValue(), ClimateSensor.BLE_CLIMATE_SERVICE_UUID_LIGHT, ClimateSensor.BLE_CLIMATE_CHAR_UUID_LIGHT_ALARM_HIGH);
+		if (doWrite) {
+			writeAlarmValue(Float.valueOf(mLightAlarmHigh).intValue(), ClimateSensor.BLE_CLIMATE_SERVICE_UUID_LIGHT, ClimateSensor.BLE_CLIMATE_CHAR_UUID_LIGHT_ALARM_HIGH);
+		}
 	}
 
-	@Override
-	public void update(Observable observable, Object data) {
-		if (data instanceof BluetoothGattCharacteristic) {			
-			BluetoothGattCharacteristic characteristic = (BluetoothGattCharacteristic) data;
-			
-			String uuid = characteristic.getUuid().toString().toUpperCase();
-			
-			BigInteger bi = new BigInteger(characteristic.getValue());
-			if (uuid.equals(BLE_CLIMATE_CHAR_UUID_TEMPERATURE_CURRENT)) {
-				setTemperature(getPhysicalTemperature(bi));				
-			} else if (uuid.equals(BLE_CLIMATE_CHAR_UUID_LIGHT_CURRENT)) {
-				setLight((float)(0.96 * bi.floatValue()));				
-			} else if (uuid.equals(BLE_CLIMATE_CHAR_UUID_HUMIDITY_CURRENT)) {
-				setHumidity(getPhysicalHumidity(bi));				
-			} else if (uuid.equals(BLE_CLIMATE_CHAR_UUID_TEMPERATURE_ALARM_SET)) {
-				setTemperatureAlarmSet((bi.floatValue() == 0) ? false:true);
-			} else if (uuid.equals(BLE_CLIMATE_CHAR_UUID_TEMPERATURE_ALARM_LOW)) {
-				setTemperatureAlarmLow(getPhysicalTemperature(bi));
-			} else if (uuid.equals(BLE_CLIMATE_CHAR_UUID_TEMPERATURE_ALARM_HIGH)) {
-				setTemperatureAlarmHigh(getPhysicalTemperature(bi));
-			} else if (uuid.equals(BLE_CLIMATE_CHAR_UUID_HUMIDITY_ALARM_SET)) {
-				setHumidityAlarmSet((bi.floatValue() == 0) ? false:true);
-			} else if (uuid.equals(BLE_CLIMATE_CHAR_UUID_HUMIDITY_ALARM_LOW)) {
-				setHumidityAlarmLow(getPhysicalHumidity(bi));
-			} else if (uuid.equals(BLE_CLIMATE_CHAR_UUID_HUMIDITY_ALARM_HIGH)) {
-				setHumidityAlarmHigh(getPhysicalHumidity(bi));
-			} else if (uuid.equals(BLE_CLIMATE_CHAR_UUID_LIGHT_ALARM_SET)) {
-				setLightAlarmSet((bi.floatValue() == 0) ? false:true);
-			} else if (uuid.equals(BLE_CLIMATE_CHAR_UUID_LIGHT_ALARM_LOW)) {
-				setLightAlarmLow(Float.valueOf(bi.floatValue()/100.0f).intValue());
-			} else if (uuid.equals(BLE_CLIMATE_CHAR_UUID_LIGHT_ALARM_HIGH)) {
-				setLightAlarmHigh(Float.valueOf(bi.floatValue()/100.0f).intValue());
-			}
-		}
-		
-		super.update(observable, data);
-	}
-	
 	private float getPhysicalTemperature(BigInteger temperature) {
 		return (float)(-46.85 + (175.72*temperature.floatValue()/65536));
 	}
@@ -351,23 +290,23 @@ public class ClimateSensor extends Sensor {
 		} else if (uuid.equals(BLE_CLIMATE_CHAR_UUID_HUMIDITY_CURRENT)) {
 			setHumidity(getPhysicalHumidity(bi));				
 		} else if (uuid.equals(BLE_CLIMATE_CHAR_UUID_TEMPERATURE_ALARM_SET)) {
-			setTemperatureAlarmSet((bi.floatValue() == 0) ? false:true);
+			setTemperatureAlarmSet((bi.floatValue() == 0) ? false:true, false);
 		} else if (uuid.equals(BLE_CLIMATE_CHAR_UUID_TEMPERATURE_ALARM_LOW)) {
-			setTemperatureAlarmLow(getPhysicalTemperature(bi));
+			setTemperatureAlarmLow(getPhysicalTemperature(bi), false);
 		} else if (uuid.equals(BLE_CLIMATE_CHAR_UUID_TEMPERATURE_ALARM_HIGH)) {
-			setTemperatureAlarmHigh(getPhysicalTemperature(bi));
+			setTemperatureAlarmHigh(getPhysicalTemperature(bi), false);
 		} else if (uuid.equals(BLE_CLIMATE_CHAR_UUID_HUMIDITY_ALARM_SET)) {
-			setHumidityAlarmSet((bi.floatValue() == 0) ? false:true);
+			setHumidityAlarmSet((bi.floatValue() == 0) ? false:true, false);
 		} else if (uuid.equals(BLE_CLIMATE_CHAR_UUID_HUMIDITY_ALARM_LOW)) {
-			setHumidityAlarmLow(getPhysicalHumidity(bi));
+			setHumidityAlarmLow(getPhysicalHumidity(bi), false);
 		} else if (uuid.equals(BLE_CLIMATE_CHAR_UUID_HUMIDITY_ALARM_HIGH)) {
-			setHumidityAlarmHigh(getPhysicalHumidity(bi));
+			setHumidityAlarmHigh(getPhysicalHumidity(bi), false);
 		} else if (uuid.equals(BLE_CLIMATE_CHAR_UUID_LIGHT_ALARM_SET)) {
-			setLightAlarmSet((bi.floatValue() == 0) ? false:true);
+			setLightAlarmSet((bi.floatValue() == 0) ? false:true, false);
 		} else if (uuid.equals(BLE_CLIMATE_CHAR_UUID_LIGHT_ALARM_LOW)) {
-			setLightAlarmLow(Float.valueOf(bi.floatValue()/100.0f).intValue());
+			setLightAlarmLow(Float.valueOf(bi.floatValue()/100.0f).intValue(), false);
 		} else if (uuid.equals(BLE_CLIMATE_CHAR_UUID_LIGHT_ALARM_HIGH)) {
-			setLightAlarmHigh(Float.valueOf(bi.floatValue()/100.0f).intValue());
+			setLightAlarmHigh(Float.valueOf(bi.floatValue()/100.0f).intValue(), false);
 		}
 	}
 }

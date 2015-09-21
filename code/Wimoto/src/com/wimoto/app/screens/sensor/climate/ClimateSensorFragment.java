@@ -87,10 +87,10 @@ public class ClimateSensorFragment extends SensorFragment {
 				mView.removeView(mAlarmTemperaturePickerView);
 				
 				ClimateSensor climateSensor = (ClimateSensor) mSensor;
-				climateSensor.setTemperatureAlarmSet(true);
+				climateSensor.setTemperatureAlarmSet(true, true);
 				
-				climateSensor.setTemperatureAlarmLow(lowerValue);
-				climateSensor.setTemperatureAlarmHigh(upperValue);
+				climateSensor.setTemperatureAlarmLow(lowerValue, true);
+				climateSensor.setTemperatureAlarmHigh(upperValue, true);
 			}
 			
 			@Override
@@ -98,28 +98,28 @@ public class ClimateSensorFragment extends SensorFragment {
 				mView.removeView(mAlarmTemperaturePickerView);
 				
 				ClimateSensor climateSensor = (ClimateSensor) mSensor;
-				climateSensor.setTemperatureAlarmSet(false);	
+				climateSensor.setTemperatureAlarmSet(false, true);	
 			}
 		});
 		
-		mTemperaturePickerView = new TimePickerView(getActivity(), ClimateSensor.SENSOR_FIELD_CLIMATE_TEMPERATURE, 
-				new TimePickerListener() {
-
-					@Override
-					public void onSave(Date lowerDate, Date upperDate) {
-						mView.removeView(mTemperaturePickerView);
-						
-						Log.e("lower", lowerDate.toString());
-						Log.e("upper", upperDate.toString());
-					}
-
-					@Override
-					public void onCancel() {
-						mView.removeView(mTemperaturePickerView);
-						
-						((ClimateSensor)mSensor).setTemperatureAlarmSet(false);
-					}
-		});
+//		mTemperaturePickerView = new TimePickerView(getActivity(), ClimateSensor.SENSOR_FIELD_CLIMATE_TEMPERATURE, 
+//				new TimePickerListener() {
+//
+//					@Override
+//					public void onSave(Date lowerDate, Date upperDate) {
+//						mView.removeView(mTemperaturePickerView);
+//						
+//						Log.e("lower", lowerDate.toString());
+//						Log.e("upper", upperDate.toString());
+//					}
+//
+//					@Override
+//					public void onCancel() {
+//						mView.removeView(mTemperaturePickerView);
+//						
+//						((ClimateSensor)mSensor).setTemperatureAlarmSet(false);
+//					}
+//		});
 		
 		mTemperatureSwitch = (AnimationSwitch) mView.findViewById(R.id.temperature_switch);
 		mTemperatureSwitch.setOnCheckedChangeListener(new OnCheckedChangeListener() {
@@ -130,7 +130,7 @@ public class ClimateSensorFragment extends SensorFragment {
 				} else {
 					mView.removeView(mAlarmTemperaturePickerView);
 					
-					((ClimateSensor)mSensor).setTemperatureAlarmSet(false);
+					((ClimateSensor)mSensor).setTemperatureAlarmSet(false, true);
 				}
 			}
 		});
@@ -157,10 +157,10 @@ public class ClimateSensorFragment extends SensorFragment {
 				mView.removeView(mAlarmHumidityPickerView);
 				
 				ClimateSensor climateSensor = (ClimateSensor) mSensor;
-				climateSensor.setHumidityAlarmSet(true);
+				climateSensor.setHumidityAlarmSet(true, true);
 				
-				climateSensor.setHumidityAlarmLow(lowerValue);
-				climateSensor.setHumidityAlarmHigh(upperValue);
+				climateSensor.setHumidityAlarmLow(lowerValue, true);
+				climateSensor.setHumidityAlarmHigh(upperValue, true);
 			}
 			
 			@Override
@@ -168,7 +168,7 @@ public class ClimateSensorFragment extends SensorFragment {
 				mView.removeView(mAlarmHumidityPickerView);
 				
 				ClimateSensor climateSensor = (ClimateSensor) mSensor;
-				climateSensor.setHumidityAlarmSet(false);	
+				climateSensor.setHumidityAlarmSet(false, true);	
 			}
 		});
 		
@@ -181,7 +181,7 @@ public class ClimateSensorFragment extends SensorFragment {
 				} else {
 					mView.removeView(mAlarmHumidityPickerView);
 					
-					((ClimateSensor)mSensor).setHumidityAlarmSet(false);
+					((ClimateSensor)mSensor).setHumidityAlarmSet(false, true);
 				}
 			}
 		});
@@ -208,10 +208,10 @@ public class ClimateSensorFragment extends SensorFragment {
 				mView.removeView(mAlarmLightPickerView);
 				
 				ClimateSensor climateSensor = (ClimateSensor) mSensor;
-				climateSensor.setLightAlarmSet(true);
+				climateSensor.setLightAlarmSet(true, true);
 				
-				climateSensor.setLightAlarmLow(lowerValue);
-				climateSensor.setLightAlarmHigh(upperValue);
+				climateSensor.setLightAlarmLow(lowerValue, true);
+				climateSensor.setLightAlarmHigh(upperValue, true);
 			}
 			
 			@Override
@@ -219,7 +219,7 @@ public class ClimateSensorFragment extends SensorFragment {
 				mView.removeView(mAlarmLightPickerView);
 				
 				ClimateSensor climateSensor = (ClimateSensor) mSensor;
-				climateSensor.setLightAlarmSet(false);	
+				climateSensor.setLightAlarmSet(false, true);	
 			}
 		});
 		
@@ -230,7 +230,7 @@ public class ClimateSensorFragment extends SensorFragment {
 				if (isChecked) {
 					showLightPickerView();
 				} else {
-					((ClimateSensor)mSensor).setLightAlarmSet(false);
+					((ClimateSensor)mSensor).setLightAlarmSet(false, true);
 				}
 			}
 		});
@@ -340,20 +340,20 @@ public class ClimateSensorFragment extends SensorFragment {
 	}
 		
 	private void showTemperaturePickerView() {
-//		mView.addView(mAlarmTemperaturePickerView);
-//
-//		mAlarmTemperaturePickerView.setSelectedMinValue(((ClimateSensor)mSensor).getTemperatureAlarmLow());
-//		mAlarmTemperaturePickerView.setSelectedMaxValue(((ClimateSensor)mSensor).getTemperatureAlarmHigh());
-//		
-//		mAlarmTemperaturePickerView.show();
-		
-		
-		Date date = new Date();
-		mTemperaturePickerView.setMinMaxDate(date, date);
-		
-		mView.addView(mTemperaturePickerView);
+		mView.addView(mAlarmTemperaturePickerView);
 
-		mTemperaturePickerView.show();
+		mAlarmTemperaturePickerView.setSelectedMinValue(((ClimateSensor)mSensor).getTemperatureAlarmLow());
+		mAlarmTemperaturePickerView.setSelectedMaxValue(((ClimateSensor)mSensor).getTemperatureAlarmHigh());
+		
+		mAlarmTemperaturePickerView.show();
+		
+		
+//		Date date = new Date();
+//		mTemperaturePickerView.setMinMaxDate(date, date);
+//		
+//		mView.addView(mTemperaturePickerView);
+//
+//		mTemperaturePickerView.show();
 	}
 	
 	private void showHumidityPickerView() {
