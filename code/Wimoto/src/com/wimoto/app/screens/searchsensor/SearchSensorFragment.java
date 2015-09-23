@@ -12,9 +12,7 @@ import com.mobitexoft.leftmenu.PageFragment;
 import com.wimoto.app.AppContext;
 import com.wimoto.app.MainActivity;
 import com.wimoto.app.R;
-import com.wimoto.app.bluetooth.BluetoothConnection;
 import com.wimoto.app.bluetooth.WimotoDevice;
-import com.wimoto.app.model.Sensor;
 
 public class SearchSensorFragment extends PageFragment {
 

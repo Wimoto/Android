@@ -2,15 +2,13 @@ package com.wimoto.app.model;
 
 import java.math.BigInteger;
 import java.util.LinkedList;
-import java.util.Observable;
 
 import android.bluetooth.BluetoothGattCharacteristic;
 
-import com.couchbase.lite.Document;
 import com.wimoto.app.AppContext;
 import com.wimoto.app.R;
-import com.wimoto.app.bluetooth.BluetoothConnection;
 import com.wimoto.app.bluetooth.WimotoDevice;
+import com.wimoto.app.bluetooth.WimotoDevice.State;
 
 public class WaterSensor extends Sensor {
 	
@@ -56,45 +54,8 @@ public class WaterSensor extends Sensor {
 		mSensorValues.put(SENSOR_FIELD_WATER_LEVEL, new LinkedList<Float>());
 	}
 
-	public WaterSensor(AppContext context, BluetoothConnection connection) {
-		this(context);
-		
-		//setConnection(connection);
-	}
-	
 	public WimotoDevice.Profile getProfile() {
 		return WimotoDevice.Profile.WATER;
-	}
-	
-//	@Override
-//	public void setConnection(BluetoothConnection connection) {
-//		super.setConnection(connection);
-//		
-//		initiateSensorCharacteristics();
-//	}
-	
-	@Override
-	public void setDocument(Document document) {
-		super.setDocument(document);
-		
-		initiateSensorCharacteristics();		
-	}
-
-	@Override
-	protected void initiateSensorCharacteristics() {
-		super.initiateSensorCharacteristics();
-		
-//		if ((mConnection != null) && (mDocument != null)) {
-//			mConnection.readCharacteristic(BLE_WATER_SERVICE_UUID_CONTACT, BLE_WATER_CHAR_UUID_CONTACT_ALARM_SET);
-//			mConnection.enableChangesNotification(BLE_WATER_SERVICE_UUID_CONTACT, BLE_WATER_CHAR_UUID_CONTACT_ALARM);
-//			mConnection.enableChangesNotification(BLE_WATER_SERVICE_UUID_CONTACT, BLE_WATER_CHAR_UUID_CONTACT_CURRENT);
-//			
-//			mConnection.readCharacteristic(BLE_WATER_SERVICE_UUID_LEVEL, BLE_WATER_CHAR_UUID_LEVEL_ALARM_SET);
-//			mConnection.readCharacteristic(BLE_WATER_SERVICE_UUID_LEVEL, BLE_WATER_CHAR_UUID_LEVEL_ALARM_LOW);
-//			mConnection.readCharacteristic(BLE_WATER_SERVICE_UUID_LEVEL, BLE_WATER_CHAR_UUID_LEVEL_ALARM_HIGH);
-//			mConnection.enableChangesNotification(BLE_WATER_SERVICE_UUID_LEVEL, BLE_WATER_CHAR_UUID_LEVEL_ALARM);
-//			mConnection.enableChangesNotification(BLE_WATER_SERVICE_UUID_LEVEL, BLE_WATER_CHAR_UUID_LEVEL_CURRENT);
-//		}
 	}
 	
 	public float getContact() {
@@ -145,47 +106,68 @@ public class WaterSensor extends Sensor {
 		return mLevelAlarmLow;
 	}
 
-	public void setLevelAlarmLow(float levelAlarmLow) {
+	public void setLevelAlarmLow(float levelAlarmLow, boolean doWrite) {
 		notifyObservers(SENSOR_FIELD_WATER_LEVEL_ALARM_LOW, mLevelAlarmLow, levelAlarmLow);
 		
 		mLevelAlarmLow = levelAlarmLow;
-		writeAlarmValue(Float.valueOf(mLevelAlarmLow).intValue(), WaterSensor.SENSOR_FIELD_WATER_LEVEL_ALARM_LOW, WaterSensor.BLE_WATER_CHAR_UUID_LEVEL_ALARM_LOW);	
+		if (doWrite) {
+			writeAlarmValue(Float.valueOf(mLevelAlarmLow).intValue(), WaterSensor.SENSOR_FIELD_WATER_LEVEL_ALARM_LOW, WaterSensor.BLE_WATER_CHAR_UUID_LEVEL_ALARM_LOW);
+		}
 	}
 
 	public float getLevelAlarmHigh() {
 		return mLevelAlarmHigh;
 	}
 
-	public void setLevelAlarmHigh(float levelAlarmHigh) {
+	public void setLevelAlarmHigh(float levelAlarmHigh, boolean doWrite) {
 		notifyObservers(SENSOR_FIELD_WATER_LEVEL_ALARM_HIGH, mLevelAlarmHigh, levelAlarmHigh);
 		
 		mLevelAlarmHigh = levelAlarmHigh;
-		writeAlarmValue(Float.valueOf(mLevelAlarmHigh).intValue(), WaterSensor.SENSOR_FIELD_WATER_LEVEL_ALARM_HIGH, WaterSensor.BLE_WATER_CHAR_UUID_LEVEL_ALARM_HIGH);
+		if (doWrite) {
+			writeAlarmValue(Float.valueOf(mLevelAlarmHigh).intValue(), WaterSensor.SENSOR_FIELD_WATER_LEVEL_ALARM_HIGH, WaterSensor.BLE_WATER_CHAR_UUID_LEVEL_ALARM_HIGH);
+		}
 	}
 	
+	// WimotoDeviceCallback
 	@Override
-	public void update(Observable observable, Object data) {
-		if (data instanceof BluetoothGattCharacteristic) {
-			BluetoothGattCharacteristic characteristic = (BluetoothGattCharacteristic) data;
+	public void onConnectionStateChange(State state) {
+		super.onConnectionStateChange(state);
+
+		if (state == State.CONNECTED) {
+			mWimotoDevice.readCharacteristic(BLE_WATER_SERVICE_UUID_CONTACT, BLE_WATER_CHAR_UUID_CONTACT_CURRENT);
+			mWimotoDevice.readCharacteristic(BLE_WATER_SERVICE_UUID_LEVEL, BLE_WATER_CHAR_UUID_LEVEL_CURRENT);
+			mWimotoDevice.readCharacteristic(BLE_WATER_SERVICE_UUID_CONTACT, BLE_WATER_CHAR_UUID_CONTACT_ALARM_SET);
+			mWimotoDevice.readCharacteristic(BLE_WATER_SERVICE_UUID_LEVEL, BLE_WATER_CHAR_UUID_LEVEL_ALARM_SET);
+			mWimotoDevice.readCharacteristic(BLE_WATER_SERVICE_UUID_LEVEL, BLE_WATER_CHAR_UUID_LEVEL_ALARM_LOW);
+			mWimotoDevice.readCharacteristic(BLE_WATER_SERVICE_UUID_LEVEL, BLE_WATER_CHAR_UUID_LEVEL_ALARM_HIGH);
+
+			mWimotoDevice.enableChangesNotification(BLE_WATER_SERVICE_UUID_CONTACT, BLE_WATER_CHAR_UUID_CONTACT_ALARM);
+			mWimotoDevice.enableChangesNotification(BLE_WATER_SERVICE_UUID_CONTACT, BLE_WATER_CHAR_UUID_CONTACT_CURRENT);
 			
-			String uuid = characteristic.getUuid().toString().toUpperCase();
-			
-			BigInteger bi = new BigInteger(characteristic.getValue());
-			if (uuid.equals(BLE_WATER_CHAR_UUID_CONTACT_CURRENT)) {
-				setContact(bi.floatValue());
-			} else if (uuid.equals(BLE_WATER_CHAR_UUID_LEVEL_CURRENT)) {
-				setLevel(bi.floatValue());
-			} else if (uuid.equals(BLE_WATER_CHAR_UUID_CONTACT_ALARM_SET)) {
-				setContactAlarmSet((bi.floatValue() == 0) ? false:true);
-			} else if (uuid.equals(BLE_WATER_CHAR_UUID_LEVEL_ALARM_SET)) {
-				setLevelAlarmSet((bi.floatValue() == 0) ? false:true);
-			} else if (uuid.equals(BLE_WATER_CHAR_UUID_LEVEL_ALARM_LOW)) {
-				setLevelAlarmLow(Float.valueOf(bi.floatValue()/100.0f).intValue());
-			} else if (uuid.equals(BLE_WATER_CHAR_UUID_LEVEL_ALARM_HIGH)) {
-				setLevelAlarmHigh(Float.valueOf(bi.floatValue()/100.0f).intValue());
-			}
+			mWimotoDevice.enableChangesNotification(BLE_WATER_SERVICE_UUID_LEVEL, BLE_WATER_CHAR_UUID_LEVEL_ALARM);
+			mWimotoDevice.enableChangesNotification(BLE_WATER_SERVICE_UUID_LEVEL, BLE_WATER_CHAR_UUID_LEVEL_CURRENT);			
 		}
+	}
+
+	@Override
+	public void onCharacteristicChanged(BluetoothGattCharacteristic characteristic) {
+		super.onCharacteristicChanged(characteristic);
 		
-		super.update(observable, data);
+		String uuid = characteristic.getUuid().toString().toUpperCase();
+		
+		BigInteger bi = new BigInteger(characteristic.getValue());
+		if (uuid.equals(BLE_WATER_CHAR_UUID_CONTACT_CURRENT)) {
+			setContact(bi.floatValue());
+		} else if (uuid.equals(BLE_WATER_CHAR_UUID_LEVEL_CURRENT)) {
+			setLevel(bi.floatValue());
+		} else if (uuid.equals(BLE_WATER_CHAR_UUID_CONTACT_ALARM_SET)) {
+			setContactAlarmSet((bi.floatValue() == 0) ? false:true);
+		} else if (uuid.equals(BLE_WATER_CHAR_UUID_LEVEL_ALARM_SET)) {
+			setLevelAlarmSet((bi.floatValue() == 0) ? false:true);
+		} else if (uuid.equals(BLE_WATER_CHAR_UUID_LEVEL_ALARM_LOW)) {
+			setLevelAlarmLow(Float.valueOf(bi.floatValue()/100.0f).intValue(), false);
+		} else if (uuid.equals(BLE_WATER_CHAR_UUID_LEVEL_ALARM_HIGH)) {
+			setLevelAlarmHigh(Float.valueOf(bi.floatValue()/100.0f).intValue(), false);
+		}
 	}
 }

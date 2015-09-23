@@ -12,7 +12,6 @@ import android.widget.TextView;
 
 import com.wimoto.app.AppContext;
 import com.wimoto.app.R;
-import com.wimoto.app.bluetooth.BluetoothConnection;
 import com.wimoto.app.bluetooth.WimotoDevice;
 
 public class SensorView extends LinearLayout implements Observer {

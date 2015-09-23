@@ -22,16 +22,14 @@ import com.couchbase.lite.View;
 import com.couchbase.lite.android.AndroidContext;
 import com.couchbase.lite.util.Log;
 import com.wimoto.app.AppContext;
-import com.wimoto.app.bluetooth.BluetoothConnection;
 import com.wimoto.app.bluetooth.BluetoothService;
-import com.wimoto.app.bluetooth.WimotoDevice;
-import com.wimoto.app.bluetooth.BluetoothService.BluetoothServiceListener;
 import com.wimoto.app.bluetooth.DiscoveryListener;
+import com.wimoto.app.bluetooth.WimotoDevice;
 import com.wimoto.app.model.Sensor;
 import com.wimoto.app.model.demosensors.ClimateDemoSensor;
 import com.wimoto.app.model.demosensors.ThermoDemoSensor;
 
-public class SensorsManager implements BluetoothServiceListener {
+public class SensorsManager {
 
 	private final static String WIMOTO_DB 		= "wimoto";
 	private final static String WIMOTO_SENSORS 	= "wimoto_sensors";
@@ -62,7 +60,7 @@ public class SensorsManager implements BluetoothServiceListener {
 		mRegisteredSensorListeners = new HashSet<SensorsManagerListener> ();
 
 		try {
-			mBluetoothService = new BluetoothService(mContext, this);
+			mBluetoothService = new BluetoothService(mContext);
 			
 			Manager manager = new Manager(new AndroidContext(mContext), Manager.DEFAULT_OPTIONS);
 			
@@ -100,8 +98,6 @@ public class SensorsManager implements BluetoothServiceListener {
 	}
 	
 	public void disconnectGatts() {
-		mBluetoothService.disconnectGatts();
-		
 		Collection<Sensor> values = mSensors.values();
 		for (Sensor sensor: values) {
 			sensor.disconnect();
@@ -237,59 +233,5 @@ public class SensorsManager implements BluetoothServiceListener {
 		for (SensorsManagerListener observer: mUnregisteredSensorListeners) {
 			observer.didUpdateSensors(sensors);
 		}
-	}
-		
-//	@Override
-//	public void onWimotoDeviceDiscovered(BluetoothConnection connection) {
-//		Log.e("", "onConnectionDiscovered " + connection.getName());
-//		Sensor sensor = mSensors.get(connection.getId());
-//		if (sensor == null) {
-//			mSensors.put(connection.getId(), Sensor.getSensorFromConnection(mContext, connection));
-//			
-//			mContext.runOnUiThread(new Runnable() {
-//				@Override
-//				public void run() {
-//					notifyUnregisteredSensorObservers();
-//				}
-//			});
-//		} else {
-//			sensor.setConnection(connection);
-//		}
-//	}
-	
-	@Override
-	public void connectionEstablished(BluetoothConnection connection) {
-//		Sensor sensor = mSensors.get(connection.getId());
-//		if (sensor == null) {
-//			mSensors.put(connection.getId(), Sensor.getSensorFromConnection(mContext, connection));
-//			
-//			mContext.runOnUiThread(new Runnable() {
-//				@Override
-//				public void run() {
-//					notifyUnregisteredSensorObservers();
-//				}
-//			});
-//		} else {
-//			sensor.setConnection(connection);
-//		}		
-	}
-
-	@Override
-	public void connectionAborted(BluetoothConnection connection) {
-//		Sensor sensor = mSensors.get(connection.getId());
-//		if (sensor != null) { 
-//			sensor.setConnection(null);
-//			
-//			if (sensor.getDocument() == null) {
-//				mSensors.remove(connection.getId());
-//				
-//				mContext.runOnUiThread(new Runnable() {
-//					@Override
-//					public void run() {
-//						notifyUnregisteredSensorObservers();
-//					}
-//				});
-//			}
-//		}
-	}
+	}		
 }

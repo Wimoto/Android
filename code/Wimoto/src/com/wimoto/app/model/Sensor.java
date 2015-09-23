@@ -11,7 +11,6 @@ import java.util.Observer;
 import java.util.Set;
 import java.util.Timer;
 
-import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.util.Log;
 
@@ -25,7 +24,6 @@ import com.couchbase.lite.View;
 import com.mobitexoft.utils.SHA256Hash;
 import com.mobitexoft.utils.propertyobserver.PropertyObservable;
 import com.wimoto.app.AppContext;
-import com.wimoto.app.bluetooth.BluetoothConnection;
 import com.wimoto.app.bluetooth.WimotoDevice;
 import com.wimoto.app.bluetooth.WimotoDevice.State;
 import com.wimoto.app.model.demosensors.ClimateDemoSensor;
@@ -86,22 +84,6 @@ public abstract class Sensor extends PropertyObservable implements Observer, Wim
 		return sensor;
 	}
 
-	public static Sensor getSensorFromConnection(AppContext context, BluetoothConnection connection) {
-//		if (connection.getSensorProfile() == SensorProfile.CLIMATE) {
-//			return new ClimateSensor(context, connection);
-//		} else if (connection.getSensorProfile() == SensorProfile.GROW) {
-//			return new GrowSensor(context, connection);
-//		} else if (connection.getSensorProfile() == SensorProfile.SENTRY) {
-//			return new SentrySensor(context, connection);
-//		} else if (connection.getSensorProfile() == SensorProfile.THERMO) {
-//			return new ThermoSensor(context, connection);
-//		} else if (connection.getSensorProfile() == SensorProfile.WATER) {
-//			return new WaterSensor(context, connection);
-//		}
-		
-		return null;
-	}
-	
 	public Sensor(AppContext context) {
 		mContext = context;
 		

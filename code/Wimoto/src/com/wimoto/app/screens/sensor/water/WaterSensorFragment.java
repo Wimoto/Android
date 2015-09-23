@@ -87,8 +87,8 @@ public class WaterSensorFragment extends SensorFragment {
 				WaterSensor waterSensor = (WaterSensor) mSensor;
 				waterSensor.setLevelAlarmSet(true);
 				
-				waterSensor.setLevelAlarmLow(lowerValue);
-				waterSensor.setLevelAlarmHigh(upperValue);
+				waterSensor.setLevelAlarmLow(lowerValue, true);
+				waterSensor.setLevelAlarmHigh(upperValue, true);
 			}
 			
 			@Override

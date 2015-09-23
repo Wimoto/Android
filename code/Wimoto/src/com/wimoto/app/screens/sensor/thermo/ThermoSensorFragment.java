@@ -73,8 +73,8 @@ public class ThermoSensorFragment extends SensorFragment {
 				ThermoSensor thermoSensor = (ThermoSensor) mSensor;
 				thermoSensor.setTemperatureAlarmSet(true);
 				
-				thermoSensor.setTemperatureAlarmLow(lowerValue);
-				thermoSensor.setTemperatureAlarmHigh(upperValue);
+				thermoSensor.setTemperatureAlarmLow(lowerValue, true);
+				thermoSensor.setTemperatureAlarmHigh(upperValue, true);
 			}
 			
 			@Override
@@ -125,8 +125,8 @@ public class ThermoSensorFragment extends SensorFragment {
 				ThermoSensor thermoSensor = (ThermoSensor) mSensor;
 				thermoSensor.setProbeAlarmSet(true);
 				
-				thermoSensor.setProbeAlarmLow(lowerValue);
-				thermoSensor.setProbeAlarmHigh(upperValue);
+				thermoSensor.setProbeAlarmLow(lowerValue, true);
+				thermoSensor.setProbeAlarmHigh(upperValue, true);
 			}
 			
 			@Override
@@ -191,7 +191,7 @@ public class ThermoSensorFragment extends SensorFragment {
 			@Override
 			public void run() {
 				String propertyName = event.getPropertyName();
-				if (Sensor.SENSOR_FIELD_CONNECTION.equals(propertyName)) {
+				if (Sensor.SENSOR_FIELD_DEVICE.equals(propertyName)) {
 					if (event.getNewValue() == null) {
 						mTemperatureTextView.setText(getString(R.string.sensor_two_hyphens));
 	        			mProbeTextView.setText(getString(R.string.sensor_two_hyphens));
