@@ -158,7 +158,7 @@ public class SentrySensorFragment extends SensorFragment {
 			@Override
 			public void run() {
 				String propertyName = event.getPropertyName();
-				if (Sensor.SENSOR_FIELD_CONNECTION.equals(propertyName)) {
+				if (Sensor.SENSOR_FIELD_DEVICE.equals(propertyName)) {
 					if (event.getNewValue() == null) {
 						//mAccelerometerTextView.setText(getString(R.string.sensor_two_hyphens));
 						mInfraredTextView.setText(getString(R.string.sensor_two_hyphens));

@@ -6,11 +6,10 @@ import java.util.Observable;
 
 import android.bluetooth.BluetoothGattCharacteristic;
 
-import com.couchbase.lite.Document;
 import com.wimoto.app.AppContext;
 import com.wimoto.app.R;
-import com.wimoto.app.bluetooth.BluetoothConnection;
 import com.wimoto.app.bluetooth.WimotoDevice;
+import com.wimoto.app.bluetooth.WimotoDevice.State;
 
 public class SentrySensor extends Sensor {
 	
@@ -53,44 +52,8 @@ public class SentrySensor extends Sensor {
 		mSensorValues.put(SENSOR_FIELD_SENTRY_PASSIVE_INFRARED, new LinkedList<Float>());
 	}
 
-	public SentrySensor(AppContext context, BluetoothConnection connection) {
-		this(context);
-		
-		//setConnection(connection);
-	}
-	
 	public WimotoDevice.Profile getProfile() {
 		return WimotoDevice.Profile.SENTRY;
-	}
-	
-//	@Override
-//	public void setConnection(BluetoothConnection connection) {
-//		super.setConnection(connection);
-//		
-//		initiateSensorCharacteristics();
-//	}
-	
-	@Override
-	public void setDocument(Document document) {
-		super.setDocument(document);
-		
-		initiateSensorCharacteristics();		
-	}
-
-	@Override
-	protected void initiateSensorCharacteristics() {
-		super.initiateSensorCharacteristics();
-		
-//		if ((mConnection != null) && (mDocument != null)) {
-//			mConnection.readCharacteristic(BLE_SENTRY_SERVICE_UUID_ACCELEROMETER, BLE_SENTRY_CHAR_UUID_ACCELEROMETER_ALARM_SET);
-//			mConnection.readCharacteristic(BLE_SENTRY_SERVICE_UUID_ACCELEROMETER, BLE_SENTRY_CHAR_UUID_ACCELEROMETER_ALARM_CLEAR);	
-//			mConnection.enableChangesNotification(BLE_SENTRY_SERVICE_UUID_ACCELEROMETER, BLE_SENTRY_CHAR_UUID_ACCELEROMETER_ALARM);
-//			mConnection.enableChangesNotification(BLE_SENTRY_SERVICE_UUID_ACCELEROMETER, BLE_SENTRY_CHAR_UUID_ACCELEROMETER_CURRENT);
-//			
-//			mConnection.readCharacteristic(BLE_SENTRY_SERVICE_UUID_PASSIVE_INFRARED, BLE_SENTRY_CHAR_UUID_PASSIVE_INFRARED_ALARM_SET);
-//			mConnection.enableChangesNotification(BLE_SENTRY_SERVICE_UUID_PASSIVE_INFRARED, BLE_SENTRY_CHAR_UUID_PASSIVE_INFRARED_ALARM);
-//			mConnection.enableChangesNotification(BLE_SENTRY_SERVICE_UUID_PASSIVE_INFRARED, BLE_SENTRY_CHAR_UUID_PASSIVE_INFRARED_CURRENT);
-//		}
 	}
 	
 	public float getAccelerometer() {
@@ -170,5 +133,45 @@ public class SentrySensor extends Sensor {
 		}
 		
 		super.update(observable, data);
+	}
+	
+	// WimotoDeviceCallback
+	@Override
+	public void onConnectionStateChange(State state) {
+		super.onConnectionStateChange(state);
+
+		if (state == State.CONNECTED) {
+			mWimotoDevice.readCharacteristic(BLE_SENTRY_SERVICE_UUID_ACCELEROMETER, BLE_SENTRY_CHAR_UUID_ACCELEROMETER_CURRENT);
+			mWimotoDevice.readCharacteristic(BLE_SENTRY_SERVICE_UUID_PASSIVE_INFRARED, BLE_SENTRY_CHAR_UUID_PASSIVE_INFRARED_CURRENT);
+			
+			mWimotoDevice.readCharacteristic(BLE_SENTRY_SERVICE_UUID_ACCELEROMETER, BLE_SENTRY_CHAR_UUID_ACCELEROMETER_ALARM_SET);
+			mWimotoDevice.readCharacteristic(BLE_SENTRY_SERVICE_UUID_ACCELEROMETER, BLE_SENTRY_CHAR_UUID_ACCELEROMETER_ALARM_CLEAR);
+			mWimotoDevice.readCharacteristic(BLE_SENTRY_SERVICE_UUID_PASSIVE_INFRARED, BLE_SENTRY_CHAR_UUID_PASSIVE_INFRARED_ALARM_SET);
+			mWimotoDevice.enableChangesNotification(BLE_SENTRY_SERVICE_UUID_ACCELEROMETER, BLE_SENTRY_CHAR_UUID_ACCELEROMETER_ALARM);
+			mWimotoDevice.enableChangesNotification(BLE_SENTRY_SERVICE_UUID_ACCELEROMETER, BLE_SENTRY_CHAR_UUID_ACCELEROMETER_CURRENT);
+			
+			mWimotoDevice.enableChangesNotification(BLE_SENTRY_SERVICE_UUID_PASSIVE_INFRARED, BLE_SENTRY_CHAR_UUID_PASSIVE_INFRARED_ALARM);
+			mWimotoDevice.enableChangesNotification(BLE_SENTRY_SERVICE_UUID_PASSIVE_INFRARED, BLE_SENTRY_CHAR_UUID_PASSIVE_INFRARED_CURRENT);			
+		}
+	}
+
+	@Override
+	public void onCharacteristicChanged(BluetoothGattCharacteristic characteristic) {
+		super.onCharacteristicChanged(characteristic);
+		
+		String uuid = characteristic.getUuid().toString().toUpperCase();
+		
+		BigInteger bi = new BigInteger(characteristic.getValue());
+		if (uuid.equals(BLE_SENTRY_CHAR_UUID_ACCELEROMETER_CURRENT)) {
+			setAccelerometer(bi.floatValue());
+		} else if (uuid.equals(BLE_SENTRY_CHAR_UUID_PASSIVE_INFRARED_CURRENT)) {
+			setInfrared(bi.floatValue());
+		} else if (uuid.equals(BLE_SENTRY_CHAR_UUID_ACCELEROMETER_ALARM_SET)) {
+			setAccelerometerAlarmSet((bi.floatValue() == 0) ? false:true);
+		} else if (uuid.equals(BLE_SENTRY_CHAR_UUID_ACCELEROMETER_ALARM_CLEAR)) {
+			setAccelerometerAlarmClear((bi.floatValue() == 0) ? false:true);
+		} else if (uuid.equals(BLE_SENTRY_CHAR_UUID_PASSIVE_INFRARED_ALARM_SET)) {
+			setInfraredAlarmSet((bi.floatValue() == 0) ? false:true);
+		} 
 	}
 }
