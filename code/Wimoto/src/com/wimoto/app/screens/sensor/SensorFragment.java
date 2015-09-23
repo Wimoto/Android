@@ -130,7 +130,7 @@ public abstract class SensorFragment extends PageFragment implements PropertyCha
 		mSensor = sensor;
 		if (mSensor != null) {
 			mSensor.addChangeListener(this, Sensor.SENSOR_FIELD_STATE, true);
-			mSensor.addChangeListener(this, Sensor.SENSOR_FIELD_CONNECTION, true);
+			mSensor.addChangeListener(this, Sensor.SENSOR_FIELD_DEVICE, true);
 			mSensor.addChangeListener(this, Sensor.SENSOR_FIELD_BATTERY_LEVEL);
 			mSensor.addChangeListener(this, Sensor.SENSOR_FIELD_RSSI);
 		}

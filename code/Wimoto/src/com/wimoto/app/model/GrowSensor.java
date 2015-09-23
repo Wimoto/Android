@@ -2,15 +2,13 @@ package com.wimoto.app.model;
 
 import java.math.BigInteger;
 import java.util.LinkedList;
-import java.util.Observable;
 
 import android.bluetooth.BluetoothGattCharacteristic;
 
-import com.couchbase.lite.Document;
 import com.wimoto.app.AppContext;
 import com.wimoto.app.R;
-import com.wimoto.app.bluetooth.BluetoothConnection;
 import com.wimoto.app.bluetooth.WimotoDevice;
+import com.wimoto.app.bluetooth.WimotoDevice.State;
 
 public class GrowSensor extends Sensor {
 
@@ -86,50 +84,6 @@ public class GrowSensor extends Sensor {
 		return WimotoDevice.Profile.GROW;
 	}
 	
-//	public GrowSensor(AppContext context, BluetoothConnection connection) {
-//		this(context);
-//		
-//		setConnection(connection);
-//	}
-	
-//	public void setConnection(BluetoothConnection connection) {
-//		super.setConnection(connection);
-//		
-//		initiateSensorCharacteristics();		
-//	}
-	
-	@Override
-	public void setDocument(Document document) {
-		super.setDocument(document);
-		
-		initiateSensorCharacteristics();		
-	}
-	
-	@Override
-	protected void initiateSensorCharacteristics() {
-		super.initiateSensorCharacteristics();
-		
-//		if ((mConnection != null) && (mDocument != null)) {
-//			mConnection.readCharacteristic(BLE_GROW_SERVICE_UUID_LIGHT, BLE_GROW_CHAR_UUID_LIGHT_ALARM_SET);
-//			mConnection.readCharacteristic(BLE_GROW_SERVICE_UUID_LIGHT, BLE_GROW_CHAR_UUID_LIGHT_ALARM_LOW);
-//			mConnection.readCharacteristic(BLE_GROW_SERVICE_UUID_LIGHT, BLE_GROW_CHAR_UUID_LIGHT_ALARM_HIGH);			
-//			mConnection.enableChangesNotification(BLE_GROW_SERVICE_UUID_LIGHT, BLE_GROW_CHAR_UUID_LIGHT_ALARM);
-//			mConnection.enableChangesNotification(BLE_GROW_SERVICE_UUID_LIGHT, BLE_GROW_CHAR_UUID_LIGHT_CURRENT);
-//			
-//			mConnection.readCharacteristic(BLE_GROW_SERVICE_UUID_MOISTURE, BLE_GROW_CHAR_UUID_MOISTURE_ALARM_SET);
-//			mConnection.readCharacteristic(BLE_GROW_SERVICE_UUID_MOISTURE, BLE_GROW_CHAR_UUID_MOISTURE_ALARM_LOW);
-//			mConnection.readCharacteristic(BLE_GROW_SERVICE_UUID_MOISTURE, BLE_GROW_CHAR_UUID_MOISTURE_ALARM_HIGH);			
-//			mConnection.enableChangesNotification(BLE_GROW_SERVICE_UUID_MOISTURE, BLE_GROW_CHAR_UUID_MOISTURE_ALARM);
-//			mConnection.enableChangesNotification(BLE_GROW_SERVICE_UUID_MOISTURE, BLE_GROW_CHAR_UUID_MOISTURE_CURRENT);
-//			
-//			mConnection.readCharacteristic(BLE_GROW_SERVICE_UUID_TEMPERATURE, BLE_GROW_CHAR_UUID_TEMPERATURE_ALARM_SET);
-//			mConnection.readCharacteristic(BLE_GROW_SERVICE_UUID_TEMPERATURE, BLE_GROW_CHAR_UUID_TEMPERATURE_ALARM_LOW);
-//			mConnection.readCharacteristic(BLE_GROW_SERVICE_UUID_TEMPERATURE, BLE_GROW_CHAR_UUID_TEMPERATURE_ALARM_HIGH);			
-//			mConnection.enableChangesNotification(BLE_GROW_SERVICE_UUID_TEMPERATURE, BLE_GROW_CHAR_UUID_TEMPERATURE_ALARM);
-//			mConnection.enableChangesNotification(BLE_GROW_SERVICE_UUID_TEMPERATURE, BLE_GROW_CHAR_UUID_TEMPERATURE_CURRENT);
-//		}
-	}
-	
 	public float getLight() {
 		return mLight;
 	}
@@ -178,22 +132,26 @@ public class GrowSensor extends Sensor {
 		return mLightAlarmLow;
 	}
 
-	public void setLightAlarmLow(float lightAlarmLow) {
+	public void setLightAlarmLow(float lightAlarmLow, boolean doWrite) {
 		notifyObservers(SENSOR_FIELD_GROW_LIGHT_ALARM_LOW, mLightAlarmLow, lightAlarmLow);
 		
 		mLightAlarmLow = lightAlarmLow;
-		writeAlarmValue(Float.valueOf(mLightAlarmLow).intValue(), GrowSensor.BLE_GROW_SERVICE_UUID_LIGHT, GrowSensor.BLE_GROW_CHAR_UUID_LIGHT_ALARM_LOW);
+		if (doWrite) {
+			writeAlarmValue(Float.valueOf(mLightAlarmLow).intValue(), GrowSensor.BLE_GROW_SERVICE_UUID_LIGHT, GrowSensor.BLE_GROW_CHAR_UUID_LIGHT_ALARM_LOW);
+		}
 	}
 
 	public float getLightAlarmHigh() {
 		return mLightAlarmHigh;
 	}
 
-	public void setLightAlarmHigh(float lightAlarmHigh) {
+	public void setLightAlarmHigh(float lightAlarmHigh, boolean doWrite) {
 		notifyObservers(SENSOR_FIELD_GROW_LIGHT_ALARM_HIGH, mLightAlarmHigh, lightAlarmHigh);
 		
 		mLightAlarmHigh = lightAlarmHigh;
-		writeAlarmValue(Float.valueOf(mLightAlarmHigh).intValue(), GrowSensor.BLE_GROW_SERVICE_UUID_LIGHT, GrowSensor.BLE_GROW_CHAR_UUID_LIGHT_ALARM_HIGH);
+		if (doWrite) {
+			writeAlarmValue(Float.valueOf(mLightAlarmHigh).intValue(), GrowSensor.BLE_GROW_SERVICE_UUID_LIGHT, GrowSensor.BLE_GROW_CHAR_UUID_LIGHT_ALARM_HIGH);
+		}
 	}
 	
 	public boolean isMoistureAlarmSet() {
@@ -211,22 +169,26 @@ public class GrowSensor extends Sensor {
 		return mMoistureAlarmLow;
 	}
 
-	public void setMoistureAlarmLow(float moistureAlarmLow) {
+	public void setMoistureAlarmLow(float moistureAlarmLow, boolean doWrite) {
 		notifyObservers(SENSOR_FIELD_GROW_MOISTURE_ALARM_LOW, mMoistureAlarmLow, moistureAlarmLow);
 		
 		mMoistureAlarmLow = moistureAlarmLow;
-		writeAlarmValue(Float.valueOf(mMoistureAlarmLow).intValue(), GrowSensor.BLE_GROW_SERVICE_UUID_MOISTURE, GrowSensor.BLE_GROW_CHAR_UUID_MOISTURE_ALARM_LOW);
+		if (doWrite) {
+			writeAlarmValue(Float.valueOf(mMoistureAlarmLow).intValue(), GrowSensor.BLE_GROW_SERVICE_UUID_MOISTURE, GrowSensor.BLE_GROW_CHAR_UUID_MOISTURE_ALARM_LOW);
+		}
 	}
 
 	public float getMoistureAlarmHigh() {
 		return mMoistureAlarmHigh;
 	}
 
-	public void setMoistureAlarmHigh(float moistureAlarmHigh) {
+	public void setMoistureAlarmHigh(float moistureAlarmHigh, boolean doWrite) {
 		notifyObservers(SENSOR_FIELD_GROW_MOISTURE_ALARM_HIGH, mMoistureAlarmHigh, moistureAlarmHigh);
 		
 		mMoistureAlarmHigh = moistureAlarmHigh;
-		writeAlarmValue(Float.valueOf(mMoistureAlarmHigh).intValue(), GrowSensor.BLE_GROW_SERVICE_UUID_MOISTURE, GrowSensor.BLE_GROW_CHAR_UUID_MOISTURE_ALARM_HIGH);
+		if (doWrite) {
+			writeAlarmValue(Float.valueOf(mMoistureAlarmHigh).intValue(), GrowSensor.BLE_GROW_SERVICE_UUID_MOISTURE, GrowSensor.BLE_GROW_CHAR_UUID_MOISTURE_ALARM_HIGH);
+		}
 	}
 	
 	public boolean isTemperatureAlarmSet() {
@@ -244,59 +206,91 @@ public class GrowSensor extends Sensor {
 		return mTemperatureAlarmLow;
 	}
 
-	public void setTemperatureAlarmLow(float temperatureAlarmLow) {
+	public void setTemperatureAlarmLow(float temperatureAlarmLow, boolean doWrite) {
 		notifyObservers(SENSOR_FIELD_GROW_TEMPERATURE_ALARM_LOW, mTemperatureAlarmLow, temperatureAlarmLow);
 		
 		mTemperatureAlarmLow = temperatureAlarmLow;
-		writeAlarmValue(Float.valueOf(mTemperatureAlarmLow).intValue(), GrowSensor.BLE_GROW_SERVICE_UUID_TEMPERATURE, GrowSensor.BLE_GROW_CHAR_UUID_TEMPERATURE_ALARM_LOW);
+		if (doWrite) {
+			writeAlarmValue(Float.valueOf(mTemperatureAlarmLow).intValue(), GrowSensor.BLE_GROW_SERVICE_UUID_TEMPERATURE, GrowSensor.BLE_GROW_CHAR_UUID_TEMPERATURE_ALARM_LOW);
+		}
 	}
 
 	public float getTemperatureAlarmHigh() {
 		return mTemperatureAlarmHigh;
 	}
 
-	public void setTemperatureAlarmHigh(float temperatureAlarmHigh) {
+	public void setTemperatureAlarmHigh(float temperatureAlarmHigh, boolean doWrite) {
 		notifyObservers(SENSOR_FIELD_GROW_TEMPERATURE_ALARM_HIGH, mTemperatureAlarmLow, temperatureAlarmHigh);
 		
 		mTemperatureAlarmLow = temperatureAlarmHigh;
-		writeAlarmValue(Float.valueOf(temperatureAlarmHigh).intValue(), GrowSensor.BLE_GROW_SERVICE_UUID_TEMPERATURE, GrowSensor.BLE_GROW_CHAR_UUID_TEMPERATURE_ALARM_HIGH);
-	}
-	
-	@Override
-	public void update(Observable observable, Object data) {
-		if (data instanceof BluetoothGattCharacteristic) {			
-			BluetoothGattCharacteristic characteristic = (BluetoothGattCharacteristic) data;
-			
-			String uuid = characteristic.getUuid().toString().toUpperCase();
-			
-			BigInteger bi = new BigInteger(characteristic.getValue());
-			if (uuid.equals(BLE_GROW_CHAR_UUID_LIGHT_CURRENT)) {
-				setLight(bi.floatValue());				
-			} else if (uuid.equals(BLE_GROW_CHAR_UUID_MOISTURE_CURRENT)) {
-				setMoisture(bi.floatValue());				
-			} else if (uuid.equals(BLE_GROW_CHAR_UUID_TEMPERATURE_CURRENT)) {
-				setTemperature(bi.floatValue());			
-			} else if (uuid.equals(BLE_GROW_CHAR_UUID_LIGHT_ALARM_SET)) {
-				setLightAlarmSet((bi.floatValue() == 0) ? false:true);
-			} else if (uuid.equals(BLE_GROW_CHAR_UUID_LIGHT_ALARM_LOW)) {
-				setLightAlarmLow(Float.valueOf(bi.floatValue()/100.0f).intValue());
-			} else if (uuid.equals(BLE_GROW_CHAR_UUID_LIGHT_ALARM_HIGH)) {
-				setLightAlarmHigh(Float.valueOf(bi.floatValue()/100.0f).intValue());
-			} else if (uuid.equals(BLE_GROW_CHAR_UUID_MOISTURE_ALARM_SET)) {
-				setMoistureAlarmSet((bi.floatValue() == 0) ? false:true);
-			} else if (uuid.equals(BLE_GROW_CHAR_UUID_MOISTURE_ALARM_LOW)) {
-				setMoistureAlarmLow(Float.valueOf(bi.floatValue()/100.0f).intValue());
-			} else if (uuid.equals(BLE_GROW_CHAR_UUID_MOISTURE_ALARM_HIGH)) {
-				setMoistureAlarmHigh(Float.valueOf(bi.floatValue()/100.0f).intValue());
-			} else if (uuid.equals(BLE_GROW_CHAR_UUID_TEMPERATURE_ALARM_SET)) {
-				setTemperatureAlarmSet((bi.floatValue() == 0) ? false:true);
-			} else if (uuid.equals(BLE_GROW_CHAR_UUID_TEMPERATURE_ALARM_LOW)) {
-				setTemperatureAlarmLow(Float.valueOf(bi.floatValue()/100.0f).intValue());
-			} else if (uuid.equals(BLE_GROW_CHAR_UUID_TEMPERATURE_ALARM_HIGH)) {
-				setTemperatureAlarmHigh(Float.valueOf(bi.floatValue()/100.0f).intValue());
-			}
+		if (doWrite) {
+			writeAlarmValue(Float.valueOf(temperatureAlarmHigh).intValue(), GrowSensor.BLE_GROW_SERVICE_UUID_TEMPERATURE, GrowSensor.BLE_GROW_CHAR_UUID_TEMPERATURE_ALARM_HIGH);
 		}
+	}
 		
-		super.update(observable, data);
+	// WimotoDeviceCallback
+	@Override
+	public void onConnectionStateChange(State state) {
+		super.onConnectionStateChange(state);
+
+		if (state == State.CONNECTED) {
+			mWimotoDevice.readCharacteristic(BLE_GROW_SERVICE_UUID_LIGHT, BLE_GROW_CHAR_UUID_LIGHT_CURRENT);
+			mWimotoDevice.readCharacteristic(BLE_GROW_SERVICE_UUID_LIGHT, BLE_GROW_CHAR_UUID_LIGHT_ALARM_SET);
+			mWimotoDevice.readCharacteristic(BLE_GROW_SERVICE_UUID_LIGHT, BLE_GROW_CHAR_UUID_LIGHT_ALARM_LOW);
+			mWimotoDevice.readCharacteristic(BLE_GROW_SERVICE_UUID_LIGHT, BLE_GROW_CHAR_UUID_LIGHT_ALARM_HIGH);
+			
+			mWimotoDevice.readCharacteristic(BLE_GROW_SERVICE_UUID_MOISTURE, BLE_GROW_CHAR_UUID_MOISTURE_CURRENT);
+			mWimotoDevice.readCharacteristic(BLE_GROW_SERVICE_UUID_MOISTURE, BLE_GROW_CHAR_UUID_MOISTURE_ALARM_SET);
+			mWimotoDevice.readCharacteristic(BLE_GROW_SERVICE_UUID_MOISTURE, BLE_GROW_CHAR_UUID_MOISTURE_ALARM_LOW);
+			mWimotoDevice.readCharacteristic(BLE_GROW_SERVICE_UUID_MOISTURE, BLE_GROW_CHAR_UUID_MOISTURE_ALARM_HIGH);
+			
+			mWimotoDevice.readCharacteristic(BLE_GROW_SERVICE_UUID_TEMPERATURE, BLE_GROW_CHAR_UUID_TEMPERATURE_CURRENT);
+			mWimotoDevice.readCharacteristic(BLE_GROW_SERVICE_UUID_TEMPERATURE, BLE_GROW_CHAR_UUID_TEMPERATURE_ALARM_SET);
+			mWimotoDevice.readCharacteristic(BLE_GROW_SERVICE_UUID_TEMPERATURE, BLE_GROW_CHAR_UUID_TEMPERATURE_ALARM_LOW);
+			mWimotoDevice.readCharacteristic(BLE_GROW_SERVICE_UUID_TEMPERATURE, BLE_GROW_CHAR_UUID_TEMPERATURE_ALARM_HIGH);			
+			
+			mWimotoDevice.enableChangesNotification(BLE_GROW_SERVICE_UUID_LIGHT, BLE_GROW_CHAR_UUID_LIGHT_ALARM);
+			mWimotoDevice.enableChangesNotification(BLE_GROW_SERVICE_UUID_LIGHT, BLE_GROW_CHAR_UUID_LIGHT_CURRENT);
+			
+			mWimotoDevice.enableChangesNotification(BLE_GROW_SERVICE_UUID_MOISTURE, BLE_GROW_CHAR_UUID_MOISTURE_ALARM);
+			mWimotoDevice.enableChangesNotification(BLE_GROW_SERVICE_UUID_MOISTURE, BLE_GROW_CHAR_UUID_MOISTURE_CURRENT);
+			
+			mWimotoDevice.enableChangesNotification(BLE_GROW_SERVICE_UUID_TEMPERATURE, BLE_GROW_CHAR_UUID_TEMPERATURE_ALARM);
+			mWimotoDevice.enableChangesNotification(BLE_GROW_SERVICE_UUID_TEMPERATURE, BLE_GROW_CHAR_UUID_TEMPERATURE_CURRENT);
+		}
+	}
+
+	@Override
+	public void onCharacteristicChanged(BluetoothGattCharacteristic characteristic) {
+		super.onCharacteristicChanged(characteristic);
+				
+		String uuid = characteristic.getUuid().toString().toUpperCase();
+		
+		BigInteger bi = new BigInteger(characteristic.getValue());
+		if (uuid.equals(BLE_GROW_CHAR_UUID_LIGHT_CURRENT)) {
+			setLight(bi.floatValue());				
+		} else if (uuid.equals(BLE_GROW_CHAR_UUID_MOISTURE_CURRENT)) {
+			setMoisture(bi.floatValue());				
+		} else if (uuid.equals(BLE_GROW_CHAR_UUID_TEMPERATURE_CURRENT)) {
+			setTemperature(bi.floatValue());			
+		} else if (uuid.equals(BLE_GROW_CHAR_UUID_LIGHT_ALARM_SET)) {
+			setLightAlarmSet((bi.floatValue() == 0) ? false:true);
+		} else if (uuid.equals(BLE_GROW_CHAR_UUID_LIGHT_ALARM_LOW)) {
+			setLightAlarmLow(Float.valueOf(bi.floatValue()/100.0f).intValue(), false);
+		} else if (uuid.equals(BLE_GROW_CHAR_UUID_LIGHT_ALARM_HIGH)) {
+			setLightAlarmHigh(Float.valueOf(bi.floatValue()/100.0f).intValue(), false);
+		} else if (uuid.equals(BLE_GROW_CHAR_UUID_MOISTURE_ALARM_SET)) {
+			setMoistureAlarmSet((bi.floatValue() == 0) ? false:true);
+		} else if (uuid.equals(BLE_GROW_CHAR_UUID_MOISTURE_ALARM_LOW)) {
+			setMoistureAlarmLow(Float.valueOf(bi.floatValue()/100.0f).intValue(), false);
+		} else if (uuid.equals(BLE_GROW_CHAR_UUID_MOISTURE_ALARM_HIGH)) {
+			setMoistureAlarmHigh(Float.valueOf(bi.floatValue()/100.0f).intValue(), false);
+		} else if (uuid.equals(BLE_GROW_CHAR_UUID_TEMPERATURE_ALARM_SET)) {
+			setTemperatureAlarmSet((bi.floatValue() == 0) ? false:true);
+		} else if (uuid.equals(BLE_GROW_CHAR_UUID_TEMPERATURE_ALARM_LOW)) {
+			setTemperatureAlarmLow(Float.valueOf(bi.floatValue()/100.0f).intValue(), false);
+		} else if (uuid.equals(BLE_GROW_CHAR_UUID_TEMPERATURE_ALARM_HIGH)) {
+			setTemperatureAlarmHigh(Float.valueOf(bi.floatValue()/100.0f).intValue(), false);
+		}
 	}
 }

@@ -81,8 +81,8 @@ public class GrowSensorFragment extends SensorFragment {
 				GrowSensor growSensor = (GrowSensor) mSensor;
 				growSensor.setLightAlarmSet(true);
 				
-				growSensor.setLightAlarmLow(lowerValue);
-				growSensor.setLightAlarmHigh(upperValue);
+				growSensor.setLightAlarmLow(lowerValue, true);
+				growSensor.setLightAlarmHigh(upperValue, true);
 			}
 			
 			@Override
@@ -133,8 +133,8 @@ public class GrowSensorFragment extends SensorFragment {
 				GrowSensor growSensor = (GrowSensor) mSensor;
 				growSensor.setMoistureAlarmSet(true);
 				
-				growSensor.setMoistureAlarmLow(lowerValue);
-				growSensor.setMoistureAlarmHigh(upperValue);
+				growSensor.setMoistureAlarmLow(lowerValue, true);
+				growSensor.setMoistureAlarmHigh(upperValue, true);
 			}
 			
 			@Override
@@ -185,8 +185,8 @@ public class GrowSensorFragment extends SensorFragment {
 				GrowSensor growSensor = (GrowSensor) mSensor;
 				growSensor.setLightAlarmSet(true);
 				
-				growSensor.setTemperatureAlarmLow(lowerValue);
-				growSensor.setTemperatureAlarmHigh(upperValue);
+				growSensor.setTemperatureAlarmLow(lowerValue, true);
+				growSensor.setTemperatureAlarmHigh(upperValue, true);
 			}
 			
 			@Override
@@ -254,7 +254,7 @@ public class GrowSensorFragment extends SensorFragment {
 			@Override
 			public void run() {
 				String propertyName = event.getPropertyName();
-				if (Sensor.SENSOR_FIELD_CONNECTION.equals(propertyName)) {
+				if (Sensor.SENSOR_FIELD_DEVICE.equals(propertyName)) {
 					if (event.getNewValue() == null) {
 						mLightTextView.setText(getString(R.string.sensor_two_hyphens));
 						mMoistureTextView.setText(getString(R.string.sensor_two_hyphens));

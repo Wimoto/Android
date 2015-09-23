@@ -3,6 +3,7 @@ package com.wimoto.app.bluetooth;
 import java.util.LinkedList;
 import java.util.UUID;
 
+import android.app.Activity;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCallback;
@@ -145,46 +146,37 @@ public class WimotoDevice {
 		
 		mBluetoothGatt = mBluetoothDevice.connectGatt(mContext, true, new BluetoothGattCallback() {
 	        @Override
-	        public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
+	        public void onConnectionStateChange(final BluetoothGatt gatt, int status, int newState) {
 	        	Log.e("", "BluetoothGattCallback " + newState + " ___status " + status);
-	        	if (mWimotoDeviceCallback != null) {
-		        	switch (newState) {
-					case 0:
+	        	switch (newState) {
+				case 0:
+					mRequests = new LinkedList<WimotoDevice.CharacteristicRequest>();
+					if (mWimotoDeviceCallback != null) {
 						mWimotoDeviceCallback.onConnectionStateChange(State.DISCONNECTED);
-						
-						break;
-
-					case 1:
-						mWimotoDeviceCallback.onConnectionStateChange(State.CONNECTING);
-						break;
-
-					case 2:
-						gatt.discoverServices();
-						
-						break;
-
-					case 3:
-						mWimotoDeviceCallback.onConnectionStateChange(State.DISCONNECTING);
-						break;
-
-					default:
-						break;
 					}
-	        	}
-	        	
-	        	
-//	        	Log.i("", "onConnectionStateChange " + newState);
-//	        	
-//	            if (newState == BluetoothProfile.STATE_CONNECTED) {
-//	                Log.i("", "Connected to GATT server.");
-//	                Log.i("", "Attempting to start service discovery:" +
-//	                		gatt.discoverServices());                
-//	            } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
-//	                Log.i("", "Disconnected from GATT server."); 
-//	                
-//	    			setChanged();
-//	    			notifyObservers(newState);
-//	            }
+					mBluetoothGatt.close();
+					
+					break;
+
+				case 1:
+					if (mWimotoDeviceCallback != null) {
+						mWimotoDeviceCallback.onConnectionStateChange(State.CONNECTING);
+					}
+					break;
+
+				case 2:
+					gatt.discoverServices();						
+					break;
+
+				case 3:
+					if (mWimotoDeviceCallback != null) {
+						mWimotoDeviceCallback.onConnectionStateChange(State.DISCONNECTING);
+					}
+					break;
+
+				default:
+					break;
+				}	        	
 	        }
 
 	        @Override
@@ -256,7 +248,6 @@ public class WimotoDevice {
 		mWimotoDeviceCallback = null;
 		
 		mBluetoothGatt.disconnect();
-		mBluetoothGatt.close();
 	}
 	
 	private void addRequest(CharacteristicRequest request) {

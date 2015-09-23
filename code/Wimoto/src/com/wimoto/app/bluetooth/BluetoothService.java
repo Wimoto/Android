@@ -99,47 +99,54 @@ public class BluetoothService implements BluetoothConnectionStateListener {
 	public void startScan(DiscoveryListener discoveryListener) {
 		mDiscoveryListener = discoveryListener;
 		
-		//mBluetoothAdapter.startLeScan(wimotoDeviceUuids, mLeScanCallback);
-		mBluetoothAdapter.startLeScan(mLeScanCallback);
+		mBluetoothAdapter.startLeScan(new WimotoScanCallback(mContext) {
+			@Override
+			protected void onWimotoDeviceDiscovered(WimotoDevice device) {
+				if (mDiscoveryListener != null) {
+					mDiscoveryListener.onWimotoDeviceDiscovered(device);
+				}
+				
+			}
+		});
 	}
 	
 	public void stopScan() {
 		mDiscoveryListener = null;
 		
-		mBluetoothAdapter.stopLeScan(mLeScanCallback);
+		mBluetoothAdapter.stopLeScan(null);
 	}
 		
-	private WimotoScanCallback mLeScanCallback =
-	        new WimotoScanCallback(mContext) {
-
-				@Override
-				protected void onWimotoDeviceDiscovered(WimotoDevice device) {
-					if (mDiscoveryListener != null) {
-						mDiscoveryListener.onWimotoDeviceDiscovered(device);
-					}
-					
-				}
-//	    @Override
-//	    public void onLeScan(final BluetoothDevice device, int rssi,
-//	            byte[] scanRecord) {
-//	    	Log.e("", "onLeScan device found " + device.getName() + " ____ " + mBluetoothManager.getConnectionState(device, BluetoothProfile.GATT));
-//	    	
-//	    	BluetoothConnection connection = mManagedConnections.get(device.getAddress());
-//	    	if (connection == null) {
-//		    	connection = BluetoothConnection.createConnection(mContext, BluetoothService.this, device, scanRecord);
-//	    		
-//		    	if (connection != null) {
-//		    		mManagedConnections.put(device.getAddress(), connection);
-//		    		if (mDiscoveryListener != null) {
-//		    			mDiscoveryListener.onWimotoDeviceDiscovered(connection);
-//		    		}
-//		    	}		    	
-//	    	}
-//	    	if (connection != null) {
-//	    		connection.setRssi(rssi);
-//	    	}
-//	   }
-	};
+//	private WimotoScanCallback mLeScanCallback =
+//	        new WimotoScanCallback(mContext) {
+//
+//				@Override
+//				protected void onWimotoDeviceDiscovered(WimotoDevice device) {
+//					if (mDiscoveryListener != null) {
+//						mDiscoveryListener.onWimotoDeviceDiscovered(device);
+//					}
+//					
+//				}
+////	    @Override
+////	    public void onLeScan(final BluetoothDevice device, int rssi,
+////	            byte[] scanRecord) {
+////	    	Log.e("", "onLeScan device found " + device.getName() + " ____ " + mBluetoothManager.getConnectionState(device, BluetoothProfile.GATT));
+////	    	
+////	    	BluetoothConnection connection = mManagedConnections.get(device.getAddress());
+////	    	if (connection == null) {
+////		    	connection = BluetoothConnection.createConnection(mContext, BluetoothService.this, device, scanRecord);
+////	    		
+////		    	if (connection != null) {
+////		    		mManagedConnections.put(device.getAddress(), connection);
+////		    		if (mDiscoveryListener != null) {
+////		    			mDiscoveryListener.onWimotoDeviceDiscovered(connection);
+////		    		}
+////		    	}		    	
+////	    	}
+////	    	if (connection != null) {
+////	    		connection.setRssi(rssi);
+////	    	}
+////	   }
+//	};
 	
 	private static abstract class WimotoScanCallback implements BluetoothAdapter.LeScanCallback {
 

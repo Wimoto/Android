@@ -37,6 +37,7 @@ public abstract class Sensor extends PropertyObservable implements Observer, Wim
 	public static final String SENSOR_FIELD_TITLE						= "title";
 	public static final String SENSOR_FIELD_STATE						= "mState";
 	public static final String SENSOR_FIELD_CONNECTION					= "mConnection";
+	public static final String SENSOR_FIELD_DEVICE						= "mDevice";
 	public static final String SENSOR_FIELD_BATTERY_LEVEL				= "batteryLevel";
 	public static final String SENSOR_FIELD_RSSI						= "rssi";
 	
@@ -56,8 +57,6 @@ public abstract class Sensor extends PropertyObservable implements Observer, Wim
 	private int mRssi;
 	
 	private Timer mRssiTimer;
-	
-	
 	
 	protected Map<String, LinkedList<Float>> mSensorValues;
 	
@@ -148,6 +147,7 @@ public abstract class Sensor extends PropertyObservable implements Observer, Wim
 //	}
 
 	public void connectDevice(WimotoDevice device) {
+		notifyObservers(SENSOR_FIELD_DEVICE, mWimotoDevice, device);
 		mWimotoDevice = device;
 		
 		mWimotoDevice.connect(this);

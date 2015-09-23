@@ -279,7 +279,7 @@ public class ClimateSensorFragment extends SensorFragment {
 			@Override
 			public void run() {
 				String propertyName = event.getPropertyName();
-				if (Sensor.SENSOR_FIELD_CONNECTION.equals(propertyName)) {
+				if (Sensor.SENSOR_FIELD_DEVICE.equals(propertyName)) {
 					if (event.getNewValue() == null) {
 						mTemperatureTextView.setText(getString(R.string.sensor_two_hyphens));
 	        			mHumidityTextView.setText(getString(R.string.sensor_two_hyphens));
