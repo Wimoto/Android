@@ -1,10 +1,12 @@
 package com.wimoto.app.model;
 
 import java.math.BigInteger;
+import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.Observable;
+import java.util.Map;
 
 import android.bluetooth.BluetoothGattCharacteristic;
+import android.util.Log;
 
 import com.wimoto.app.AppContext;
 import com.wimoto.app.R;
@@ -13,7 +15,10 @@ import com.wimoto.app.bluetooth.WimotoDevice.State;
 
 public class SentrySensor extends Sensor {
 	
-	public static final String SENSOR_FIELD_SENTRY_ACCELEROMETER					= "SentryAccelerometer";
+	public static final String SENSOR_FIELD_SENTRY_ACCELEROMETER_X					= "mAccelerationX";
+	public static final String SENSOR_FIELD_SENTRY_ACCELEROMETER_Y					= "mAccelerationY";
+	public static final String SENSOR_FIELD_SENTRY_ACCELEROMETER_Z					= "mAccelerationZ";
+	
 	public static final String SENSOR_FIELD_SENTRY_ACCELEROMETER_ALARM_SET			= "SentryAccelerometerAlarmSet";
 	public static final String SENSOR_FIELD_SENTRY_ACCELEROMETER_ALARM_CLEAR		= "SentryAccelerometerAlarmClear";
 	
@@ -35,7 +40,9 @@ public class SentrySensor extends Sensor {
 	private static final String BLE_SENTRY_CHAR_UUID_PASSIVE_INFRARED_ALARM_SET		= "4209DC6F-E433-4420-83D8-CDAACCD2E312";
 	private static final String BLE_SENTRY_CHAR_UUID_PASSIVE_INFRARED_ALARM			= "4209DC70-E433-4420-83D8-CDAACCD2E312";
 	
-	private float mAccelerometer;
+	private float mAccelerationX;
+	private float mAccelerationY;
+	private float mAccelerationZ;
 	private float mInfrared;
 	
 	private boolean mAccelerometerAlarmSet;
@@ -48,7 +55,7 @@ public class SentrySensor extends Sensor {
 		
 		mTitle = mContext.getString(R.string.sensor_sentry);
 		
-		mSensorValues.put(SENSOR_FIELD_SENTRY_ACCELEROMETER, new LinkedList<Float>());
+		mSensorValues.put(SENSOR_FIELD_SENTRY_ACCELEROMETER_X, new LinkedList<Float>());
 		mSensorValues.put(SENSOR_FIELD_SENTRY_PASSIVE_INFRARED, new LinkedList<Float>());
 	}
 
@@ -56,17 +63,38 @@ public class SentrySensor extends Sensor {
 		return WimotoDevice.Profile.SENTRY;
 	}
 	
-	public float getAccelerometer() {
-		return mAccelerometer;
+//	public float getAccelerometer() {
+//		return mAccelerometer;
+//	}
+//	
+//	public void setAccelerometer(float accelerometer) {
+//		notifyObservers(SENSOR_FIELD_SENTRY_ACCELEROMETER, mAccelerometer, accelerometer);
+//
+//		mAccelerometer = accelerometer;
+//		addValue(SENSOR_FIELD_SENTRY_ACCELEROMETER, mAccelerometer);
+//	}
+	
+	public void setAccelerationX(float accelerationX) {		
+		notifyObservers(SENSOR_FIELD_SENTRY_ACCELEROMETER_X, mAccelerationX, accelerationX);
+
+		mAccelerationX = accelerationX;
+		//addValue(SENSOR_FIELD_SENTRY_PASSIVE_INFRARED, mInfrared);
+	}
+
+	public void setAccelerationY(float accelerationY) {		
+		notifyObservers(SENSOR_FIELD_SENTRY_ACCELEROMETER_Y, mAccelerationY, accelerationY);
+
+		mAccelerationY = accelerationY;
+		//addValue(SENSOR_FIELD_SENTRY_PASSIVE_INFRARED, mInfrared);
 	}
 	
-	public void setAccelerometer(float accelerometer) {
-		notifyObservers(SENSOR_FIELD_SENTRY_ACCELEROMETER, mAccelerometer, accelerometer);
+	public void setAccelerationZ(float accelerationZ) {		
+		notifyObservers(SENSOR_FIELD_SENTRY_ACCELEROMETER_Z, mAccelerationZ, accelerationZ);
 
-		mAccelerometer = accelerometer;
-		addValue(SENSOR_FIELD_SENTRY_ACCELEROMETER, mAccelerometer);
+		mAccelerationZ = accelerationZ;
+		//addValue(SENSOR_FIELD_SENTRY_PASSIVE_INFRARED, mInfrared);
 	}
-
+	
 	public float getInfrared() {
 		return mInfrared;
 	}
@@ -111,30 +139,6 @@ public class SentrySensor extends Sensor {
 		enableAlarm(mInfraredAlarmSet, BLE_SENTRY_SERVICE_UUID_PASSIVE_INFRARED, BLE_SENTRY_CHAR_UUID_PASSIVE_INFRARED_ALARM_SET);
 	}
 	
-	@Override
-	public void update(Observable observable, Object data) {
-		if (data instanceof BluetoothGattCharacteristic) {
-			BluetoothGattCharacteristic characteristic = (BluetoothGattCharacteristic) data;
-			
-			String uuid = characteristic.getUuid().toString().toUpperCase();
-			
-			BigInteger bi = new BigInteger(characteristic.getValue());
-			if (uuid.equals(BLE_SENTRY_CHAR_UUID_ACCELEROMETER_CURRENT)) {
-				setAccelerometer(bi.floatValue());
-			} else if (uuid.equals(BLE_SENTRY_CHAR_UUID_PASSIVE_INFRARED_CURRENT)) {
-				setInfrared(bi.floatValue());
-			} else if (uuid.equals(BLE_SENTRY_CHAR_UUID_ACCELEROMETER_ALARM_SET)) {
-				setAccelerometerAlarmSet((bi.floatValue() == 0) ? false:true);
-			} else if (uuid.equals(BLE_SENTRY_CHAR_UUID_ACCELEROMETER_ALARM_CLEAR)) {
-				setAccelerometerAlarmClear((bi.floatValue() == 0) ? false:true);
-			} else if (uuid.equals(BLE_SENTRY_CHAR_UUID_PASSIVE_INFRARED_ALARM_SET)) {
-				setInfraredAlarmSet((bi.floatValue() == 0) ? false:true);
-			} 
-		}
-		
-		super.update(observable, data);
-	}
-	
 	// WimotoDeviceCallback
 	@Override
 	public void onConnectionStateChange(State state) {
@@ -163,7 +167,21 @@ public class SentrySensor extends Sensor {
 		
 		BigInteger bi = new BigInteger(characteristic.getValue());
 		if (uuid.equals(BLE_SENTRY_CHAR_UUID_ACCELEROMETER_CURRENT)) {
-			setAccelerometer(bi.floatValue());
+			//setAccelerometer(bi.floatValue());
+			try {
+				byte[] bytes = characteristic.getValue();
+				
+				int x = bytes[0] & 0xff;
+				setAccelerationX(ValueFactor.newInstance(x).mAngleXY);
+				
+				int y = bytes[1] & 0xff;
+				setAccelerationY(ValueFactor.newInstance(x).mAngleXY);
+				
+				int z = bytes[2] & 0xff;
+				setAccelerationZ(ValueFactor.newInstance(x).mAngleZ);
+				
+				Log.e("", "x " + x + " y " + y + " z " + z);
+			} catch (Exception e) { }
 		} else if (uuid.equals(BLE_SENTRY_CHAR_UUID_PASSIVE_INFRARED_CURRENT)) {
 			setInfrared(bi.floatValue());
 		} else if (uuid.equals(BLE_SENTRY_CHAR_UUID_ACCELEROMETER_ALARM_SET)) {
@@ -173,5 +191,90 @@ public class SentrySensor extends Sensor {
 		} else if (uuid.equals(BLE_SENTRY_CHAR_UUID_PASSIVE_INFRARED_ALARM_SET)) {
 			setInfraredAlarmSet((bi.floatValue() == 0) ? false:true);
 		} 
+	}
+	
+	private static class ValueFactor {
+		
+		private static Map<String, ValueFactor> mValueFactors;
+
+		public static ValueFactor newInstance(int factorId) {
+			if (mValueFactors == null) {
+				mValueFactors = new HashMap<String, SentrySensor.ValueFactor>();
+				
+				mValueFactors.put("0", new ValueFactor("0", "90"));
+				mValueFactors.put("1", new ValueFactor("2.69", "87.31"));
+				mValueFactors.put("2", new ValueFactor("5.38", "84.62"));
+				mValueFactors.put("3", new ValueFactor("8.08", "81.92"));
+				mValueFactors.put("4", new ValueFactor("10.81", "79.19"));
+				mValueFactors.put("5", new ValueFactor("13.55", "76.45"));
+				mValueFactors.put("6", new ValueFactor("16.33", "73.67"));
+				mValueFactors.put("7", new ValueFactor("19.16", "70.84"));
+				mValueFactors.put("8", new ValueFactor("22.02", "67.98"));
+				mValueFactors.put("9", new ValueFactor("24.95", "65.05"));
+				mValueFactors.put("10", new ValueFactor("27.95", "62.05"));
+				mValueFactors.put("11", new ValueFactor("31.04", "58.96"));
+				mValueFactors.put("12", new ValueFactor("34.23", "55.77"));
+				mValueFactors.put("13", new ValueFactor("37.54", "52.46"));
+				mValueFactors.put("14", new ValueFactor("41.01", "48.99"));
+				mValueFactors.put("15", new ValueFactor("44.68", "45.32"));
+				mValueFactors.put("16", new ValueFactor("48.59", "41.41"));
+				mValueFactors.put("17", new ValueFactor("52.83", "37.17"));
+				mValueFactors.put("18", new ValueFactor("57.54", "32.46"));
+				mValueFactors.put("19", new ValueFactor("62.95", "27.05"));
+				mValueFactors.put("20", new ValueFactor("69.64", "20.36"));
+				mValueFactors.put("21", new ValueFactor("79.86", "10.14"));
+				mValueFactors.put("22", new ValueFactor("", ""));
+				mValueFactors.put("23", new ValueFactor("", ""));
+				mValueFactors.put("24", new ValueFactor("", ""));
+				mValueFactors.put("25", new ValueFactor("", ""));
+				mValueFactors.put("26", new ValueFactor("", ""));
+				mValueFactors.put("27", new ValueFactor("", ""));
+				mValueFactors.put("28", new ValueFactor("Shaken ", ""));
+				mValueFactors.put("29", new ValueFactor("Shaken ", ""));
+				mValueFactors.put("30", new ValueFactor("Shaken ", ""));
+				mValueFactors.put("31", new ValueFactor("Shaken ", ""));
+				mValueFactors.put("63", new ValueFactor("-2.69", "-87.31"));
+				mValueFactors.put("62", new ValueFactor("-5.38", "-84.62"));
+				mValueFactors.put("61", new ValueFactor("-8.08", "-81.92"));
+				mValueFactors.put("60", new ValueFactor("-10.81", "-79.19"));
+				mValueFactors.put("59", new ValueFactor("-13.55", "-76.45"));
+				mValueFactors.put("58", new ValueFactor("-16.33", "-73.67"));
+				mValueFactors.put("57", new ValueFactor("-19.16", "-70.84"));
+				mValueFactors.put("56", new ValueFactor("-22.02", "-67.98"));
+				mValueFactors.put("55", new ValueFactor("-24.95", "-65.05"));
+				mValueFactors.put("54", new ValueFactor("-27.95", "-62.05"));
+				mValueFactors.put("53", new ValueFactor("-31.04", "-58.96"));
+				mValueFactors.put("52", new ValueFactor("-34.23", "-55.77"));
+				mValueFactors.put("51", new ValueFactor("-37.54", "-52.46"));
+				mValueFactors.put("50", new ValueFactor("-41.01", "-48.99"));
+				mValueFactors.put("49", new ValueFactor("-44.68", "-45.32"));
+				mValueFactors.put("48", new ValueFactor("-48.59", "-41.41"));
+				mValueFactors.put("47", new ValueFactor("-52.83", "-37.17"));
+				mValueFactors.put("46", new ValueFactor("-57.54", "-32.46"));
+				mValueFactors.put("45", new ValueFactor("-62.95", "-27.05"));
+				mValueFactors.put("44", new ValueFactor("-69.64", "-20.36"));
+				mValueFactors.put("43", new ValueFactor("-79.86", "-10.14"));
+				mValueFactors.put("42", new ValueFactor("", ""));
+				mValueFactors.put("41", new ValueFactor("", ""));
+				mValueFactors.put("40", new ValueFactor("", ""));
+				mValueFactors.put("39", new ValueFactor("", ""));
+				mValueFactors.put("38", new ValueFactor("", ""));
+				mValueFactors.put("37", new ValueFactor("", ""));
+				mValueFactors.put("36", new ValueFactor("Shaken ", ""));
+				mValueFactors.put("35", new ValueFactor("Shaken ", ""));
+				mValueFactors.put("34", new ValueFactor("Shaken ", ""));
+				mValueFactors.put("33", new ValueFactor("Shaken ", ""));
+				mValueFactors.put("32", new ValueFactor("Shaken ", ""));			
+			}
+			return mValueFactors.get("" + factorId);
+		}
+		
+		private float mAngleXY;
+		private float mAngleZ;
+		
+		private ValueFactor(String angleXY, String angleZ) {
+			mAngleXY = Float.valueOf(angleXY).floatValue();
+			mAngleZ = Float.valueOf(angleZ).floatValue();
+		}
 	}
 }

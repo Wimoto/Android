@@ -341,5 +341,5 @@ public abstract class Sensor extends PropertyObservable implements Observer, Wim
 	public void onCharacteristicChanged(BluetoothGattCharacteristic characteristic) {
 		// TODO Auto-generated method stub
 		
-	}
+	}	
 }

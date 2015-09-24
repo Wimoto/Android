@@ -6,6 +6,7 @@ import java.util.Locale;
 
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,7 +25,10 @@ import com.wimoto.app.widgets.sparkline.LineSparkView;
 
 public class SentrySensorFragment extends SensorFragment {
 	
-	//private TextView mAccelerometerTextView;
+	private TextView mAccelerometerXTextView;
+	private TextView mAccelerometerYTextView;
+	private TextView mAccelerometerZTextView;
+	
 	private TextView mInfraredTextView;
 	
 	private LineSparkView mAccelerometerSparkView;
@@ -49,30 +53,32 @@ public class SentrySensorFragment extends SensorFragment {
 	protected void initViews() {
 		super.initViews();
 		
+		mAccelerometerXTextView = (TextView) mView.findViewById(R.id.accelerometerXTextView);
+		mAccelerometerYTextView = (TextView) mView.findViewById(R.id.accelerometerYTextView);
+		mAccelerometerZTextView = (TextView) mView.findViewById(R.id.accelerometerZTextView);
+		
 		mAccelerometerSparkView = (LineSparkView) mView.findViewById(R.id.accelerometerSparkView);
-		mAccelerometerSparkView.setValues(mSensor.getLastValues(SentrySensor.SENSOR_FIELD_SENTRY_ACCELEROMETER));
+		//mAccelerometerSparkView.setValues(mSensor.getLastValues(SentrySensor.SENSOR_FIELD_SENTRY_ACCELEROMETER));
 		mAccelerometerSparkView.setBackgroundColor(Color.TRANSPARENT);
 		mAccelerometerSparkView.setLineColor(Color.WHITE);
-		
-		//mAccelerometerTextView = (TextView) mView.findViewById(R.id.accelerometerTextView);
-		
+				
 		mAccelerometerAlarmLayout = (LinearLayout) mView.findViewById(R.id.accelerometerAlarmLayout);
 		
-		mAccelerometerDatePickerView = new TimePickerView(getActivity(), SentrySensor.SENSOR_FIELD_SENTRY_ACCELEROMETER, 
-				new TimePickerListener() {
-
-					@Override
-					public void onSave(Date lowerDate, Date upperDate) {
-						mView.removeView(mAccelerometerDatePickerView);
-					}
-
-					@Override
-					public void onCancel() {
-						mView.removeView(mAccelerometerDatePickerView);
-						
-						((SentrySensor)mSensor).setAccelerometerAlarmSet(false);
-					}
-		});
+//		mAccelerometerDatePickerView = new TimePickerView(getActivity(), SentrySensor.SENSOR_FIELD_SENTRY_ACCELEROMETER, 
+//				new TimePickerListener() {
+//
+//					@Override
+//					public void onSave(Date lowerDate, Date upperDate) {
+//						mView.removeView(mAccelerometerDatePickerView);
+//					}
+//
+//					@Override
+//					public void onCancel() {
+//						mView.removeView(mAccelerometerDatePickerView);
+//						
+//						((SentrySensor)mSensor).setAccelerometerAlarmSet(false);
+//					}
+//		});
 		
 		mAccelerometerSwitch = (AnimationSwitch)mView.findViewById(R.id.accelerometer_switch);
 		mAccelerometerSwitch.setOnCheckedChangeListener(new OnCheckedChangeListener() {
@@ -98,21 +104,21 @@ public class SentrySensorFragment extends SensorFragment {
 		
 		mInfraredAlarmLayout = (LinearLayout) mView.findViewById(R.id.infraredAlarmLayout);
 		
-		mInfraredDatePickerView = new TimePickerView(getActivity(), SentrySensor.SENSOR_FIELD_SENTRY_ACCELEROMETER, 
-				new TimePickerListener() {
-
-					@Override
-					public void onSave(Date lowerDate, Date upperDate) {
-						mView.removeView(mInfraredDatePickerView);
-					}
-
-					@Override
-					public void onCancel() {
-						mView.removeView(mInfraredDatePickerView);
-						
-						((SentrySensor)mSensor).setInfraredAlarmSet(false);
-					}
-		});
+//		mInfraredDatePickerView = new TimePickerView(getActivity(), SentrySensor.SENSOR_FIELD_SENTRY_ACCELEROMETER, 
+//				new TimePickerListener() {
+//
+//					@Override
+//					public void onSave(Date lowerDate, Date upperDate) {
+//						mView.removeView(mInfraredDatePickerView);
+//					}
+//
+//					@Override
+//					public void onCancel() {
+//						mView.removeView(mInfraredDatePickerView);
+//						
+//						((SentrySensor)mSensor).setInfraredAlarmSet(false);
+//					}
+//		});
 		
 		mInfraredSwitch = (AnimationSwitch)mView.findViewById(R.id.infrared_switch);
 		mInfraredSwitch.setOnCheckedChangeListener(new OnCheckedChangeListener() {
@@ -136,7 +142,10 @@ public class SentrySensorFragment extends SensorFragment {
 		super.setSensor(sensor);
 		
 		if (mSensor != null) {
-			mSensor.addChangeListener(this, SentrySensor.SENSOR_FIELD_SENTRY_ACCELEROMETER);
+			mSensor.addChangeListener(this, SentrySensor.SENSOR_FIELD_SENTRY_ACCELEROMETER_X);
+			mSensor.addChangeListener(this, SentrySensor.SENSOR_FIELD_SENTRY_ACCELEROMETER_Y);
+			mSensor.addChangeListener(this, SentrySensor.SENSOR_FIELD_SENTRY_ACCELEROMETER_Z);
+
 			mSensor.addChangeListener(this, SentrySensor.SENSOR_FIELD_SENTRY_ACCELEROMETER_ALARM_SET);
 			mSensor.addChangeListener(this, SentrySensor.SENSOR_FIELD_SENTRY_ACCELEROMETER_ALARM_CLEAR);
 			
@@ -169,14 +178,26 @@ public class SentrySensorFragment extends SensorFragment {
 						mAccelerometerAlarmLayout.setVisibility(View.VISIBLE);
 						mInfraredAlarmLayout.setVisibility(View.VISIBLE);
 					}
-				} else if (SentrySensor.SENSOR_FIELD_SENTRY_ACCELEROMETER.equals(propertyName)) {
+				} else if (SentrySensor.SENSOR_FIELD_SENTRY_ACCELEROMETER_X.equals(propertyName)) {
+					mAccelerometerXTextView.setText(String.format("%.1f", event.getNewValue()));
+					
 					//mAccelerometerTextView.setText(String.format("%.01f", event.getNewValue()));
-					mAccelerometerSparkView.invalidate();
-					if(((SentrySensor)mSensor).isAccelerometerAlarmSet()) {
-						showAlert(getString(R.string.sensor_sentry_alert_accelerometer));
-					}
+					//mAccelerometerSparkView.invalidate();
+//					if(((SentrySensor)mSensor).isAccelerometerAlarmSet()) {
+//						showAlert(getString(R.string.sensor_sentry_alert_accelerometer));
+//					}
+				} else if (SentrySensor.SENSOR_FIELD_SENTRY_ACCELEROMETER_Y.equals(propertyName)) {
+					mAccelerometerYTextView.setText(String.format("%.1f", event.getNewValue()));					
+				} else if (SentrySensor.SENSOR_FIELD_SENTRY_ACCELEROMETER_Z.equals(propertyName)) {
+					mAccelerometerZTextView.setText(String.format("%.1f", event.getNewValue()));					
 				} else if (SentrySensor.SENSOR_FIELD_SENTRY_PASSIVE_INFRARED.equals(propertyName)) {
-					mInfraredTextView.setText(String.format(Locale.US, "%.01f", event.getNewValue()));
+					int value = ((Float) event.getNewValue()).intValue();
+					if (value == 0) {
+						mInfraredTextView.setText("No movement");
+					} else {
+						mInfraredTextView.setText("Movement");
+					}
+					
 					if(((SentrySensor)mSensor).isInfraredAlarmSet()) {
 						showAlert(getString(R.string.sensor_sentry_alert_infrared));
 					}
