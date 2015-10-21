@@ -211,7 +211,7 @@ public class GrowSensor extends Sensor {
 		
 		mTemperatureAlarmLow = temperatureAlarmLow;
 		if (doWrite) {
-			writeAlarmValue(Float.valueOf(mTemperatureAlarmLow).intValue(), GrowSensor.BLE_GROW_SERVICE_UUID_TEMPERATURE, GrowSensor.BLE_GROW_CHAR_UUID_TEMPERATURE_ALARM_LOW);
+			writeAlarmValue(getSensorTemperature(mTemperatureAlarmLow), GrowSensor.BLE_GROW_SERVICE_UUID_TEMPERATURE, GrowSensor.BLE_GROW_CHAR_UUID_TEMPERATURE_ALARM_LOW);
 		}
 	}
 
@@ -224,8 +224,32 @@ public class GrowSensor extends Sensor {
 		
 		mTemperatureAlarmLow = temperatureAlarmHigh;
 		if (doWrite) {
-			writeAlarmValue(Float.valueOf(temperatureAlarmHigh).intValue(), GrowSensor.BLE_GROW_SERVICE_UUID_TEMPERATURE, GrowSensor.BLE_GROW_CHAR_UUID_TEMPERATURE_ALARM_HIGH);
+			writeAlarmValue(getSensorTemperature(mTemperatureAlarmHigh), GrowSensor.BLE_GROW_SERVICE_UUID_TEMPERATURE, GrowSensor.BLE_GROW_CHAR_UUID_TEMPERATURE_ALARM_HIGH);
 		}
+	}
+	
+	private float getPhysicalTemperature(BigInteger temperature) {
+		int sensorTemperature = temperature.intValue();
+		float converted_temp = 0;
+	    if(sensorTemperature < 2048) {
+	        converted_temp = (float) (sensorTemperature * 0.0625);
+	    } else {
+	        converted_temp = (float) (((~sensorTemperature + 1) & 0x00000FFF) * -0.0625);
+	    }
+	    
+	    return roundToOne(converted_temp);
+	}
+	
+	private int getSensorTemperature(float temperature) {
+		int converted_temp = 0;
+	    if (temperature >= 0) {
+	        converted_temp = (int) (temperature / 0.0625);
+	    } else {
+	        converted_temp = (int) (temperature / 0.0625);
+	        converted_temp = ( ~-converted_temp|2048 ) + 1;
+	    }
+	    
+	    return converted_temp;
 	}
 		
 	// WimotoDeviceCallback
@@ -272,7 +296,7 @@ public class GrowSensor extends Sensor {
 		} else if (uuid.equals(BLE_GROW_CHAR_UUID_MOISTURE_CURRENT)) {
 			setMoisture(bi.floatValue());				
 		} else if (uuid.equals(BLE_GROW_CHAR_UUID_TEMPERATURE_CURRENT)) {
-			setTemperature(bi.floatValue());			
+			setTemperature(getPhysicalTemperature(bi));			
 		} else if (uuid.equals(BLE_GROW_CHAR_UUID_LIGHT_ALARM_SET)) {
 			setLightAlarmSet((bi.floatValue() == 0) ? false:true);
 		} else if (uuid.equals(BLE_GROW_CHAR_UUID_LIGHT_ALARM_LOW)) {
@@ -288,9 +312,9 @@ public class GrowSensor extends Sensor {
 		} else if (uuid.equals(BLE_GROW_CHAR_UUID_TEMPERATURE_ALARM_SET)) {
 			setTemperatureAlarmSet((bi.floatValue() == 0) ? false:true);
 		} else if (uuid.equals(BLE_GROW_CHAR_UUID_TEMPERATURE_ALARM_LOW)) {
-			setTemperatureAlarmLow(Float.valueOf(bi.floatValue()/100.0f).intValue(), false);
+			setTemperatureAlarmLow(getPhysicalTemperature(bi), false);
 		} else if (uuid.equals(BLE_GROW_CHAR_UUID_TEMPERATURE_ALARM_HIGH)) {
-			setTemperatureAlarmHigh(Float.valueOf(bi.floatValue()/100.0f).intValue(), false);
+			setTemperatureAlarmHigh(getPhysicalTemperature(bi), false);
 		}
 	}
 }

@@ -52,7 +52,7 @@
      <string name="sensor_grow_alert_moisture">Current moisture is out of range.</string>
      <string name="sensor_grow_alert_temperature">Current temperature is out of range.</string>     
      <string name="sensor_sentry_alert_accelerometer">Accelerometer is detected a motion.</string>
-     <string name="sensor_sentry_alert_infrared">Infrafer sensor is detected a motion.</string>     
+     <string name="sensor_sentry_alert_infrared">Infrared sensor is detected a motion.</string>     
      <string name="sensor_water_alert_contact">Contact sensor is detected a water.</string>
      <string name="sensor_water_alert_level">Current water level is out of range.</string>
      

@@ -316,6 +316,10 @@ public abstract class Sensor extends PropertyObservable implements Observer, Wim
 		}
 	}
 	
+	protected float roundToOne(float value) {
+		return Math.round(value*10)/10;
+	}
+	
 	public LinkedList<Float> getLastValues(String valueType) {
 		return mSensorValues.get(valueType);
 	}

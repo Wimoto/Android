@@ -2,7 +2,6 @@ package com.wimoto.app.screens.sensor.sentry;
 
 import java.beans.PropertyChangeEvent;
 import java.util.Date;
-import java.util.Locale;
 
 import android.graphics.Color;
 import android.os.Bundle;
@@ -64,21 +63,25 @@ public class SentrySensorFragment extends SensorFragment {
 				
 		mAccelerometerAlarmLayout = (LinearLayout) mView.findViewById(R.id.accelerometerAlarmLayout);
 		
-//		mAccelerometerDatePickerView = new TimePickerView(getActivity(), SentrySensor.SENSOR_FIELD_SENTRY_ACCELEROMETER, 
-//				new TimePickerListener() {
-//
-//					@Override
-//					public void onSave(Date lowerDate, Date upperDate) {
-//						mView.removeView(mAccelerometerDatePickerView);
-//					}
-//
-//					@Override
-//					public void onCancel() {
-//						mView.removeView(mAccelerometerDatePickerView);
-//						
-//						((SentrySensor)mSensor).setAccelerometerAlarmSet(false);
-//					}
-//		});
+		mAccelerometerDatePickerView = new TimePickerView(getActivity(), new TimePickerListener() {
+			@Override
+			public void onSave(Date lowerDate, Date upperDate) {
+				mView.removeView(mAccelerometerDatePickerView);
+				
+				SentrySensor sentrySensor = (SentrySensor) mSensor;
+				sentrySensor.setAccelerometerAlarmSet(true);
+				
+				sentrySensor.setAccelerometerAlarmEnabledTime(lowerDate);
+				sentrySensor.setAccelerometerAlarmDisabledTime(upperDate);
+			}
+
+			@Override
+			public void onCancel() {
+				mView.removeView(mAccelerometerDatePickerView);
+				
+				((SentrySensor)mSensor).setAccelerometerAlarmSet(false);
+			}
+		});
 		
 		mAccelerometerSwitch = (AnimationSwitch)mView.findViewById(R.id.accelerometer_switch);
 		mAccelerometerSwitch.setOnCheckedChangeListener(new OnCheckedChangeListener() {
@@ -104,21 +107,25 @@ public class SentrySensorFragment extends SensorFragment {
 		
 		mInfraredAlarmLayout = (LinearLayout) mView.findViewById(R.id.infraredAlarmLayout);
 		
-//		mInfraredDatePickerView = new TimePickerView(getActivity(), SentrySensor.SENSOR_FIELD_SENTRY_ACCELEROMETER, 
-//				new TimePickerListener() {
-//
-//					@Override
-//					public void onSave(Date lowerDate, Date upperDate) {
-//						mView.removeView(mInfraredDatePickerView);
-//					}
-//
-//					@Override
-//					public void onCancel() {
-//						mView.removeView(mInfraredDatePickerView);
-//						
-//						((SentrySensor)mSensor).setInfraredAlarmSet(false);
-//					}
-//		});
+		mInfraredDatePickerView = new TimePickerView(getActivity(), new TimePickerListener() {
+			@Override
+			public void onSave(Date lowerDate, Date upperDate) {
+				mView.removeView(mInfraredDatePickerView);
+				
+				SentrySensor sentrySensor = (SentrySensor) mSensor;
+				sentrySensor.setInfraredAlarmSet(true);
+				
+				sentrySensor.setInfraredAlarmEnabledTime(lowerDate);
+				sentrySensor.setInfraredAlarmDisabledTime(upperDate);
+			}
+
+			@Override
+			public void onCancel() {
+				mView.removeView(mInfraredDatePickerView);
+				
+				((SentrySensor)mSensor).setInfraredAlarmSet(false);
+			}
+		});
 		
 		mInfraredSwitch = (AnimationSwitch)mView.findViewById(R.id.infrared_switch);
 		mInfraredSwitch.setOnCheckedChangeListener(new OnCheckedChangeListener() {
@@ -198,21 +205,25 @@ public class SentrySensorFragment extends SensorFragment {
 						mInfraredTextView.setText("Movement");
 					}
 					
-					if(((SentrySensor)mSensor).isInfraredAlarmSet()) {
-						showAlert(getString(R.string.sensor_sentry_alert_infrared));
-					}
+//					if(((SentrySensor)mSensor).isInfraredAlarmSet()) {
+//						showAlert(getString(R.string.sensor_sentry_alert_infrared));
+//					}
 				} else if (SentrySensor.SENSOR_FIELD_SENTRY_ACCELEROMETER_ALARM_SET.equals(propertyName)) {
 					mAccelerometerSwitch.setChecked(((Boolean)event.getNewValue()).booleanValue());
 				} else if (SentrySensor.SENSOR_FIELD_SENTRY_PASSIVE_INFRARED_ALARM_SET.equals(propertyName)) {
 					mInfraredSwitch.setChecked(((Boolean)event.getNewValue()).booleanValue());
 				} 
+				
+//				if(((SentrySensor)mSensor).checkAccelerometerAlarm()) {
+//					showAlarmMessage(mSensor, "accelerometer alarm", SentrySensor.SENSOR_FIELD_SENTRY_ACCELEROMETER_ALARM_SET);
+//				}
 			}
 		});
 	}
 	
-	private void showAccelerometerDatePickerView() {
-		Date date = new Date();
-		mAccelerometerDatePickerView.setMinMaxDate(date, date);
+	private void showAccelerometerDatePickerView() {	
+		Log.e("", "enTime " + ((SentrySensor) mSensor).getAccelerometerAlarmEnabledTime() + " disTime " + ((SentrySensor) mSensor).getAccelerometerAlarmDisabledTime());
+		mAccelerometerDatePickerView.setMinMaxDate(((SentrySensor) mSensor).getAccelerometerAlarmEnabledTime(), ((SentrySensor) mSensor).getAccelerometerAlarmDisabledTime());
 		
 		mView.addView(mAccelerometerDatePickerView);
 
@@ -220,8 +231,8 @@ public class SentrySensorFragment extends SensorFragment {
 	}
 	
 	private void showInfraredDatePickerView() {
-		Date date = new Date();
-		mInfraredDatePickerView.setMinMaxDate(date, date);
+		Log.e("", "enTime " + ((SentrySensor) mSensor).getInfraredAlarmEnabledTime() + " disTime " + ((SentrySensor) mSensor).getInfraredAlarmDisabledTime());
+		mInfraredDatePickerView.setMinMaxDate(((SentrySensor) mSensor).getInfraredAlarmEnabledTime(), ((SentrySensor) mSensor).getInfraredAlarmDisabledTime());
 		
 		mView.addView(mInfraredDatePickerView);
 

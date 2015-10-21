@@ -24,8 +24,8 @@ public class TimePickerView extends BasePickerView {
 	private TimePicker mLeftTimePicker;
 	private TimePicker mRightTimePicker;
 	
-	public TimePickerView(Context context, String sensorCharacteristic, TimePickerListener listener) {
-		super(context, sensorCharacteristic);
+	public TimePickerView(Context context, TimePickerListener listener) {
+		super(context, null);
 		
 		mListener = listener;
 		
@@ -44,11 +44,11 @@ public class TimePickerView extends BasePickerView {
 	public void setMinMaxDate(Date minDate, Date maxDate) {
 		Calendar c = Calendar.getInstance();
 		
-		c.setTime(minDate);
+		c.setTime((minDate == null) ? new Date():minDate);
 		mLeftTimePicker.setCurrentHour(c.get(Calendar.HOUR_OF_DAY));
 		mLeftTimePicker.setCurrentMinute(c.get(Calendar.MINUTE));
 		
-		c.setTime(maxDate);
+		c.setTime((maxDate == null) ? new Date():maxDate);
 		mRightTimePicker.setCurrentHour(c.get(Calendar.HOUR_OF_DAY));
 		mRightTimePicker.setCurrentMinute(c.get(Calendar.MINUTE));
 	}
