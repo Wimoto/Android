@@ -84,6 +84,7 @@ public class SentrySensorFragment extends SensorFragment {
 		});
 		
 		mAccelerometerSwitch = (AnimationSwitch)mView.findViewById(R.id.accelerometer_switch);
+		mAccelerometerSwitch.setSyncMode();
 		mAccelerometerSwitch.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 			@Override
 			public void onCheckedChanged(AnimationSwitch view, boolean isChecked) {
@@ -128,6 +129,7 @@ public class SentrySensorFragment extends SensorFragment {
 		});
 		
 		mInfraredSwitch = (AnimationSwitch)mView.findViewById(R.id.infrared_switch);
+		mInfraredSwitch.setSyncMode();
 		mInfraredSwitch.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 			@Override
 			public void onCheckedChanged(AnimationSwitch view, boolean isChecked) {
@@ -221,8 +223,7 @@ public class SentrySensorFragment extends SensorFragment {
 		});
 	}
 	
-	private void showAccelerometerDatePickerView() {	
-		Log.e("", "enTime " + ((SentrySensor) mSensor).getAccelerometerAlarmEnabledTime() + " disTime " + ((SentrySensor) mSensor).getAccelerometerAlarmDisabledTime());
+	private void showAccelerometerDatePickerView() {
 		mAccelerometerDatePickerView.setMinMaxDate(((SentrySensor) mSensor).getAccelerometerAlarmEnabledTime(), ((SentrySensor) mSensor).getAccelerometerAlarmDisabledTime());
 		
 		mView.addView(mAccelerometerDatePickerView);
@@ -230,8 +231,7 @@ public class SentrySensorFragment extends SensorFragment {
 		mAccelerometerDatePickerView.show();
 	}
 	
-	private void showInfraredDatePickerView() {
-		Log.e("", "enTime " + ((SentrySensor) mSensor).getInfraredAlarmEnabledTime() + " disTime " + ((SentrySensor) mSensor).getInfraredAlarmDisabledTime());
+	private void showInfraredDatePickerView() {		
 		mInfraredDatePickerView.setMinMaxDate(((SentrySensor) mSensor).getInfraredAlarmEnabledTime(), ((SentrySensor) mSensor).getInfraredAlarmDisabledTime());
 		
 		mView.addView(mInfraredDatePickerView);

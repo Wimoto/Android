@@ -19,6 +19,7 @@ import android.widget.TextView.OnEditorActionListener;
 import com.jeremyfeinstein.slidingmenu.lib.app.SlidingFragmentActivity;
 import com.mobitexoft.leftmenu.PageFragment;
 import com.wimoto.app.R;
+import com.wimoto.app.bluetooth.WimotoDevice;
 import com.wimoto.app.model.ClimateSensor;
 import com.wimoto.app.model.GrowSensor;
 import com.wimoto.app.model.Sensor;
@@ -172,11 +173,17 @@ public abstract class SensorFragment extends PageFragment implements PropertyCha
 			@Override
 			public void run() {
 				String propertyName = event.getPropertyName();
+				Object newValue = event.getNewValue();
 				if (Sensor.SENSOR_FIELD_STATE.equals(propertyName)) {
 					int state = 0;
-					if ((event.getNewValue() !=null) && (event.getNewValue() instanceof Integer)) {
-						state = ((Integer) event.getNewValue()).intValue();
+					if (newValue != null) {
+						if (newValue instanceof Integer) {
+							state = ((Integer) newValue).intValue();
+						} else if (newValue instanceof WimotoDevice.State) {
+							state = ((WimotoDevice.State) newValue).ordinal();
+						}
 					}
+					
 					if (state == BluetoothProfile.STATE_CONNECTED) {
 						mView.setBackgroundColor(getResources().getColor(getBackgroundColorRes()));
 						mBatteryImageView.setVisibility(View.VISIBLE);
@@ -189,9 +196,9 @@ public abstract class SensorFragment extends PageFragment implements PropertyCha
 						mSensorFooterView.showConnectionSensitiveButtons(false);
 					}
 				} else if (Sensor.SENSOR_FIELD_BATTERY_LEVEL.equals(propertyName)) {
-					updateBateryLevel((Integer)event.getNewValue());
+					updateBateryLevel((Integer)newValue);
 				} else if (Sensor.SENSOR_FIELD_RSSI.equals(propertyName)) {
-					mRssiTextView.setText((Integer)event.getNewValue() + "dB");
+					mRssiTextView.setText((Integer)newValue + "dB");
 				}	
 			}
 		});

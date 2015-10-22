@@ -281,13 +281,12 @@ public class SentrySensor extends Sensor {
 
 		if (state == State.CONNECTED) {
 			mWimotoDevice.readCharacteristic(BLE_SENTRY_SERVICE_UUID_ACCELEROMETER, BLE_SENTRY_CHAR_UUID_ACCELEROMETER_CURRENT);
-			mWimotoDevice.readCharacteristic(BLE_SENTRY_SERVICE_UUID_PASSIVE_INFRARED, BLE_SENTRY_CHAR_UUID_PASSIVE_INFRARED_CURRENT);
-			
 			mWimotoDevice.readCharacteristic(BLE_SENTRY_SERVICE_UUID_ACCELEROMETER, BLE_SENTRY_CHAR_UUID_ACCELEROMETER_ALARM_SET);
 			mWimotoDevice.readCharacteristic(BLE_SENTRY_SERVICE_UUID_ACCELEROMETER, BLE_SENTRY_CHAR_UUID_ACCELEROMETER_ALARM_CLEAR);
 			mWimotoDevice.enableChangesNotification(BLE_SENTRY_SERVICE_UUID_ACCELEROMETER, BLE_SENTRY_CHAR_UUID_ACCELEROMETER_ALARM);
 			mWimotoDevice.enableChangesNotification(BLE_SENTRY_SERVICE_UUID_ACCELEROMETER, BLE_SENTRY_CHAR_UUID_ACCELEROMETER_CURRENT);
 			
+			mWimotoDevice.readCharacteristic(BLE_SENTRY_SERVICE_UUID_PASSIVE_INFRARED, BLE_SENTRY_CHAR_UUID_PASSIVE_INFRARED_CURRENT);
 			mWimotoDevice.readCharacteristic(BLE_SENTRY_SERVICE_UUID_PASSIVE_INFRARED, BLE_SENTRY_CHAR_UUID_PASSIVE_INFRARED_ALARM_SET);
 			mWimotoDevice.enableChangesNotification(BLE_SENTRY_SERVICE_UUID_PASSIVE_INFRARED, BLE_SENTRY_CHAR_UUID_PASSIVE_INFRARED_ALARM);
 			mWimotoDevice.enableChangesNotification(BLE_SENTRY_SERVICE_UUID_PASSIVE_INFRARED, BLE_SENTRY_CHAR_UUID_PASSIVE_INFRARED_CURRENT);			
@@ -299,7 +298,7 @@ public class SentrySensor extends Sensor {
 		super.onCharacteristicChanged(characteristic);
 		
 		String uuid = characteristic.getUuid().toString().toUpperCase();
-		Log.e("uuuuuid", uuid);
+		//Log.e("uuid", uuid);
 		
 		BigInteger bi = new BigInteger(characteristic.getValue());
 		if (uuid.equals(BLE_SENTRY_CHAR_UUID_ACCELEROMETER_CURRENT)) {

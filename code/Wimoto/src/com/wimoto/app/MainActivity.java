@@ -31,6 +31,8 @@ public class MainActivity extends AppContext implements SensorsManagerListener {
 	
 	private Fragment mCurrentFragment;
 	
+	private Sensor mCurrentSensor;
+	
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -126,8 +128,14 @@ public class MainActivity extends AppContext implements SensorsManagerListener {
 				pushFragmentToCenterSlide(new NoSensorFragment(), TAG_NO_SENSOR);
 			}
 		} else {
-			SensorFragment sensorfragment = SensorFragment.createSensorFragment(sensor);
-			pushFragmentToCenterSlide(sensorfragment, sensorfragment.getFragmentId());
+			if (sensor.equals(mCurrentSensor) && (mCurrentFragment instanceof SensorFragment)) {
+				toggle();
+			} else {
+				mCurrentSensor = sensor;
+				
+				SensorFragment sensorfragment = SensorFragment.createSensorFragment(sensor);
+				pushFragmentToCenterSlide(sensorfragment, sensorfragment.getFragmentId());
+			}
 		}
 	}
 		
