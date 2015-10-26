@@ -87,6 +87,7 @@ public class ThermoSensorFragment extends SensorFragment {
 		});
 		
 		mTemperatureSwitch = (AnimationSwitch)mView.findViewById(R.id.temperature_switch);
+		mTemperatureSwitch.setSyncMode();
 		mTemperatureSwitch.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 			@Override
 			public void onCheckedChanged(AnimationSwitch view, boolean isChecked) {
@@ -139,6 +140,7 @@ public class ThermoSensorFragment extends SensorFragment {
 		});
 		
 		mProbeSwitch = (AnimationSwitch)mView.findViewById(R.id.probe_switch);
+		mProbeSwitch.setSyncMode();
 		mProbeSwitch.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 			@Override
 			public void onCheckedChanged(AnimationSwitch view, boolean isChecked) {

@@ -95,6 +95,7 @@ public class GrowSensorFragment extends SensorFragment {
 		});
 		
 		mLightSwitch = (AnimationSwitch)mView.findViewById(R.id.light_switch);
+		mLightSwitch.setSyncMode();
 		mLightSwitch.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 			@Override
 			public void onCheckedChanged(AnimationSwitch view, boolean isChecked) {
@@ -147,6 +148,7 @@ public class GrowSensorFragment extends SensorFragment {
 		});
 		
 		mMoistureSwitch = (AnimationSwitch)mView.findViewById(R.id.moisture_switch);
+		mMoistureSwitch.setSyncMode();
 		mMoistureSwitch.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 			@Override
 			public void onCheckedChanged(AnimationSwitch view, boolean isChecked) {
@@ -199,6 +201,7 @@ public class GrowSensorFragment extends SensorFragment {
 		});
 		
 		mTemperatureSwitch = (AnimationSwitch)mView.findViewById(R.id.temperature_switch);
+		mTemperatureSwitch.setSyncMode();
 		mTemperatureSwitch.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 			@Override
 			public void onCheckedChanged(AnimationSwitch view, boolean isChecked) {

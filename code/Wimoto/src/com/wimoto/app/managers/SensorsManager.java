@@ -25,6 +25,7 @@ import com.wimoto.app.AppContext;
 import com.wimoto.app.bluetooth.BluetoothService;
 import com.wimoto.app.bluetooth.DiscoveryListener;
 import com.wimoto.app.bluetooth.WimotoDevice;
+import com.wimoto.app.bluetooth.WimotoDevice.Profile;
 import com.wimoto.app.model.Sensor;
 import com.wimoto.app.model.demosensors.ClimateDemoSensor;
 import com.wimoto.app.model.demosensors.ThermoDemoSensor;
@@ -76,10 +77,7 @@ public class SensorsManager {
 				mSensors.put(sensor.getId(), sensor);
 			}
 			
-			Log.e("Loaded Sensors Count", Integer.toString(mSensors.size()));	
-			
-			//addDemoSensors();
-			
+			Log.e("Loaded Sensors Count", Integer.toString(mSensors.size()));				
 		} catch (Exception e) {
 			e.printStackTrace();			
 		}
@@ -91,6 +89,14 @@ public class SensorsManager {
 	
 	public void startScan(DiscoveryListener discoveryListener) {		
 		mBluetoothService.startScan(discoveryListener);
+
+		if (!mSensors.containsKey(ClimateDemoSensor.SENSOR_CLIMATE_DEMO_ID)) {
+			discoveryListener.onWimotoDeviceDiscovered(WimotoDevice.getDemoInstance(mContext, Profile.CLIMATE_DEMO));
+		}
+		
+		if (!mSensors.containsKey(ThermoDemoSensor.SENSOR_THERMO_DEMO_ID)) {
+			discoveryListener.onWimotoDeviceDiscovered(WimotoDevice.getDemoInstance(mContext, Profile.THERMO_DEMO));
+		}
 	}
 	
 	public void stopScan() {
@@ -123,24 +129,12 @@ public class SensorsManager {
 		return query;
 	}
 	
-	private void addDemoSensors() {
-		if (!mSensors.containsKey(ClimateDemoSensor.SENSOR_CLIMATE_DEMO)) {
-			mSensors.put(ClimateDemoSensor.SENSOR_CLIMATE_DEMO, new ClimateDemoSensor(mContext));
-		}
-		
-		if (!mSensors.containsKey(ThermoDemoSensor.SENSOR_THERMO_DEMO)) {
-			mSensors.put(ThermoDemoSensor.SENSOR_THERMO_DEMO, new ThermoDemoSensor(mContext));
-		}
-		
-		Log.e("Total Count with demo", Integer.toString(mSensors.size()));
-	}
-	
 	public void registerDevice(WimotoDevice device) {
 		try {
 			SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 		    Calendar calendar = GregorianCalendar.getInstance();
 		    String currentTimeString = dateFormatter.format(calendar.getTime());
-			
+		    
 			Map<String, Object> properties = new HashMap<String, Object>();
 			
 			properties.put("type", DOC_TYPE);
@@ -151,10 +145,9 @@ public class SensorsManager {
 
 			Document document = mDatabase.createDocument();
 			document.putProperties(properties);
-			
+
 			Sensor sensor = Sensor.getSensorFromDocument(mContext, document);
 			sensor.connectDevice(device);
-			
 			mSensors.put(sensor.getId(), sensor);
 			notifyRegisteredSensorObservers();
 		} catch (Exception e) {

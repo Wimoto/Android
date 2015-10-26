@@ -11,7 +11,8 @@ import com.wimoto.app.model.ThermoSensor;
 
 public class ThermoDemoSensor extends ThermoSensor {
 
-	public static final String SENSOR_THERMO_DEMO	= "ThermoDemo";
+	public static final String SENSOR_THERMO_DEMO		= "ThermoDemo";
+	public static final String SENSOR_THERMO_DEMO_ID	= "XX:00:YY:99:ZZ:88";
 	
 	private Handler mHandler;
 	

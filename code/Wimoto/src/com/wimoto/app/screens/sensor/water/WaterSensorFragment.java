@@ -61,6 +61,7 @@ public class WaterSensorFragment extends SensorFragment {
 		mContactAlarmLayout = (LinearLayout) mView.findViewById(R.id.contactAlarmLayout);
 		
 		mContactSwitch = (AnimationSwitch)mView.findViewById(R.id.contact_switch);
+		mContactSwitch.setSyncMode();
 		mContactSwitch.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 			@Override
 			public void onCheckedChanged(AnimationSwitch view, boolean isChecked) {
@@ -101,6 +102,7 @@ public class WaterSensorFragment extends SensorFragment {
 		});
 		
 		mLevelSwitch = (AnimationSwitch)mView.findViewById(R.id.level_switch);
+		mLevelSwitch.setSyncMode();
 		mLevelSwitch.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 			@Override
 			public void onCheckedChanged(AnimationSwitch view, boolean isChecked) {

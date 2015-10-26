@@ -3,7 +3,6 @@ package com.wimoto.app.bluetooth;
 import java.util.LinkedList;
 import java.util.UUID;
 
-import android.app.Activity;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCallback;
@@ -13,6 +12,8 @@ import android.bluetooth.BluetoothGattService;
 import android.util.Log;
 
 import com.wimoto.app.AppContext;
+import com.wimoto.app.model.demosensors.ClimateDemoSensor;
+import com.wimoto.app.model.demosensors.ThermoDemoSensor;
 
 public class WimotoDevice {
 
@@ -107,6 +108,10 @@ public class WimotoDevice {
 		return null;
 	}
 	
+	public static WimotoDevice getDemoInstance(AppContext context, Profile profile) {
+		return new WimotoDevice(context, null, profile);
+	}
+	
 	private WimotoDevice() { 
 		//
 	}
@@ -130,10 +135,21 @@ public class WimotoDevice {
 	}
 	
 	public String getId() {
+		if (mProfile == Profile.CLIMATE_DEMO) {
+			return ClimateDemoSensor.SENSOR_CLIMATE_DEMO_ID;
+		} else if (mProfile == Profile.THERMO_DEMO) {
+			return ThermoDemoSensor.SENSOR_THERMO_DEMO_ID;
+		}
+		
 		return mBluetoothDevice.getAddress();
 	}
 	
 	public String getName() {
+		if (mProfile == Profile.CLIMATE_DEMO) {
+			return ClimateDemoSensor.SENSOR_CLIMATE_DEMO;
+		} else if (mProfile == Profile.THERMO_DEMO) {
+			return ThermoDemoSensor.SENSOR_THERMO_DEMO;
+		}
 		return mBluetoothDevice.getName();
 	}
 	
@@ -143,6 +159,11 @@ public class WimotoDevice {
 	
 	public void connect(WimotoDeviceCallback wimotoDeviceCallback) {
 		mWimotoDeviceCallback = wimotoDeviceCallback;
+		
+		if (mProfile == Profile.CLIMATE_DEMO || mProfile == Profile.THERMO_DEMO) {
+			//mWimotoDeviceCallback.onConnectionStateChange(State.CONNECTED);
+			return;
+		}
 		
 		mBluetoothGatt = mBluetoothDevice.connectGatt(mContext, true, new BluetoothGattCallback() {
 	        @Override
@@ -246,6 +267,11 @@ public class WimotoDevice {
 		Log.e("", "WimotoDevice disconnect()");
 		
 		mWimotoDeviceCallback = null;
+		
+		if (mProfile == Profile.CLIMATE_DEMO || mProfile == Profile.THERMO_DEMO) {
+			//mWimotoDeviceCallback.onConnectionStateChange(State.DISCONNECTED);
+			return;
+		}
 		
 		mBluetoothGatt.disconnect();
 	}

@@ -7,11 +7,13 @@ import android.os.Handler;
 
 import com.wimoto.app.AppContext;
 import com.wimoto.app.R;
+import com.wimoto.app.bluetooth.WimotoDevice.State;
 import com.wimoto.app.model.ClimateSensor;
 
 public class ClimateDemoSensor extends ClimateSensor {
 
-	public static final String SENSOR_CLIMATE_DEMO	= "ClimateDemo";
+	public static final String SENSOR_CLIMATE_DEMO		= "ClimateDemo";
+	public static final String SENSOR_CLIMATE_DEMO_ID	= "AA:11:BB:22:CC:33";
 	
 	private Handler mHandler;
 	
@@ -88,7 +90,5 @@ public class ClimateDemoSensor extends ClimateSensor {
 		} else {
 			setLight(mLight + lightStep);
 		}
-		
 	}
-	
 }
