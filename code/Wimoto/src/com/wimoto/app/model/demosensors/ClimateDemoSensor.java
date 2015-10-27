@@ -44,11 +44,12 @@ public class ClimateDemoSensor extends ClimateSensor {
 	}
 
 	public void runDemo() {
-		notifyObservers(SENSOR_FIELD_CONNECTION, 0, 0);
+		notifyObservers(SENSOR_FIELD_STATE, State.DISCONNECTED, State.CONNECTED);
 		mRunnable.run();
 	}
 	
 	public void stopDemo() {
+		notifyObservers(SENSOR_FIELD_STATE, State.CONNECTED, State.DISCONNECTED);
 		mHandler.removeCallbacks(mRunnable);
 	}
 

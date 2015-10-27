@@ -7,6 +7,7 @@ import android.os.Handler;
 
 import com.wimoto.app.AppContext;
 import com.wimoto.app.R;
+import com.wimoto.app.bluetooth.WimotoDevice.State;
 import com.wimoto.app.model.ThermoSensor;
 
 public class ThermoDemoSensor extends ThermoSensor {
@@ -38,11 +39,12 @@ public class ThermoDemoSensor extends ThermoSensor {
 	}
 	
 	public void runDemo() {
-		notifyObservers(SENSOR_FIELD_CONNECTION, 0, 0);
+		notifyObservers(SENSOR_FIELD_STATE, State.DISCONNECTED, State.CONNECTED);
 		mRunnable.run();
 	}
 	
 	public void stopDemo() {
+		notifyObservers(SENSOR_FIELD_STATE, State.CONNECTED, State.DISCONNECTED);
 		mHandler.removeCallbacks(mRunnable);
 	}
 

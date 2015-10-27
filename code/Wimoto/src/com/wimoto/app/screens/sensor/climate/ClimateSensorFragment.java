@@ -1,12 +1,10 @@
 package com.wimoto.app.screens.sensor.climate;
 
 import java.beans.PropertyChangeEvent;
-import java.util.Date;
 import java.util.Locale;
 
 import android.graphics.Color;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,7 +21,6 @@ import com.wimoto.app.widgets.pickers.AlarmPickerTemperatureView;
 import com.wimoto.app.widgets.pickers.AlarmPickerView;
 import com.wimoto.app.widgets.pickers.AlarmPickerView.AlarmPickerListener;
 import com.wimoto.app.widgets.pickers.TimePickerView;
-import com.wimoto.app.widgets.pickers.TimePickerView.TimePickerListener;
 import com.wimoto.app.widgets.sparkline.LineSparkView;
 import com.wimoto.app.widgets.temperature.TemperatureValueTextView;
 import com.wimoto.app.widgets.temperature.TemperatureValueView;

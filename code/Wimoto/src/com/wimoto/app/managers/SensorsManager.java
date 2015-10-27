@@ -160,6 +160,9 @@ public class SensorsManager {
 			sensor.getDocument().delete();
 			sensor.setDocument(null);
 			
+			sensor.disconnect();
+			mSensors.remove(sensor.getId());
+			
 //			if (!sensor.isConnected()) {
 //				mSensors.remove(sensor.getId());
 //			}
