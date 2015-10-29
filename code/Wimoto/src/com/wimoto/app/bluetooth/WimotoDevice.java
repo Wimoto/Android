@@ -58,6 +58,7 @@ public class WimotoDevice {
 		void onConnectionStateChange(State state);
 		
 		void onCharacteristicChanged(BluetoothGattCharacteristic characteristic);
+		void onCharacteristicWritten(BluetoothGattCharacteristic characteristic);
 	}
 	
 	private final static String BLE_CLIMATE_AD_SERVICE_UUID 	= "EC484ED09F3B5419C00A94FD";
@@ -252,6 +253,7 @@ public class WimotoDevice {
 			public void onCharacteristicWrite(BluetoothGatt gatt,
 					BluetoothGattCharacteristic characteristic, int status) {
 				Log.e("", "onCharacteristicWrite " + status);
+				mWimotoDeviceCallback.onCharacteristicWritten(characteristic);
 				//performNextRequest();
 			}
 

@@ -3,16 +3,21 @@ package com.wimoto.app.screens.sensor.grow;
 import java.beans.PropertyChangeEvent;
 import java.util.Locale;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.wimoto.app.R;
 import com.wimoto.app.model.GrowSensor;
+import com.wimoto.app.model.GrowSensor.GrowCalibrationState;
 import com.wimoto.app.model.Sensor;
 import com.wimoto.app.screens.sensor.SensorFragment;
 import com.wimoto.app.widgets.AnimationSwitch;
@@ -20,12 +25,15 @@ import com.wimoto.app.widgets.AnimationSwitch.OnCheckedChangeListener;
 import com.wimoto.app.widgets.pickers.AlarmPickerView;
 import com.wimoto.app.widgets.pickers.AlarmPickerView.AlarmPickerListener;
 import com.wimoto.app.widgets.sparkline.LineSparkView;
+import com.wimoto.app.widgets.temperature.TemperatureValueView;
 
 public class GrowSensorFragment extends SensorFragment {
 	
 	private TextView mLightTextView;
-	private TextView mMoistureTextView;
-	private TextView mTemperatureTextView;
+	private MoistureTextView mMoistureTextView;
+	private TextView mMoisturePercentageTextView;
+	
+	private TemperatureValueView mTemperatureTextView;
 	
 	private LineSparkView mLightSparkView;
 	private LineSparkView mMoistureSparkView;
@@ -52,6 +60,8 @@ public class GrowSensorFragment extends SensorFragment {
 	private AlarmPickerView mAlarmMoisturePickerView;
 	private AlarmPickerView mAlarmTemperaturePickerView;
 	
+	private TextView mReCalibrateTextView;
+	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		mView  = (ViewGroup)inflater.inflate(R.layout.sensor_grow_fragment, null);
@@ -68,7 +78,7 @@ public class GrowSensorFragment extends SensorFragment {
 		mLightSparkView.setLineColor(Color.WHITE);
 		
 		mLightTextView = (TextView) mView.findViewById(R.id.lightTextView);
-		mLightTextView.setText(Float.toString(((GrowSensor)mSensor).getLight()));
+		mLightTextView.setText(String.format(Locale.US, "%.01f", ((GrowSensor) mSensor).getLight()));
 		
 		mLightAlarmLayout = (LinearLayout) mView.findViewById(R.id.lightAlarmLayout);
 		
@@ -120,8 +130,17 @@ public class GrowSensorFragment extends SensorFragment {
 		mMoistureSparkView.setBackgroundColor(Color.TRANSPARENT);
 		mMoistureSparkView.setLineColor(Color.WHITE);
 		
-		mMoistureTextView = (TextView) mView.findViewById(R.id.moistureTextView);
-		mMoistureTextView.setText(Float.toString(((GrowSensor)mSensor).getMoisture()));
+		mMoistureTextView = (MoistureTextView) mView.findViewById(R.id.moistureTextView);
+		
+		mMoisturePercentageTextView = (TextView) mView.findViewById(R.id.moisturePercentageTextView);
+		
+		mReCalibrateTextView = (TextView) mView.findViewById(R.id.reCalibrateTextView);
+		mReCalibrateTextView.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				reCalibrateAction();
+			}
+		});
 		
 		mMoistureAlarmLayout = (LinearLayout) mView.findViewById(R.id.moistureAlarmLayout);
 		
@@ -173,8 +192,8 @@ public class GrowSensorFragment extends SensorFragment {
 		mTemperatureSparkView.setBackgroundColor(Color.TRANSPARENT);
 		mTemperatureSparkView.setLineColor(Color.WHITE);
 		
-		mTemperatureTextView = (TextView) mView.findViewById(R.id.temperatureTextView);
-		mTemperatureTextView.setText(Float.toString(((GrowSensor)mSensor).getTemperature()));
+		mTemperatureTextView = (TemperatureValueView) mView.findViewById(R.id.temperatureTextView);
+		mTemperatureTextView.setTemperature(((GrowSensor)mSensor).getTemperature());
 		
 		mTemperatureAlarmLayout = (LinearLayout) mView.findViewById(R.id.temperatureAlarmLayout);
 		
@@ -241,6 +260,8 @@ public class GrowSensorFragment extends SensorFragment {
 			mSensor.addChangeListener(this, GrowSensor.SENSOR_FIELD_GROW_TEMPERATURE_ALARM_SET);
 			mSensor.addChangeListener(this, GrowSensor.SENSOR_FIELD_GROW_TEMPERATURE_ALARM_LOW);
 			mSensor.addChangeListener(this, GrowSensor.SENSOR_FIELD_GROW_TEMPERATURE_ALARM_HIGH);
+			
+			mSensor.addChangeListener(this, GrowSensor.SENSOR_FIELD_GROW_CALIBRATION_STATE);
 		}
 	}
 	
@@ -257,6 +278,8 @@ public class GrowSensorFragment extends SensorFragment {
 			@Override
 			public void run() {
 				String propertyName = event.getPropertyName();
+				GrowSensor sensor = (GrowSensor)mSensor;
+				
 				if (Sensor.SENSOR_FIELD_DEVICE.equals(propertyName)) {
 					if (event.getNewValue() == null) {
 						mLightTextView.setText(getString(R.string.sensor_two_hyphens));
@@ -270,26 +293,41 @@ public class GrowSensorFragment extends SensorFragment {
 						mLightAlarmLayout.setVisibility(View.VISIBLE);
 						mMoistureAlarmLayout.setVisibility(View.VISIBLE);
 	        			mTemperatureAlarmLayout.setVisibility(View.VISIBLE);
+	        			
+	        			mTemperatureTextView.setTemperature(sensor.getTemperature());
+	        			
+	        			mMoistureTextView.setMoistureCalibration(sensor.getMoisture(), sensor.getHumidityLowCalibration(), sensor.getHumidityHighCalibration());
+	        			if ((sensor.getHumidityLowCalibration() != null) && (sensor.getHumidityHighCalibration() != null)) {
+	        				mMoisturePercentageTextView.setVisibility(View.INVISIBLE);
+	        				mReCalibrateTextView.setVisibility(View.VISIBLE);
+	        			} else {
+	        				mMoisturePercentageTextView.setVisibility(View.VISIBLE);
+	        				mReCalibrateTextView.setVisibility(View.INVISIBLE);
+	        				
+	        				reCalibrateAction();
+	        			}
+	        			
+	        			mLightTextView.setText(String.format(Locale.US, "%.01f", sensor.getLight()));
 					}
 				} else if (GrowSensor.SENSOR_FIELD_GROW_LIGHT.equals(propertyName)) {
 					mLightTextView.setText(String.format(Locale.US, "%.01f", event.getNewValue()));
 					mLightSparkView.invalidate();
-					if(((GrowSensor)mSensor).isLightAlarmSet() && outOfRange((Float)event.getNewValue(), 
-							((GrowSensor)mSensor).getLightAlarmHigh(), ((GrowSensor)mSensor).getLightAlarmLow())) {
-						showAlert(getString(R.string.sensor_grow_alert_light));
-					}
+//					if(sensor.isLightAlarmSet() && outOfRange((Float)event.getNewValue(), 
+//							sensor.getLightAlarmHigh(), sensor.getLightAlarmLow())) {
+//						showAlert(getString(R.string.sensor_grow_alert_light));
+//					}
 				} else if (GrowSensor.SENSOR_FIELD_GROW_MOISTURE.equals(propertyName)) {
-					mMoistureTextView.setText(String.format(Locale.US, "%.01f", event.getNewValue()));
-					if(((GrowSensor)mSensor).isMoistureAlarmSet() && outOfRange((Float)event.getNewValue(), 
-							((GrowSensor)mSensor).getMoistureAlarmHigh(), ((GrowSensor)mSensor).getMoistureAlarmLow())) {
-						showAlert(getString(R.string.sensor_grow_alert_moisture));
-					}
+					mMoistureTextView.setMoistureCalibration((Float)event.getNewValue(), sensor.getHumidityLowCalibration(), sensor.getHumidityHighCalibration());
+//					if(sensor.isMoistureAlarmSet() && outOfRange((Float)event.getNewValue(), 
+//							sensor.getMoistureAlarmHigh(), sensor.getMoistureAlarmLow())) {
+//						showAlert(getString(R.string.sensor_grow_alert_moisture));
+//					}
 				} else if (GrowSensor.SENSOR_FIELD_GROW_TEMPERATURE.equals(propertyName)) {
 					mTemperatureTextView.setText(String.format(Locale.US, "%.01f", event.getNewValue()));
-					if(((GrowSensor)mSensor).isTemperatureAlarmSet() && outOfRange((Float)event.getNewValue(), 
-							((GrowSensor)mSensor).getTemperatureAlarmHigh(), ((GrowSensor)mSensor).getTemperatureAlarmLow())) {
-						showAlert(getString(R.string.sensor_grow_alert_temperature));
-					}
+//					if(sensor.isTemperatureAlarmSet() && outOfRange((Float)event.getNewValue(), 
+//							sensor.getTemperatureAlarmHigh(), sensor.getTemperatureAlarmLow())) {
+//						showAlert(getString(R.string.sensor_grow_alert_temperature));
+//					}
 				} else if (GrowSensor.SENSOR_FIELD_GROW_LIGHT_ALARM_SET.equals(propertyName)) {
 					mLightSwitch.setChecked(((Boolean)event.getNewValue()).booleanValue());
 				} else if (GrowSensor.SENSOR_FIELD_GROW_LIGHT_ALARM_LOW.equals(propertyName)) {
@@ -308,6 +346,24 @@ public class GrowSensorFragment extends SensorFragment {
 					mTemperatureAlarmLowTextView.setText(String.format(Locale.US, "%.01f", event.getNewValue()));
 				} else if (GrowSensor.SENSOR_FIELD_GROW_TEMPERATURE_ALARM_HIGH.equals(propertyName)) {
 					mTemperatureAlarmHighTextView.setText(String.format(Locale.US, "%.01f", event.getNewValue()));
+				} else if (GrowSensor.SENSOR_FIELD_GROW_CALIBRATION_STATE.equals(propertyName)) {
+					Log.e("GrowCalibrationState", "changed");
+					if (sensor.getCalibrationState() == GrowCalibrationState.HIGH_VALUE_FINISHED) {
+						showCalibrationEndAlert();
+					} else if (sensor.getCalibrationState() == GrowCalibrationState.LOW_VALUE_FINISHED) {
+						mMoistureTextView.setMoistureCalibration(sensor.getMoisture(), sensor.getHumidityLowCalibration(), sensor.getHumidityHighCalibration());
+						if ((sensor.getHumidityLowCalibration() != null) && (sensor.getHumidityHighCalibration() != null)) {
+	        				mMoisturePercentageTextView.setVisibility(View.INVISIBLE);
+	        				mReCalibrateTextView.setVisibility(View.VISIBLE);
+	        			} else {
+	        				mMoisturePercentageTextView.setVisibility(View.VISIBLE);
+	        				mReCalibrateTextView.setVisibility(View.INVISIBLE);
+	        			}
+						
+						sensor.setCalibrationState(GrowCalibrationState.DEFAULT);
+					}
+					
+					mReCalibrateTextView.setVisibility((sensor.getCalibrationState() == GrowCalibrationState.DEFAULT) ? View.VISIBLE : View.INVISIBLE);
 				}
 			}
 		});
@@ -338,5 +394,34 @@ public class GrowSensorFragment extends SensorFragment {
 		mAlarmTemperaturePickerView.setSelectedMaxValue(((GrowSensor)mSensor).getTemperatureAlarmHigh());
 		
 		mAlarmTemperaturePickerView.show();
+	}
+	
+	private void reCalibrateAction() {
+		((GrowSensor)mSensor).setHumidityLowCalibration(null);
+		((GrowSensor)mSensor).setHumidityHighCalibration(null);
+		
+		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+		builder.setMessage("Place the device in dry soil.");
+		builder.setPositiveButton("Next", new DialogInterface.OnClickListener() {		
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				((GrowSensor)mSensor).setCalibrationState(GrowCalibrationState.HIGH_VALUE_STARTED);
+			}
+		});
+		builder.setCancelable(false);
+		builder.create().show();
+	}
+	
+	private void showCalibrationEndAlert() {
+		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+		builder.setMessage("Pour water over the soil, then wait a few seconds.");
+		builder.setPositiveButton("Finish", new DialogInterface.OnClickListener() {		
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				((GrowSensor)mSensor).setCalibrationState(GrowCalibrationState.LOW_VALUE_STARTED);
+			}
+		});
+		builder.setCancelable(false);
+		builder.create().show();
 	}
 }

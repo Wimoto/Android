@@ -1,9 +1,13 @@
 package com.wimoto.app.model;
 
 import java.math.BigInteger;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
 
 import android.bluetooth.BluetoothGattCharacteristic;
+import android.os.Handler;
+import android.util.Log;
 
 import com.wimoto.app.AppContext;
 import com.wimoto.app.R;
@@ -12,20 +16,24 @@ import com.wimoto.app.bluetooth.WimotoDevice.State;
 
 public class GrowSensor extends Sensor {
 
-	public static final String SENSOR_FIELD_GROW_LIGHT						= "GrowLight";
-	public static final String SENSOR_FIELD_GROW_LIGHT_ALARM_SET			= "GrowLightAlarmSet";
-	public static final String SENSOR_FIELD_GROW_LIGHT_ALARM_LOW			= "GrowLightAlarmLow";
-	public static final String SENSOR_FIELD_GROW_LIGHT_ALARM_HIGH			= "GrowLightAlarmHigh";
+	public static final String SENSOR_FIELD_GROW_LIGHT						= "mLight";
+	public static final String SENSOR_FIELD_GROW_LIGHT_ALARM_SET			= "mLightAlarmSet";
+	public static final String SENSOR_FIELD_GROW_LIGHT_ALARM_LOW			= "mLightAlarmLow";
+	public static final String SENSOR_FIELD_GROW_LIGHT_ALARM_HIGH			= "mLightAlarmHigh";
 	
-	public static final String SENSOR_FIELD_GROW_MOISTURE					= "GrowMoisture";
-	public static final String SENSOR_FIELD_GROW_MOISTURE_ALARM_SET			= "GrowMoistureAlarmSet";
-	public static final String SENSOR_FIELD_GROW_MOISTURE_ALARM_LOW			= "GrowMoistureAlarmLow";
-	public static final String SENSOR_FIELD_GROW_MOISTURE_ALARM_HIGH		= "GrowMoistureAlarmHigh";
+	public static final String SENSOR_FIELD_GROW_MOISTURE					= "mMoisture";
+	public static final String SENSOR_FIELD_GROW_MOISTURE_ALARM_SET			= "mMoistureAlarmSet";
+	public static final String SENSOR_FIELD_GROW_MOISTURE_ALARM_LOW			= "mMoistureAlarmLow";
+	public static final String SENSOR_FIELD_GROW_MOISTURE_ALARM_HIGH		= "mMoistureAlarmHigh";
 
-	public static final String SENSOR_FIELD_GROW_TEMPERATURE				= "GrowTemperature";
-	public static final String SENSOR_FIELD_GROW_TEMPERATURE_ALARM_SET		= "GrowTemperatureAlarmSet";
-	public static final String SENSOR_FIELD_GROW_TEMPERATURE_ALARM_LOW		= "GrowTemperatureAlarmLow";
-	public static final String SENSOR_FIELD_GROW_TEMPERATURE_ALARM_HIGH		= "GrowTemperatureAlarmHigh";
+	public static final String SENSOR_FIELD_GROW_TEMPERATURE				= "mTemperature";
+	public static final String SENSOR_FIELD_GROW_TEMPERATURE_ALARM_SET		= "mTemperatureAlarmSet";
+	public static final String SENSOR_FIELD_GROW_TEMPERATURE_ALARM_LOW		= "mTemperatureAlarmLow";
+	public static final String SENSOR_FIELD_GROW_TEMPERATURE_ALARM_HIGH		= "mTemperatureAlarmHigh";
+	
+	public static final String SENSOR_FIELD_GROW_CALIBRATION_STATE			= "mCalibrationState";
+	public static final String SENSOR_FIELD_GROW_CALIBRATION_LOW			= "mLowHumidityCalibration";
+	public static final String SENSOR_FIELD_GROW_CALIBRATION_HIGH			= "mHighHumidityCalibration";
 	
 	public static final String BLE_GROW_AD_SERVICE_UUID_LIGHT 				= "0000470C-0000-1000-8000-00805F9B34FB";
 	
@@ -54,6 +62,27 @@ public class GrowSensor extends Sensor {
 	private static final String BLE_GROW_CHAR_UUID_TEMPERATURE_ALARM_SET	= "DAF4470A-BFB0-4DD8-9293-62AF5F545E31";
 	private static final String BLE_GROW_CHAR_UUID_TEMPERATURE_ALARM		= "DAF4470B-BFB0-4DD8-9293-62AF5F545E31";
 
+	public enum GrowCalibrationState {
+		DEFAULT(0),
+		LOW_VALUE_STARTED(1),
+		LOW_VALUE_IN_PROGRESS(2),
+		LOW_VALUE_FINISHED(3),
+		HIGH_VALUE_STARTED(4),
+		HIGH_VALUE_IN_PROGRESS(5),
+		HIGH_VALUE_FINISHED(6),
+		COMPLETED(7);
+		
+		private int value;
+		
+		private GrowCalibrationState(int value) {
+			this.value = value;
+		}
+		
+		public int getValue() {
+			return value;
+		}
+	}
+	
 	private float mLight;
 	private float mMoisture;
 	private float mTemperature;
@@ -70,6 +99,10 @@ public class GrowSensor extends Sensor {
 	private float mTemperatureAlarmLow;
 	private float mTemperatureAlarmHigh;
 	
+	private GrowCalibrationState mCalibrationState;
+	private Number mLowHumidityCalibration;
+	private Number mHighHumidityCalibration;
+	
 	public GrowSensor(AppContext context) {
 		super(context);
 		
@@ -78,6 +111,8 @@ public class GrowSensor extends Sensor {
 		mSensorValues.put(SENSOR_FIELD_GROW_LIGHT, new LinkedList<Float>());
 		mSensorValues.put(SENSOR_FIELD_GROW_MOISTURE, new LinkedList<Float>());
 		mSensorValues.put(SENSOR_FIELD_GROW_TEMPERATURE, new LinkedList<Float>());
+		
+		mCalibrationState = GrowCalibrationState.DEFAULT;
 	}
 
 	public WimotoDevice.Profile getProfile() {
@@ -228,6 +263,92 @@ public class GrowSensor extends Sensor {
 		}
 	}
 	
+	public void setCalibrationState(GrowCalibrationState state) {
+		GrowCalibrationState previousState = mCalibrationState;
+		mCalibrationState = state;
+		notifyObservers(SENSOR_FIELD_GROW_CALIBRATION_STATE, previousState, mCalibrationState);
+		
+		if ((previousState == GrowCalibrationState.DEFAULT) && (mCalibrationState == GrowCalibrationState.HIGH_VALUE_STARTED)) {
+			if (mWimotoDevice != null) {
+				byte[] bytes = {(byte) 0xFF};
+				mWimotoDevice.writeCharacteristic(BLE_GROW_SERVICE_UUID_MOISTURE, BLE_GROW_CHAR_UUID_MOISTURE_ALARM_HIGH, bytes);
+				new Handler().postDelayed(new Runnable() {
+					@Override
+					public void run() {
+						mWimotoDevice.readCharacteristic(BLE_GROW_SERVICE_UUID_MOISTURE, BLE_GROW_CHAR_UUID_MOISTURE_CURRENT);
+					}
+				}, 2000);
+			}
+		} else if (mCalibrationState == GrowCalibrationState.LOW_VALUE_STARTED) {
+			if (mWimotoDevice != null) {
+				byte[] bytes = {(byte) 0x00};
+				mWimotoDevice.writeCharacteristic(BLE_GROW_SERVICE_UUID_MOISTURE, BLE_GROW_CHAR_UUID_MOISTURE_ALARM_LOW, bytes);
+			}
+		}
+	}
+	
+	public GrowCalibrationState getCalibrationState() {
+		return mCalibrationState;
+	}
+	
+	public Number getHumidityLowCalibration() {
+		try {
+			return (Number) mDocument.getProperties().get(SENSOR_FIELD_GROW_CALIBRATION_LOW);
+		} catch (Exception e) { 
+			return null;
+		}
+	}
+	
+	public void setHumidityLowCalibration (Number lowCalibrationValue) {
+		notifyObservers(SENSOR_FIELD_GROW_CALIBRATION_LOW, mLowHumidityCalibration, lowCalibrationValue);
+		
+		mLowHumidityCalibration = lowCalibrationValue;
+	
+		if (mDocument != null) {
+			Map<String, Object> currentProperties = mDocument.getProperties();
+
+			Map<String, Object> newProperties = new HashMap<String, Object>();
+			newProperties.putAll(currentProperties);
+
+			newProperties.put(SENSOR_FIELD_GROW_CALIBRATION_LOW, mLowHumidityCalibration);
+			
+			try {
+				mDocument.putProperties(newProperties);
+			} catch (Exception e) {
+				// TODO catch exception
+			}
+		}		
+	}
+	
+	public Number getHumidityHighCalibration() {
+		try {
+			return (Number) mDocument.getProperties().get(SENSOR_FIELD_GROW_CALIBRATION_HIGH);
+		} catch (Exception e) { 
+			return null;
+		}
+	}
+	
+	public void setHumidityHighCalibration (Number highCalibrationValue) {
+		notifyObservers(SENSOR_FIELD_GROW_CALIBRATION_HIGH, mHighHumidityCalibration, highCalibrationValue);
+		
+		mHighHumidityCalibration = highCalibrationValue;
+	
+		if (mDocument != null) {
+			Map<String, Object> currentProperties = mDocument.getProperties();
+
+			Map<String, Object> newProperties = new HashMap<String, Object>();
+			newProperties.putAll(currentProperties);
+
+			newProperties.put(SENSOR_FIELD_GROW_CALIBRATION_HIGH, mHighHumidityCalibration);
+			
+			try {
+				mDocument.putProperties(newProperties);
+			} catch (Exception e) {
+				// TODO catch exception
+			}
+		}	
+	}
+	
 	private float getPhysicalTemperature(BigInteger temperature) {
 		int sensorTemperature = temperature.intValue();
 		float converted_temp = 0;
@@ -294,7 +415,16 @@ public class GrowSensor extends Sensor {
 		if (uuid.equals(BLE_GROW_CHAR_UUID_LIGHT_CURRENT)) {
 			setLight(bi.floatValue());				
 		} else if (uuid.equals(BLE_GROW_CHAR_UUID_MOISTURE_CURRENT)) {
-			setMoisture(bi.floatValue());				
+			setMoisture(roundToOne(bi.floatValue()));
+			if (mCalibrationState == GrowCalibrationState.LOW_VALUE_IN_PROGRESS) {
+				setHumidityLowCalibration(roundToOne(bi.floatValue()));
+				setCalibrationState(GrowCalibrationState.LOW_VALUE_FINISHED);
+				Log.e("GrowCalibrationState", "GrowCalibrationState.LOW_VALUE_FINISHED");
+			} else if (mCalibrationState == GrowCalibrationState.HIGH_VALUE_IN_PROGRESS) {
+				setHumidityHighCalibration(roundToOne(bi.floatValue()));
+				setCalibrationState(GrowCalibrationState.HIGH_VALUE_FINISHED);
+				Log.e("GrowCalibrationState", "GrowCalibrationState.HIGH_VALUE_FINISHED");
+			} 
 		} else if (uuid.equals(BLE_GROW_CHAR_UUID_TEMPERATURE_CURRENT)) {
 			setTemperature(getPhysicalTemperature(bi));			
 		} else if (uuid.equals(BLE_GROW_CHAR_UUID_LIGHT_ALARM_SET)) {
@@ -315,6 +445,24 @@ public class GrowSensor extends Sensor {
 			setTemperatureAlarmLow(getPhysicalTemperature(bi), false);
 		} else if (uuid.equals(BLE_GROW_CHAR_UUID_TEMPERATURE_ALARM_HIGH)) {
 			setTemperatureAlarmHigh(getPhysicalTemperature(bi), false);
+		}
+	}
+	
+	@Override
+	public void onCharacteristicWritten(BluetoothGattCharacteristic characteristic) {
+		super.onCharacteristicWritten(characteristic);
+		
+		String uuid = characteristic.getUuid().toString().toUpperCase();
+		if (uuid.equals(BLE_GROW_CHAR_UUID_MOISTURE_ALARM_HIGH)) {
+			if (mCalibrationState == GrowCalibrationState.HIGH_VALUE_STARTED) {
+				Log.e("GrowCalibrationState", "GrowCalibrationState.HIGH_VALUE_IN_PROGRESS");
+				setCalibrationState(GrowCalibrationState.HIGH_VALUE_IN_PROGRESS);
+			} 
+		} else if (uuid.equals(BLE_GROW_CHAR_UUID_MOISTURE_ALARM_LOW)) {
+			if (mCalibrationState == GrowCalibrationState.LOW_VALUE_STARTED) {
+				Log.e("GrowCalibrationState", "GrowCalibrationState.LOW_VALUE_IN_PROGRESS");
+				setCalibrationState(GrowCalibrationState.LOW_VALUE_IN_PROGRESS);
+			} 
 		}
 	}
 }

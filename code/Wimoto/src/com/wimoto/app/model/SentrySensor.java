@@ -331,9 +331,7 @@ public class SentrySensor extends Sensor {
 			Log.e("infrared", "alarm");
 		}
 	}
-	
-	
-	
+
 	public boolean checkAccelerometerAlarm() {
 		if (getAccelerometerAlarmEnabledTime() == null || getAccelerometerAlarmDisabledTime() == null) {
 			return false;
