@@ -129,9 +129,7 @@ public abstract class Sensor extends PropertyObservable implements Observer, Wim
 //	}
 
 	public void connectDevice(WimotoDevice device) {
-		notifyObservers(SENSOR_FIELD_DEVICE, mWimotoDevice, device);
-		mWimotoDevice = device;
-		
+		mWimotoDevice = device; 
 		mWimotoDevice.connect(this);
 	}
 	
@@ -170,7 +168,6 @@ public abstract class Sensor extends PropertyObservable implements Observer, Wim
 	
 	public void setState(State state) {
 		notifyObservers(SENSOR_FIELD_STATE, (mState == null) ? 0: mState.getValue(), (state == null) ? 0: state.getValue());
-		
 		mState = state;
 	}
 		

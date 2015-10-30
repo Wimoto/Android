@@ -4,6 +4,7 @@ import java.beans.PropertyChangeEvent;
 import java.util.Locale;
 
 import android.app.AlertDialog;
+import android.bluetooth.BluetoothProfile;
 import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -278,18 +279,12 @@ public class GrowSensorFragment extends SensorFragment {
 			@Override
 			public void run() {
 				String propertyName = event.getPropertyName();
+				Object newValue = event.getNewValue();
 				GrowSensor sensor = (GrowSensor)mSensor;
 				
-				if (Sensor.SENSOR_FIELD_DEVICE.equals(propertyName)) {
-					if (event.getNewValue() == null) {
-						mLightTextView.setText(getString(R.string.sensor_two_hyphens));
-						mMoistureTextView.setText(getString(R.string.sensor_two_hyphens));
-						mTemperatureTextView.setText(getString(R.string.sensor_two_hyphens));
-	        			
-						mLightAlarmLayout.setVisibility(View.INVISIBLE);
-						mMoistureAlarmLayout.setVisibility(View.INVISIBLE);
-	        			mTemperatureAlarmLayout.setVisibility(View.INVISIBLE);
-					} else {
+				if (Sensor.SENSOR_FIELD_STATE.equals(propertyName)) {
+					int state = getConnectionState(newValue);
+					if (state == BluetoothProfile.STATE_CONNECTED) {
 						mLightAlarmLayout.setVisibility(View.VISIBLE);
 						mMoistureAlarmLayout.setVisibility(View.VISIBLE);
 	        			mTemperatureAlarmLayout.setVisibility(View.VISIBLE);
@@ -308,6 +303,14 @@ public class GrowSensorFragment extends SensorFragment {
 	        			}
 	        			
 	        			mLightTextView.setText(String.format(Locale.US, "%.01f", sensor.getLight()));
+					} else {
+						mLightTextView.setText(getString(R.string.sensor_two_hyphens));
+						mMoistureTextView.setText(getString(R.string.sensor_two_hyphens));
+						mTemperatureTextView.setText(getString(R.string.sensor_two_hyphens));
+	        			
+						mLightAlarmLayout.setVisibility(View.INVISIBLE);
+						mMoistureAlarmLayout.setVisibility(View.INVISIBLE);
+	        			mTemperatureAlarmLayout.setVisibility(View.INVISIBLE);
 					}
 				} else if (GrowSensor.SENSOR_FIELD_GROW_LIGHT.equals(propertyName)) {
 					mLightTextView.setText(String.format(Locale.US, "%.01f", event.getNewValue()));

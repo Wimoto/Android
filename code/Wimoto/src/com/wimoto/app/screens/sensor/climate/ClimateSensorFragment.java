@@ -3,6 +3,7 @@ package com.wimoto.app.screens.sensor.climate;
 import java.beans.PropertyChangeEvent;
 import java.util.Locale;
 
+import android.bluetooth.BluetoothProfile;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -279,8 +280,16 @@ public class ClimateSensorFragment extends SensorFragment {
 			@Override
 			public void run() {
 				String propertyName = event.getPropertyName();
-				if (Sensor.SENSOR_FIELD_DEVICE.equals(propertyName)) {
-					if (event.getNewValue() == null) {
+				Object newValue = event.getNewValue();
+				ClimateSensor sensor = (ClimateSensor)mSensor;
+				
+				if (Sensor.SENSOR_FIELD_STATE.equals(propertyName)) {
+					int state = getConnectionState(newValue);
+					if (state == BluetoothProfile.STATE_CONNECTED) {
+						mTemperatureAlarmLayout.setVisibility(View.VISIBLE);
+	        			mHumidityAlarmLayout.setVisibility(View.VISIBLE);
+	        			mLightAlarmLayout.setVisibility(View.VISIBLE);
+					} else {
 						mTemperatureTextView.setText(getString(R.string.sensor_two_hyphens));
 	        			mHumidityTextView.setText(getString(R.string.sensor_two_hyphens));
 	        			mLightTextView.setText(getString(R.string.sensor_two_hyphens));
@@ -288,51 +297,47 @@ public class ClimateSensorFragment extends SensorFragment {
 	        			mTemperatureAlarmLayout.setVisibility(View.INVISIBLE);
 	        			mHumidityAlarmLayout.setVisibility(View.INVISIBLE);
 	        			mLightAlarmLayout.setVisibility(View.INVISIBLE);
-					} else {
-	        			mTemperatureAlarmLayout.setVisibility(View.VISIBLE);
-	        			mHumidityAlarmLayout.setVisibility(View.VISIBLE);
-	        			mLightAlarmLayout.setVisibility(View.VISIBLE);
 					}
 				} else {
 					if (ClimateSensor.SENSOR_FIELD_CLIMATE_TEMPERATURE.equals(propertyName)) {
-						mTemperatureTextView.setTemperature((Float)event.getNewValue());
+						mTemperatureTextView.setTemperature((Float)newValue);
 						mTemperatureSparkView.invalidate();
-						if(((ClimateSensor)mSensor).isTemperatureAlarmSet() && outOfRange((Float)event.getNewValue(), 
-								((ClimateSensor)mSensor).getTemperatureAlarmHigh(), ((ClimateSensor)mSensor).getTemperatureAlarmLow())) {
+						if(sensor.isTemperatureAlarmSet() && outOfRange((Float)newValue, 
+								sensor.getTemperatureAlarmHigh(), sensor.getTemperatureAlarmLow())) {
 							showAlert(getString(R.string.sensor_climate_alert_temperature));
 						}
 					} else if (ClimateSensor.SENSOR_FIELD_CLIMATE_HUMIDITY.equals(propertyName)) {
-						mHumidityTextView.setText(String.format(Locale.US, "%.01f", event.getNewValue()));
+						mHumidityTextView.setText(String.format(Locale.US, "%.01f", newValue));
 						mHumiditySparkView.invalidate();
-						if(((ClimateSensor)mSensor).isHumidityAlarmSet() && outOfRange((Float)event.getNewValue(), 
-								((ClimateSensor)mSensor).getHumidityAlarmHigh(), ((ClimateSensor)mSensor).getHumidityAlarmLow())) {
+						if(sensor.isHumidityAlarmSet() && outOfRange((Float)newValue, 
+								sensor.getHumidityAlarmHigh(), sensor.getHumidityAlarmLow())) {
 							showAlert(getString(R.string.sensor_climate_alert_humidity));
 						}
 					} else if (ClimateSensor.SENSOR_FIELD_CLIMATE_LIGHT.equals(propertyName)) {
-						mLightTextView.setText(String.format(Locale.US, "%.01f", event.getNewValue()));
+						mLightTextView.setText(String.format(Locale.US, "%.01f", newValue));
 						mLightSparkView.invalidate();
-						if(((ClimateSensor)mSensor).isLightAlarmSet() && outOfRange((Float)event.getNewValue(), 
-								((ClimateSensor)mSensor).getLightAlarmHigh(), ((ClimateSensor)mSensor).getLightAlarmLow())) {
+						if(sensor.isLightAlarmSet() && outOfRange((Float)newValue, 
+								sensor.getLightAlarmHigh(), sensor.getLightAlarmLow())) {
 							showAlert(getString(R.string.sensor_climate_alert_light));
 						}
 					} else if (ClimateSensor.SENSOR_FIELD_CLIMATE_TEMPERATURE_ALARM_SET.equals(propertyName)) {
-						mTemperatureSwitch.setChecked(((Boolean)event.getNewValue()).booleanValue());
+						mTemperatureSwitch.setChecked(((Boolean)newValue).booleanValue());
 					} else if (ClimateSensor.SENSOR_FIELD_CLIMATE_TEMPERATURE_ALARM_LOW.equals(propertyName)) {
-						mTemperatureAlarmLowTextView.setTemperature((Float)event.getNewValue());
+						mTemperatureAlarmLowTextView.setTemperature((Float)newValue);
 					} else if (ClimateSensor.SENSOR_FIELD_CLIMATE_TEMPERATURE_ALARM_HIGH.equals(propertyName)) {
-						mTemperatureAlarmHighTextView.setTemperature((Float)event.getNewValue());
+						mTemperatureAlarmHighTextView.setTemperature((Float)newValue);
 					} else if (ClimateSensor.SENSOR_FIELD_CLIMATE_HUMIDITY_ALARM_SET.equals(propertyName)) {
-						mHumiditySwitch.setChecked(((Boolean)event.getNewValue()).booleanValue());
+						mHumiditySwitch.setChecked(((Boolean)newValue).booleanValue());
 					} else if (ClimateSensor.SENSOR_FIELD_CLIMATE_HUMIDITY_ALARM_LOW.equals(propertyName)) {
-						mHumidityAlarmLowTextView.setText(String.format(Locale.US, "%.01f", event.getNewValue()));
+						mHumidityAlarmLowTextView.setText(String.format(Locale.US, "%.01f", newValue));
 					} else if (ClimateSensor.SENSOR_FIELD_CLIMATE_HUMIDITY_ALARM_HIGH.equals(propertyName)) {
-						mHumidityAlarmHighTextView.setText(String.format(Locale.US, "%.01f", event.getNewValue()));
+						mHumidityAlarmHighTextView.setText(String.format(Locale.US, "%.01f", newValue));
 					} else if (ClimateSensor.SENSOR_FIELD_CLIMATE_LIGHT_ALARM_SET.equals(propertyName)) {
-						mLightSwitch.setChecked(((Boolean)event.getNewValue()).booleanValue());
+						mLightSwitch.setChecked(((Boolean)newValue).booleanValue());
 					} else if (ClimateSensor.SENSOR_FIELD_CLIMATE_LIGHT_ALARM_LOW.equals(propertyName)) {
-						mLightAlarmLowTextView.setText(String.format(Locale.US, "%.01f", event.getNewValue()));
+						mLightAlarmLowTextView.setText(String.format(Locale.US, "%.01f", newValue));
 					} else if (ClimateSensor.SENSOR_FIELD_CLIMATE_LIGHT_ALARM_HIGH.equals(propertyName)) {
-						mLightAlarmHighTextView.setText(String.format(Locale.US, "%.01f", event.getNewValue()));
+						mLightAlarmHighTextView.setText(String.format(Locale.US, "%.01f", newValue));
 					}					
 				}
 			}

@@ -3,6 +3,7 @@ package com.wimoto.app.screens.sensor.water;
 import java.beans.PropertyChangeEvent;
 import java.util.Locale;
 
+import android.bluetooth.BluetoothProfile;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -153,37 +154,41 @@ public class WaterSensorFragment extends SensorFragment {
 			@Override
 			public void run() {
 				String propertyName = event.getPropertyName();
-				if (Sensor.SENSOR_FIELD_CONNECTION.equals(propertyName)) {
-					if (event.getNewValue() == null) {
+				Object newValue = event.getNewValue();
+				WaterSensor sensor = (WaterSensor)mSensor;
+				
+				if (Sensor.SENSOR_FIELD_STATE.equals(propertyName)) {
+					int state = getConnectionState(newValue);
+					if (state == BluetoothProfile.STATE_CONNECTED) {
+						mContactAlarmLayout.setVisibility(View.VISIBLE);
+						mLevelAlarmLayout.setVisibility(View.VISIBLE);
+					} else {
 						mContactTextView.setText(getString(R.string.sensor_two_hyphens));
 						mLevelTextView.setText(getString(R.string.sensor_two_hyphens));
 	        			
 						mContactAlarmLayout.setVisibility(View.INVISIBLE);
 	        			mLevelAlarmLayout.setVisibility(View.INVISIBLE);
-					} else {
-						mContactAlarmLayout.setVisibility(View.VISIBLE);
-						mLevelAlarmLayout.setVisibility(View.VISIBLE);
 					}
 				} else if (WaterSensor.SENSOR_FIELD_WATER_CONTACT.equals(propertyName)) {
-					mContactTextView.setText(String.format(Locale.US, "%.01f", event.getNewValue()));
+					mContactTextView.setText(String.format(Locale.US, "%.01f", newValue));
 					mContactSparkView.invalidate();
-					if(((WaterSensor)mSensor).isContactAlarmSet()) {
+					if(sensor.isContactAlarmSet()) {
 						showAlert(getString(R.string.sensor_water_alert_contact));
 					}
 				} else if (WaterSensor.SENSOR_FIELD_WATER_LEVEL.equals(propertyName)) {
-					mLevelTextView.setText(String.format(Locale.US, "%.01f", event.getNewValue()));
-					if(((WaterSensor)mSensor).isLevelAlarmSet() && outOfRange((Float)event.getNewValue(), 
-							((WaterSensor)mSensor).getLevelAlarmHigh(), ((WaterSensor)mSensor).getLevelAlarmLow())) {
+					mLevelTextView.setText(String.format(Locale.US, "%.01f", newValue));
+					if(sensor.isLevelAlarmSet() && outOfRange((Float)newValue, 
+							sensor.getLevelAlarmHigh(), sensor.getLevelAlarmLow())) {
 						showAlert(getString(R.string.sensor_water_alert_level));
 					}
 				} else if (WaterSensor.SENSOR_FIELD_WATER_CONTACT_ALARM_SET.equals(propertyName)) {
-					mContactSwitch.setChecked(((Boolean)event.getNewValue()).booleanValue());
+					mContactSwitch.setChecked(((Boolean)newValue).booleanValue());
 				} else if (WaterSensor.SENSOR_FIELD_WATER_LEVEL_ALARM_SET.equals(propertyName)) {
-					mLevelSwitch.setChecked(((Boolean)event.getNewValue()).booleanValue());
+					mLevelSwitch.setChecked(((Boolean)newValue).booleanValue());
 				} else if (WaterSensor.SENSOR_FIELD_WATER_LEVEL_ALARM_LOW.equals(propertyName)) {
-					mLevelAlarmLowTextView.setText(String.format(Locale.US, "%.01f", event.getNewValue()));
+					mLevelAlarmLowTextView.setText(String.format(Locale.US, "%.01f", newValue));
 				} else if (WaterSensor.SENSOR_FIELD_WATER_LEVEL_ALARM_HIGH.equals(propertyName)) {
-					mLevelAlarmHighTextView.setText(String.format(Locale.US, "%.01f", event.getNewValue()));
+					mLevelAlarmHighTextView.setText(String.format(Locale.US, "%.01f", newValue));
 				} 
 			}
 		});

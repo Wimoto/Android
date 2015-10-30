@@ -3,9 +3,9 @@ package com.wimoto.app.screens.sensor.sentry;
 import java.beans.PropertyChangeEvent;
 import java.util.Date;
 
+import android.bluetooth.BluetoothProfile;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -176,31 +176,35 @@ public class SentrySensorFragment extends SensorFragment {
 			@Override
 			public void run() {
 				String propertyName = event.getPropertyName();
-				if (Sensor.SENSOR_FIELD_DEVICE.equals(propertyName)) {
-					if (event.getNewValue() == null) {
+				Object newValue = event.getNewValue();
+				//SentrySensor sensor = (SentrySensor)mSensor;
+				
+				if (Sensor.SENSOR_FIELD_STATE.equals(propertyName)) {
+					int state = getConnectionState(newValue);
+					if (state == BluetoothProfile.STATE_CONNECTED) {
+						mAccelerometerAlarmLayout.setVisibility(View.VISIBLE);
+						mInfraredAlarmLayout.setVisibility(View.VISIBLE);
+					} else {
 						//mAccelerometerTextView.setText(getString(R.string.sensor_two_hyphens));
 						mInfraredTextView.setText(getString(R.string.sensor_two_hyphens));
 	        			
 						mAccelerometerAlarmLayout.setVisibility(View.INVISIBLE);
 						mInfraredAlarmLayout.setVisibility(View.INVISIBLE);
-					} else {
-						mAccelerometerAlarmLayout.setVisibility(View.VISIBLE);
-						mInfraredAlarmLayout.setVisibility(View.VISIBLE);
 					}
 				} else if (SentrySensor.SENSOR_FIELD_SENTRY_ACCELEROMETER_X.equals(propertyName)) {
-					mAccelerometerXTextView.setText(String.format("%.1f", event.getNewValue()));
+					mAccelerometerXTextView.setText(String.format("%.1f", newValue));
 					
-					//mAccelerometerTextView.setText(String.format("%.01f", event.getNewValue()));
+					//mAccelerometerTextView.setText(String.format("%.01f", newValue));
 					//mAccelerometerSparkView.invalidate();
 //					if(((SentrySensor)mSensor).isAccelerometerAlarmSet()) {
 //						showAlert(getString(R.string.sensor_sentry_alert_accelerometer));
 //					}
 				} else if (SentrySensor.SENSOR_FIELD_SENTRY_ACCELEROMETER_Y.equals(propertyName)) {
-					mAccelerometerYTextView.setText(String.format("%.1f", event.getNewValue()));					
+					mAccelerometerYTextView.setText(String.format("%.1f", newValue));					
 				} else if (SentrySensor.SENSOR_FIELD_SENTRY_ACCELEROMETER_Z.equals(propertyName)) {
-					mAccelerometerZTextView.setText(String.format("%.1f", event.getNewValue()));					
+					mAccelerometerZTextView.setText(String.format("%.1f", newValue));					
 				} else if (SentrySensor.SENSOR_FIELD_SENTRY_PASSIVE_INFRARED.equals(propertyName)) {
-					int value = ((Float) event.getNewValue()).intValue();
+					int value = ((Float) newValue).intValue();
 					if (value == 0) {
 						mInfraredTextView.setText("No movement");
 					} else {
@@ -211,9 +215,9 @@ public class SentrySensorFragment extends SensorFragment {
 //						showAlert(getString(R.string.sensor_sentry_alert_infrared));
 //					}
 				} else if (SentrySensor.SENSOR_FIELD_SENTRY_ACCELEROMETER_ALARM_SET.equals(propertyName)) {
-					mAccelerometerSwitch.setChecked(((Boolean)event.getNewValue()).booleanValue());
+					mAccelerometerSwitch.setChecked(((Boolean)newValue).booleanValue());
 				} else if (SentrySensor.SENSOR_FIELD_SENTRY_PASSIVE_INFRARED_ALARM_SET.equals(propertyName)) {
-					mInfraredSwitch.setChecked(((Boolean)event.getNewValue()).booleanValue());
+					mInfraredSwitch.setChecked(((Boolean)newValue).booleanValue());
 				} 
 				
 //				if(((SentrySensor)mSensor).checkAccelerometerAlarm()) {

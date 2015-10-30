@@ -130,7 +130,6 @@ public abstract class SensorFragment extends PageFragment implements PropertyCha
 		mSensor = sensor;
 		if (mSensor != null) {
 			mSensor.addChangeListener(this, Sensor.SENSOR_FIELD_STATE, true);
-			mSensor.addChangeListener(this, Sensor.SENSOR_FIELD_DEVICE, true);
 			mSensor.addChangeListener(this, Sensor.SENSOR_FIELD_BATTERY_LEVEL);
 			mSensor.addChangeListener(this, Sensor.SENSOR_FIELD_RSSI);
 		}
@@ -174,15 +173,7 @@ public abstract class SensorFragment extends PageFragment implements PropertyCha
 				String propertyName = event.getPropertyName();
 				Object newValue = event.getNewValue();
 				if (Sensor.SENSOR_FIELD_STATE.equals(propertyName)) {
-					int state = 0;
-					if (newValue != null) {
-						if (newValue instanceof Integer) {
-							state = ((Integer) newValue).intValue();
-						} else if (newValue instanceof WimotoDevice.State) {
-							state = ((WimotoDevice.State) newValue).ordinal();
-						}
-					}
-					
+					int state = getConnectionState(newValue);
 					if (state == BluetoothProfile.STATE_CONNECTED) {
 						mView.setBackgroundColor(getResources().getColor(getBackgroundColorRes()));
 						mBatteryImageView.setVisibility(View.VISIBLE);
@@ -201,6 +192,18 @@ public abstract class SensorFragment extends PageFragment implements PropertyCha
 				}	
 			}
 		});
+	}
+	
+	protected int getConnectionState(Object object) {
+		int state = 0;
+		if (object != null) {
+			if (object instanceof Integer) {
+				state = ((Integer) object).intValue();
+			} else if (object instanceof WimotoDevice.State) {
+				state = ((WimotoDevice.State) object).ordinal();
+			}
+		}
+		return state;
 	}
 	
 	protected void showAlarmMessage(final Sensor sensor, final String propertyString, String message) {

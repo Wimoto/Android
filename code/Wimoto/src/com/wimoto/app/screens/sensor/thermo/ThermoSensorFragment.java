@@ -2,6 +2,7 @@ package com.wimoto.app.screens.sensor.thermo;
 
 import java.beans.PropertyChangeEvent;
 
+import android.bluetooth.BluetoothProfile;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -193,43 +194,47 @@ public class ThermoSensorFragment extends SensorFragment {
 			@Override
 			public void run() {
 				String propertyName = event.getPropertyName();
-				if (Sensor.SENSOR_FIELD_DEVICE.equals(propertyName)) {
-					if (event.getNewValue() == null) {
+				Object newValue = event.getNewValue();
+				ThermoSensor sensor = (ThermoSensor)mSensor;
+				
+				if (Sensor.SENSOR_FIELD_STATE.equals(propertyName)) {
+					int state = getConnectionState(newValue);
+					if (state == BluetoothProfile.STATE_CONNECTED) {
+						mTemperatureAlarmLayout.setVisibility(View.VISIBLE);
+	        			mProbeAlarmLayout.setVisibility(View.VISIBLE);
+					} else {
 						mTemperatureTextView.setText(getString(R.string.sensor_two_hyphens));
 	        			mProbeTextView.setText(getString(R.string.sensor_two_hyphens));
 	        			
 	        			mTemperatureAlarmLayout.setVisibility(View.INVISIBLE);
 	        			mProbeAlarmLayout.setVisibility(View.INVISIBLE);
-					} else {
-	        			mTemperatureAlarmLayout.setVisibility(View.VISIBLE);
-	        			mProbeAlarmLayout.setVisibility(View.VISIBLE);
 					}
 				} else if (ThermoSensor.SENSOR_FIELD_THERMO_TEMPERATURE.equals(propertyName)) {
-					mTemperatureTextView.setTemperature((Float)event.getNewValue());
+					mTemperatureTextView.setTemperature((Float)newValue);
 					mTemperatureSparkView.invalidate();
-					if(((ThermoSensor)mSensor).isTemperatureAlarmSet() && outOfRange((Float)event.getNewValue(),
-							((ThermoSensor)mSensor).getTemperatureAlarmHigh(), ((ThermoSensor)mSensor).getTemperatureAlarmLow())) {
+					if(sensor.isTemperatureAlarmSet() && outOfRange((Float)newValue,
+							sensor.getTemperatureAlarmHigh(), sensor.getTemperatureAlarmLow())) {
 						showAlert(getString(R.string.sensor_thermo_alert_temperature));
 					}
 				} else if (ThermoSensor.SENSOR_FIELD_THERMO_PROBE.equals(propertyName)) {
-					mProbeTextView.setTemperature((Float)event.getNewValue());
+					mProbeTextView.setTemperature((Float)newValue);
 					mProbeSparkView.invalidate();
-					if(((ThermoSensor)mSensor).isProbeAlarmSet() && outOfRange((Float)event.getNewValue(), 
-							((ThermoSensor)mSensor).getProbeAlarmHigh(), ((ThermoSensor)mSensor).getProbeAlarmLow())) {
+					if(sensor.isProbeAlarmSet() && outOfRange((Float)newValue, 
+							sensor.getProbeAlarmHigh(), sensor.getProbeAlarmLow())) {
 						showAlert(getString(R.string.sensor_thermo_alert_probe));
 					}
 				}  else if (ThermoSensor.SENSOR_FIELD_THERMO_TEMPERATURE_ALARM_SET.equals(propertyName)) {
-					mTemperatureSwitch.setChecked(((Boolean)event.getNewValue()).booleanValue());
+					mTemperatureSwitch.setChecked(((Boolean)newValue).booleanValue());
 				} else if (ThermoSensor.SENSOR_FIELD_THERMO_TEMPERATURE_ALARM_LOW.equals(propertyName)) {
-					mTemperatureAlarmLowTextView.setTemperature((Float)event.getNewValue());
+					mTemperatureAlarmLowTextView.setTemperature((Float)newValue);
 				} else if (ThermoSensor.SENSOR_FIELD_THERMO_TEMPERATURE_ALARM_HIGH.equals(propertyName)) {
-					mTemperatureAlarmHighTextView.setTemperature((Float)event.getNewValue());
+					mTemperatureAlarmHighTextView.setTemperature((Float)newValue);
 				} else if (ThermoSensor.SENSOR_FIELD_THERMO_PROBE_ALARM_SET.equals(propertyName)) {
-					mProbeSwitch.setChecked(((Boolean)event.getNewValue()).booleanValue());
+					mProbeSwitch.setChecked(((Boolean)newValue).booleanValue());
 				} else if (ThermoSensor.SENSOR_FIELD_THERMO_PROBE_ALARM_LOW.equals(propertyName)) {
-					mProbeAlarmLowTextView.setTemperature((Float)event.getNewValue());
+					mProbeAlarmLowTextView.setTemperature((Float)newValue);
 				} else if (ThermoSensor.SENSOR_FIELD_THERMO_PROBE_ALARM_HIGH.equals(propertyName)) {
-					mProbeAlarmHighTextView.setTemperature((Float)event.getNewValue());
+					mProbeAlarmHighTextView.setTemperature((Float)newValue);
 				} 
 			}
 		});

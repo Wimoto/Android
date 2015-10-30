@@ -161,7 +161,7 @@ public class WimotoDevice {
 	public void connect(WimotoDeviceCallback wimotoDeviceCallback) {
 		mWimotoDeviceCallback = wimotoDeviceCallback;
 		
-		if (mProfile == Profile.CLIMATE_DEMO || mProfile == Profile.THERMO_DEMO) {
+		if (mBluetoothDevice == null) {
 			//mWimotoDeviceCallback.onConnectionStateChange(State.CONNECTED);
 			return;
 		}
