@@ -168,7 +168,7 @@
                         android:layout_weight="1"
                         android:orientation="horizontal" >
 
-                        <TextView
+                        <com.wimoto.app.screens.sensor.grow.MoistureTextView
                             android:id="@+id/moistureTextView"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
@@ -176,14 +176,15 @@
                             android:gravity="center_vertical|right"
                             android:text="@string/sensor_two_hyphens"
                             android:textColor="@color/color_white"
-                            android:textSize="42sp" />
+                            android:textSize="25sp" />
 
                         <TextView
+                            android:id="@+id/moisturePercentageTextView"
                             android:layout_width="33dp"
                             android:layout_height="wrap_content"
                             android:layout_gravity="top"
                             android:layout_marginLeft="5dp"
-                            android:text="@string/sensor_empty"
+                            android:text="@string/sensor_percent"
                             android:textColor="@color/color_white"
                             android:textSize="24sp" />
                     </LinearLayout>
@@ -195,11 +196,23 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="right"
                     android:layout_marginTop="5dp"
+                    android:gravity="center"
                     android:orientation="horizontal" >
 
+                    <TextView
+                        android:id="@+id/reCalibrateTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:text="Re-Calibrate"
+                        android:textColor="@color/color_white"
+                        android:textSize="17sp"
+                        android:visibility="invisible" />
+                    
                     <ImageView
                         android:layout_width="32dp"
                         android:layout_height="32dp"
+                        android:layout_marginLeft="10dp"
                         android:layout_gravity="center"
                         android:src="@drawable/alarm_clock_white" />
 
@@ -275,7 +288,7 @@
                         android:layout_weight="1"
                         android:orientation="horizontal" >
 
-                        <TextView
+                        <com.wimoto.app.widgets.temperature.TemperatureValueView
                             android:id="@+id/temperatureTextView"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
