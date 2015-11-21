@@ -5,7 +5,7 @@ import java.util.Locale;
 import android.content.Context;
 import android.util.AttributeSet;
 
-import com.wimoto.app.model.Sensor;
+import com.wimoto.app.model.sensors.Sensor;
 
 public class TemperatureValueTextView extends TemperatureTextView {
 	

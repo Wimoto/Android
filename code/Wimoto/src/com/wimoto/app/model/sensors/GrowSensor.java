@@ -1,4 +1,4 @@
-package com.wimoto.app.model;
+package com.wimoto.app.model.sensors;
 
 import java.math.BigInteger;
 import java.util.HashMap;
@@ -13,6 +13,7 @@ import com.wimoto.app.AppContext;
 import com.wimoto.app.R;
 import com.wimoto.app.bluetooth.WimotoDevice;
 import com.wimoto.app.bluetooth.WimotoDevice.State;
+import com.wimoto.app.model.datalog.GrowDataLog;
 
 public class GrowSensor extends Sensor {
 
@@ -61,6 +62,11 @@ public class GrowSensor extends Sensor {
 	private static final String BLE_GROW_CHAR_UUID_TEMPERATURE_ALARM_HIGH	= "DAF44709-BFB0-4DD8-9293-62AF5F545E31";
 	private static final String BLE_GROW_CHAR_UUID_TEMPERATURE_ALARM_SET	= "DAF4470A-BFB0-4DD8-9293-62AF5F545E31";
 	private static final String BLE_GROW_CHAR_UUID_TEMPERATURE_ALARM		= "DAF4470B-BFB0-4DD8-9293-62AF5F545E31";
+	
+	private static final String BLE_GROW_SERVICE_UUID_DATA_LOGGER 			= "DAF44718-BFB0-4DD8-9293-62AF5F545E31";
+	private static final String BLE_GROW_CHAR_UUID_DATA_LOGGER_ENABLE 		= "DAF44719-BFB0-4DD8-9293-62AF5F545E31";
+	private static final String BLE_GROW_CHAR_UUID_DATA_LOGGER_READ 		= "DAF4471A-BFB0-4DD8-9293-62AF5F545E31";
+	private static final String BLE_GROW_CHAR_UUID_DATA_LOGGER_READ_ENABLE 	= "DAF4471B-BFB0-4DD8-9293-62AF5F545E31";
 
 	public enum GrowCalibrationState {
 		DEFAULT(0),
@@ -113,10 +119,19 @@ public class GrowSensor extends Sensor {
 		mSensorValues.put(SENSOR_FIELD_GROW_TEMPERATURE, new LinkedList<Float>());
 		
 		mCalibrationState = GrowCalibrationState.DEFAULT;
+		
+		this.mDataLoggerServiceString = BLE_GROW_SERVICE_UUID_DATA_LOGGER;
+		this.mDataLoggerEnableCharacteristicString = BLE_GROW_CHAR_UUID_DATA_LOGGER_ENABLE;
+		this.mDataLoggerReadEnableCharacteristicString = BLE_GROW_CHAR_UUID_DATA_LOGGER_READ_ENABLE;
+		this.mDataLoggerReadNotificationCharacteristicString = BLE_GROW_CHAR_UUID_DATA_LOGGER_READ;
 	}
 
 	public WimotoDevice.Profile getProfile() {
 		return WimotoDevice.Profile.GROW;
+	}
+	
+	public String getCodename() {
+		return "Grow";
 	}
 	
 	public float getLight() {
@@ -383,25 +398,28 @@ public class GrowSensor extends Sensor {
 			mWimotoDevice.readCharacteristic(BLE_GROW_SERVICE_UUID_LIGHT, BLE_GROW_CHAR_UUID_LIGHT_ALARM_SET);
 			mWimotoDevice.readCharacteristic(BLE_GROW_SERVICE_UUID_LIGHT, BLE_GROW_CHAR_UUID_LIGHT_ALARM_LOW);
 			mWimotoDevice.readCharacteristic(BLE_GROW_SERVICE_UUID_LIGHT, BLE_GROW_CHAR_UUID_LIGHT_ALARM_HIGH);
+			mWimotoDevice.enableChangesNotification(BLE_GROW_SERVICE_UUID_LIGHT, BLE_GROW_CHAR_UUID_LIGHT_ALARM);
+			mWimotoDevice.enableChangesNotification(BLE_GROW_SERVICE_UUID_LIGHT, BLE_GROW_CHAR_UUID_LIGHT_CURRENT);
 			
 			mWimotoDevice.readCharacteristic(BLE_GROW_SERVICE_UUID_MOISTURE, BLE_GROW_CHAR_UUID_MOISTURE_CURRENT);
 			mWimotoDevice.readCharacteristic(BLE_GROW_SERVICE_UUID_MOISTURE, BLE_GROW_CHAR_UUID_MOISTURE_ALARM_SET);
 			mWimotoDevice.readCharacteristic(BLE_GROW_SERVICE_UUID_MOISTURE, BLE_GROW_CHAR_UUID_MOISTURE_ALARM_LOW);
 			mWimotoDevice.readCharacteristic(BLE_GROW_SERVICE_UUID_MOISTURE, BLE_GROW_CHAR_UUID_MOISTURE_ALARM_HIGH);
+			mWimotoDevice.enableChangesNotification(BLE_GROW_SERVICE_UUID_MOISTURE, BLE_GROW_CHAR_UUID_MOISTURE_ALARM);
+			mWimotoDevice.enableChangesNotification(BLE_GROW_SERVICE_UUID_MOISTURE, BLE_GROW_CHAR_UUID_MOISTURE_CURRENT);
 			
 			mWimotoDevice.readCharacteristic(BLE_GROW_SERVICE_UUID_TEMPERATURE, BLE_GROW_CHAR_UUID_TEMPERATURE_CURRENT);
 			mWimotoDevice.readCharacteristic(BLE_GROW_SERVICE_UUID_TEMPERATURE, BLE_GROW_CHAR_UUID_TEMPERATURE_ALARM_SET);
 			mWimotoDevice.readCharacteristic(BLE_GROW_SERVICE_UUID_TEMPERATURE, BLE_GROW_CHAR_UUID_TEMPERATURE_ALARM_LOW);
 			mWimotoDevice.readCharacteristic(BLE_GROW_SERVICE_UUID_TEMPERATURE, BLE_GROW_CHAR_UUID_TEMPERATURE_ALARM_HIGH);			
-			
-			mWimotoDevice.enableChangesNotification(BLE_GROW_SERVICE_UUID_LIGHT, BLE_GROW_CHAR_UUID_LIGHT_ALARM);
-			mWimotoDevice.enableChangesNotification(BLE_GROW_SERVICE_UUID_LIGHT, BLE_GROW_CHAR_UUID_LIGHT_CURRENT);
-			
-			mWimotoDevice.enableChangesNotification(BLE_GROW_SERVICE_UUID_MOISTURE, BLE_GROW_CHAR_UUID_MOISTURE_ALARM);
-			mWimotoDevice.enableChangesNotification(BLE_GROW_SERVICE_UUID_MOISTURE, BLE_GROW_CHAR_UUID_MOISTURE_CURRENT);
-			
 			mWimotoDevice.enableChangesNotification(BLE_GROW_SERVICE_UUID_TEMPERATURE, BLE_GROW_CHAR_UUID_TEMPERATURE_ALARM);
 			mWimotoDevice.enableChangesNotification(BLE_GROW_SERVICE_UUID_TEMPERATURE, BLE_GROW_CHAR_UUID_TEMPERATURE_CURRENT);
+			
+			mWimotoDevice.readCharacteristic(BLE_GROW_SERVICE_UUID_DATA_LOGGER, BLE_GROW_CHAR_UUID_DATA_LOGGER_ENABLE);
+			mWimotoDevice.readCharacteristic(BLE_GROW_SERVICE_UUID_DATA_LOGGER, BLE_GROW_CHAR_UUID_DATA_LOGGER_READ_ENABLE);
+			mWimotoDevice.readCharacteristic(BLE_GROW_SERVICE_UUID_DATA_LOGGER, BLE_GROW_CHAR_UUID_DATA_LOGGER_READ);
+			mWimotoDevice.enableChangesNotification(BLE_GROW_SERVICE_UUID_DATA_LOGGER, BLE_GROW_CHAR_UUID_DATA_LOGGER_ENABLE);
+			mWimotoDevice.enableChangesNotification(BLE_GROW_SERVICE_UUID_DATA_LOGGER, BLE_GROW_CHAR_UUID_DATA_LOGGER_READ_ENABLE);
 		}
 	}
 
@@ -445,12 +463,27 @@ public class GrowSensor extends Sensor {
 			setTemperatureAlarmLow(getPhysicalTemperature(bi), false);
 		} else if (uuid.equals(BLE_GROW_CHAR_UUID_TEMPERATURE_ALARM_HIGH)) {
 			setTemperatureAlarmHigh(getPhysicalTemperature(bi), false);
+		} else if (uuid.equals(BLE_GROW_CHAR_UUID_DATA_LOGGER_ENABLE)) {
+			Log.e("DataLogger Grow", "LOGGER_ENABLE");
+			
+			setDataLoggerState(getDataLoggerStateForCharacteristic(characteristic));
+		} else if (uuid.equals(BLE_GROW_CHAR_UUID_DATA_LOGGER_READ_ENABLE)) {
+			Log.e("DataLogger Grow", "LOGGER_READ_ENABLE");
+		} else if (uuid.equals(BLE_GROW_CHAR_UUID_DATA_LOGGER_READ)) {
+			Log.e("DataLogger Grow", "LOGGER_READ");
+			
+			GrowDataLog growDataLog = new GrowDataLog(characteristic.getValue());
+			growDataLog.setSoilTemperature(getPhysicalTemperature(BigInteger.valueOf(growDataLog.getRawSoilTemperature())));
+			
+			//Log.e("GrowDataLog", growDataLog.getJSONObject().toString());
+			
+			writeSensorDataLog(growDataLog);
 		}
 	}
 	
 	@Override
-	public void onCharacteristicWritten(BluetoothGattCharacteristic characteristic) {
-		super.onCharacteristicWritten(characteristic);
+	public void onCharacteristicWritten(BluetoothGattCharacteristic characteristic, int state) {
+		super.onCharacteristicWritten(characteristic, state);
 		
 		String uuid = characteristic.getUuid().toString().toUpperCase();
 		if (uuid.equals(BLE_GROW_CHAR_UUID_MOISTURE_ALARM_HIGH)) {

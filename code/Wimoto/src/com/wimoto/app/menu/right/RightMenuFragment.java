@@ -14,7 +14,7 @@ import android.widget.ListView;
 import com.wimoto.app.R;
 import com.wimoto.app.MainActivity;
 import com.wimoto.app.managers.SensorsManager.SensorsManagerListener;
-import com.wimoto.app.model.Sensor;
+import com.wimoto.app.model.sensors.Sensor;
 import com.wimoto.app.utils.SwipeDetector;
 
 public class RightMenuFragment extends Fragment implements SensorsManagerListener {

@@ -8,7 +8,7 @@ import android.os.Handler;
 import com.wimoto.app.AppContext;
 import com.wimoto.app.R;
 import com.wimoto.app.bluetooth.WimotoDevice.State;
-import com.wimoto.app.model.ThermoSensor;
+import com.wimoto.app.model.sensors.ThermoSensor;
 
 public class ThermoDemoSensor extends ThermoSensor {
 

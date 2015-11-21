@@ -1,4 +1,4 @@
-package com.wimoto.app.model;
+package com.wimoto.app.model.sensors;
 
 import java.math.BigInteger;
 import java.util.Calendar;
@@ -80,6 +80,10 @@ public class SentrySensor extends Sensor {
 
 	public WimotoDevice.Profile getProfile() {
 		return WimotoDevice.Profile.SENTRY;
+	}
+	
+	public String getCodename() {
+		return "Sentry";
 	}
 	
 //	public float getAccelerometer() {

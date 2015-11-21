@@ -2,11 +2,19 @@ package com.wimoto.app.screens.sensor;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
 
 import android.app.AlertDialog;
 import android.bluetooth.BluetoothProfile;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,14 +27,19 @@ import com.jeremyfeinstein.slidingmenu.lib.app.SlidingFragmentActivity;
 import com.mobitexoft.leftmenu.PageFragment;
 import com.wimoto.app.R;
 import com.wimoto.app.bluetooth.WimotoDevice;
-import com.wimoto.app.model.ClimateSensor;
-import com.wimoto.app.model.GrowSensor;
-import com.wimoto.app.model.Sensor;
-import com.wimoto.app.model.SentrySensor;
-import com.wimoto.app.model.ThermoSensor;
-import com.wimoto.app.model.WaterSensor;
+import com.wimoto.app.model.SensorValue;
+import com.wimoto.app.model.SensorValueListener;
+import com.wimoto.app.model.datalog.DataLog;
 import com.wimoto.app.model.demosensors.ClimateDemoSensor;
 import com.wimoto.app.model.demosensors.ThermoDemoSensor;
+import com.wimoto.app.model.sensors.ClimateSensor;
+import com.wimoto.app.model.sensors.GrowSensor;
+import com.wimoto.app.model.sensors.Sensor;
+import com.wimoto.app.model.sensors.Sensor.DataLoggerState;
+import com.wimoto.app.model.sensors.Sensor.DataReadingListener;
+import com.wimoto.app.model.sensors.SentrySensor;
+import com.wimoto.app.model.sensors.ThermoSensor;
+import com.wimoto.app.model.sensors.WaterSensor;
 import com.wimoto.app.screens.sensor.climate.ClimateDemoSensorFragment;
 import com.wimoto.app.screens.sensor.climate.ClimateSensorFragment;
 import com.wimoto.app.screens.sensor.grow.GrowSensorFragment;
@@ -37,7 +50,7 @@ import com.wimoto.app.screens.sensor.views.SensorFooterView;
 import com.wimoto.app.screens.sensor.views.SensorFooterView.SensorFooterListener;
 import com.wimoto.app.screens.sensor.water.WaterSensorFragment;
 
-public abstract class SensorFragment extends PageFragment implements PropertyChangeListener, SensorFooterListener {
+public abstract class SensorFragment extends PageFragment implements PropertyChangeListener, SensorFooterListener, DataReadingListener {
 	
 	private static final String TAG_SENSOR = "sensor_tag";
 	private static final String TAG_NO_SENSOR = "no_sensor_tag";
@@ -130,8 +143,11 @@ public abstract class SensorFragment extends PageFragment implements PropertyCha
 		mSensor = sensor;
 		if (mSensor != null) {
 			mSensor.addChangeListener(this, Sensor.SENSOR_FIELD_STATE, true);
+			mSensor.addChangeListener(this, Sensor.SENSOR_FIELD_DL_STATE);
 			mSensor.addChangeListener(this, Sensor.SENSOR_FIELD_BATTERY_LEVEL);
 			mSensor.addChangeListener(this, Sensor.SENSOR_FIELD_RSSI);
+
+			mSensor.setDataReadingListener(this);
 		}
 	}
 	
@@ -167,6 +183,7 @@ public abstract class SensorFragment extends PageFragment implements PropertyCha
 		if (getActivity() == null) {
 			return;
 		}
+		
 		getActivity().runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
@@ -189,7 +206,10 @@ public abstract class SensorFragment extends PageFragment implements PropertyCha
 					updateBateryLevel((Integer)newValue);
 				} else if (Sensor.SENSOR_FIELD_RSSI.equals(propertyName)) {
 					mRssiTextView.setText((Integer)newValue + "dB");
-				}	
+				} else if (Sensor.SENSOR_FIELD_DL_STATE.equals(propertyName)) {
+					DataLoggerState dataLoggerState = (DataLoggerState)newValue;
+					mSensorFooterView.setDataLoggerState(dataLoggerState);
+				}
 			}
 		});
 	}
@@ -245,6 +265,27 @@ public abstract class SensorFragment extends PageFragment implements PropertyCha
 	}
 	
 	@Override
+	public void onCloudSyncButtonClicked() {
+		mSensor.requestSensorValues(new SensorValueListener() {
+			@Override
+			public void onSensorValuesReturned(ArrayList<SensorValue> sensorValues) {
+				Log.e("onSensorValuesReturned", sensorValues.size() + "");
+				didUpdateSensorReadingData(sensorValues);
+			}
+		});
+	}
+	
+	@Override
+	public void onEnableSensorDataLogger() {
+		mSensor.enableDataLogger(true);
+	}
+	
+	@Override
+	public void onReadSensorDataLogger() {
+		mSensor.readDataLogger();
+	}
+
+	@Override
 	public void onResume() {
 		super.onResume();
 		if(mDialog != null && !mDialog.isShowing()) {
@@ -290,5 +331,68 @@ public abstract class SensorFragment extends PageFragment implements PropertyCha
 		builder.setCancelable(false);
 		mDialog = builder.create();
 		mDialog.show();
+	}
+
+	@Override
+	public void didReadSensorDataLogger(ArrayList<DataLog> data) {
+		Log.e("DataReadingListener", "didReadSensorDataLogger");
+		
+		File root = new File(Environment.getExternalStorageDirectory(), "Wimoto");
+        if (!root.exists()) {
+            root.mkdirs();
+        }
+        File file = new File(root, "AppData.json");
+
+        FileWriter fileWriter;
+        
+		try {
+			fileWriter = new FileWriter(file, true);
+			
+			for(DataLog dataLog : data) {
+				fileWriter.write(dataLog.getJSONObject().toString() + "\n");
+			}
+			fileWriter.flush();
+			fileWriter.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		sendEmailWithFile(file);
+	}
+
+	@Override
+	public void didUpdateSensorReadingData(ArrayList<SensorValue> data) {
+		Log.e("DataReadingListener", "didUpdateSensorReadingData");
+
+		File root = new File(Environment.getExternalStorageDirectory(), "Wimoto");
+        if (!root.exists()) {
+            root.mkdirs();
+        }
+        File file = new File(root, "AppData.json");
+
+        FileWriter fileWriter;
+        
+		try {
+			fileWriter = new FileWriter(file, true);
+			
+			for(SensorValue sensorValue : data) {
+				fileWriter.write(sensorValue.getJSONObject().toString() + "\n");
+			}
+			fileWriter.flush();
+			fileWriter.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		sendEmailWithFile(file);
+	}
+	
+	private void sendEmailWithFile(File file) {
+		Intent intent = new Intent(Intent.ACTION_SEND);
+		intent.setType("text/plain");
+		intent.putExtra(Intent.EXTRA_SUBJECT, "Wimoto");
+		intent.putExtra(Intent.EXTRA_TEXT, String.format("Content from Wimoto %s Sensor %s", mSensor.getCodename(), mSensor.getId()));
+		intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(file));
+		startActivity(Intent.createChooser(intent, "Send Email"));
 	}
 }

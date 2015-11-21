@@ -1,4 +1,4 @@
-package com.wimoto.app.model;
+package com.wimoto.app.model.sensors;
 
 import java.math.BigInteger;
 import java.util.LinkedList;
@@ -56,6 +56,10 @@ public class WaterSensor extends Sensor {
 
 	public WimotoDevice.Profile getProfile() {
 		return WimotoDevice.Profile.WATER;
+	}
+	
+	public String getCodename() {
+		return "Water";
 	}
 	
 	public float getContact() {

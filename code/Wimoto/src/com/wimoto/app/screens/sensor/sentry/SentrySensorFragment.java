@@ -13,8 +13,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.wimoto.app.R;
-import com.wimoto.app.model.Sensor;
-import com.wimoto.app.model.SentrySensor;
+import com.wimoto.app.model.sensors.Sensor;
+import com.wimoto.app.model.sensors.SentrySensor;
 import com.wimoto.app.screens.sensor.SensorFragment;
 import com.wimoto.app.widgets.AnimationSwitch;
 import com.wimoto.app.widgets.AnimationSwitch.OnCheckedChangeListener;

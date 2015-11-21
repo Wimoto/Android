@@ -10,7 +10,7 @@ import android.widget.BaseAdapter;
 
 import com.wimoto.app.R;
 import com.wimoto.app.MainActivity;
-import com.wimoto.app.model.Sensor;
+import com.wimoto.app.model.sensors.Sensor;
 
 public class RightMenuAdapter extends BaseAdapter {
 

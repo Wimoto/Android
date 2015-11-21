@@ -4,7 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 
-import com.wimoto.app.model.Sensor;
+import com.wimoto.app.model.sensors.Sensor;
 import com.wimoto.app.widgets.temperature.TemperatureTextView.TemperatureMeasure;
 
 public class AlarmPickerTemperatureView extends AlarmPickerView implements OnSharedPreferenceChangeListener {

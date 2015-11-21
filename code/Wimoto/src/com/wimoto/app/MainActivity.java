@@ -16,7 +16,7 @@ import com.wimoto.app.managers.SensorsManager.SensorsManagerListener;
 import com.wimoto.app.menu.left.LeftMenuFragment;
 import com.wimoto.app.menu.left.MenuItem;
 import com.wimoto.app.menu.right.RightMenuFragment;
-import com.wimoto.app.model.Sensor;
+import com.wimoto.app.model.sensors.Sensor;
 import com.wimoto.app.screens.sensor.NoSensorFragment;
 import com.wimoto.app.screens.sensor.SensorFragment;
 

@@ -11,8 +11,8 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
 import com.wimoto.app.R;
-import com.wimoto.app.model.Sensor;
-import com.wimoto.app.model.ThermoSensor;
+import com.wimoto.app.model.sensors.Sensor;
+import com.wimoto.app.model.sensors.ThermoSensor;
 import com.wimoto.app.screens.sensor.SensorFragment;
 import com.wimoto.app.widgets.AnimationSwitch;
 import com.wimoto.app.widgets.AnimationSwitch.OnCheckedChangeListener;

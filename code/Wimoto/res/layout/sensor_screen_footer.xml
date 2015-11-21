@@ -36,12 +36,28 @@
                 android:layout_weight="1"
                 android:src="@drawable/cloud_sync_icon" />
 
-            <ImageView
-                android:id="@+id/dataloggerButton"
+            <RelativeLayout
                 android:layout_width="30dp"
                 android:layout_height="30dp"
-                android:layout_weight="1"
-                android:src="@drawable/datalogger_icon" />
+                android:layout_weight="1"  >
+
+                <ImageView
+                    android:id="@+id/dataloggerEnableButton"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_centerHorizontal="true"
+                    android:src="@drawable/datalogger_icon"
+                    android:visibility="invisible" />
+                
+                <ImageView
+                    android:id="@+id/dataloggerReadButton"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_centerHorizontal="true"
+                    android:src="@drawable/datalogger_icon_enabled"
+                    android:visibility="invisible" />
+
+            </RelativeLayout>
 
             <ImageView
                 android:id="@+id/firmwareButton"
@@ -58,7 +74,6 @@
                 android:layout_weight="1"
                 android:paddingLeft="10dp"
                 android:src="@drawable/menu_icon" />
-
         </LinearLayout>
     </RelativeLayout>
 

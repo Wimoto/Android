@@ -26,9 +26,9 @@ import com.wimoto.app.bluetooth.BluetoothService;
 import com.wimoto.app.bluetooth.DiscoveryListener;
 import com.wimoto.app.bluetooth.WimotoDevice;
 import com.wimoto.app.bluetooth.WimotoDevice.Profile;
-import com.wimoto.app.model.Sensor;
 import com.wimoto.app.model.demosensors.ClimateDemoSensor;
 import com.wimoto.app.model.demosensors.ThermoDemoSensor;
+import com.wimoto.app.model.sensors.Sensor;
 
 public class SensorsManager {
 

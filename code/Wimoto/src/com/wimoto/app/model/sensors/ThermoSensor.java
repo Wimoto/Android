@@ -1,4 +1,4 @@
-package com.wimoto.app.model;
+package com.wimoto.app.model.sensors;
 
 import java.math.BigInteger;
 import java.util.LinkedList;
@@ -62,6 +62,10 @@ public class ThermoSensor extends Sensor {
 
 	public WimotoDevice.Profile getProfile() {
 		return WimotoDevice.Profile.THERMO;
+	}
+	
+	public String getCodename() {
+		return "Thermo";
 	}
 	
 	public float getTemperature() {
