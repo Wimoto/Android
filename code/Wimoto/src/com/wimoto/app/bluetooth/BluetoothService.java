@@ -71,7 +71,6 @@ public class BluetoothService {
 				if (mDiscoveryListener != null) {
 					mDiscoveryListener.onWimotoDeviceDiscovered(device);
 				}
-				
 			}
 		});
 	}
@@ -88,6 +87,7 @@ public class BluetoothService {
 		
 		// TODO can be removed if you make "UUID[] wimotoDeviceUuids" to work with mBluetoothAdapter.startLeScan(wimotoDeviceUuids, mLeScanCallback);
 		private Map<String, BluetoothDevice> mDiscoveredDevices = new HashMap<String, BluetoothDevice>();
+		private Map<String, WimotoDevice> mWimotoDevices = new HashMap<String, WimotoDevice>();
 		
 		public WimotoScanCallback(AppContext context) {
 			mContext = context;
@@ -95,13 +95,19 @@ public class BluetoothService {
 		
 		@Override
 		public void onLeScan(BluetoothDevice device, int rssi, byte[] scanRecord) {
-			if (!mDiscoveredDevices.containsKey(device.getAddress())) {
-				mDiscoveredDevices.put(device.getAddress(), device);
+			String deviceAddress = device.getAddress();
+			
+			if (!mDiscoveredDevices.containsKey(deviceAddress)) {
+				mDiscoveredDevices.put(deviceAddress, device);
 				
 				WimotoDevice wimotoDevice = WimotoDevice.getInstance(mContext, device, scanRecord);
 				if (wimotoDevice != null) {
+					mWimotoDevices.put(deviceAddress, wimotoDevice);
 					onWimotoDeviceDiscovered(wimotoDevice);
 				}
+			} else {
+				WimotoDevice wimotoDevice = mWimotoDevices.get(deviceAddress);
+				wimotoDevice.setRssi(rssi);
 			}
 		}
 		

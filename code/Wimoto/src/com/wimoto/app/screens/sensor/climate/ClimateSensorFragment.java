@@ -300,6 +300,8 @@ public class ClimateSensorFragment extends SensorFragment {
 					}
 				} else {
 					if (ClimateSensor.SENSOR_FIELD_CLIMATE_TEMPERATURE.equals(propertyName)) {
+						mLastUpdateText.refresh();
+						
 						mTemperatureTextView.setTemperature((Float)newValue);
 						mTemperatureSparkView.invalidate();
 						if(sensor.isTemperatureAlarmSet() && outOfRange((Float)newValue, 
@@ -307,6 +309,7 @@ public class ClimateSensorFragment extends SensorFragment {
 							showAlert(getString(R.string.sensor_climate_alert_temperature));
 						}
 					} else if (ClimateSensor.SENSOR_FIELD_CLIMATE_HUMIDITY.equals(propertyName)) {
+						mLastUpdateText.refresh();
 						mHumidityTextView.setText(String.format(Locale.US, "%.01f", newValue));
 						mHumiditySparkView.invalidate();
 						if(sensor.isHumidityAlarmSet() && outOfRange((Float)newValue, 
@@ -314,6 +317,7 @@ public class ClimateSensorFragment extends SensorFragment {
 							showAlert(getString(R.string.sensor_climate_alert_humidity));
 						}
 					} else if (ClimateSensor.SENSOR_FIELD_CLIMATE_LIGHT.equals(propertyName)) {
+						mLastUpdateText.refresh();
 						mLightTextView.setText(String.format(Locale.US, "%.01f", newValue));
 						mLightSparkView.invalidate();
 						if(sensor.isLightAlarmSet() && outOfRange((Float)newValue, 

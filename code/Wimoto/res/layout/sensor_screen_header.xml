@@ -47,7 +47,7 @@
         android:textColor="@color/color_white"
         android:textSize="30sp" />
 
-    <TextView
+    <com.wimoto.app.widgets.LastUpdateTextView
         android:id="@+id/last_updated_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

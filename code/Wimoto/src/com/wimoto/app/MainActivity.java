@@ -1,8 +1,11 @@
 package com.wimoto.app;
 
 import java.util.ArrayList;
+import java.util.Locale;
 
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -36,6 +39,10 @@ public class MainActivity extends AppContext implements SensorsManagerListener {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        
+		Configuration configuration = new Configuration(Resources.getSystem().getConfiguration());
+		configuration.locale = Locale.US; 
+		Resources.getSystem().updateConfiguration(configuration, null);
         
         if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
         	Toast.makeText(this, R.string.alert_ble_not_supported, Toast.LENGTH_LONG).show();

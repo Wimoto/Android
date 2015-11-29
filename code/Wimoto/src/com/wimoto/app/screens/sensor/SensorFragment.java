@@ -49,6 +49,7 @@ import com.wimoto.app.screens.sensor.thermo.ThermoSensorFragment;
 import com.wimoto.app.screens.sensor.views.SensorFooterView;
 import com.wimoto.app.screens.sensor.views.SensorFooterView.SensorFooterListener;
 import com.wimoto.app.screens.sensor.water.WaterSensorFragment;
+import com.wimoto.app.widgets.LastUpdateTextView;
 
 public abstract class SensorFragment extends PageFragment implements PropertyChangeListener, SensorFooterListener, DataReadingListener {
 	
@@ -60,7 +61,7 @@ public abstract class SensorFragment extends PageFragment implements PropertyCha
 	protected ImageView mBatteryImageView;
 	protected TextView mRssiTextView;
 	protected TextView mSensorNameText;
-	protected TextView mLastUpdateText;
+	protected LastUpdateTextView mLastUpdateText;
 	
 	private SensorFooterView mSensorFooterView;
 	
@@ -121,7 +122,9 @@ public abstract class SensorFragment extends PageFragment implements PropertyCha
 		mBatteryImageView = (ImageView)mView.findViewById(R.id.battery_level);
 		mRssiTextView = (TextView)mView.findViewById(R.id.rrsi_text);
 		mSensorNameText = (TextView)mView.findViewById(R.id.sensor_name_text);
-		mLastUpdateText = (TextView)mView.findViewById(R.id.last_updated_text);
+		
+		mLastUpdateText = (LastUpdateTextView)mView.findViewById(R.id.last_updated_text);
+		mLastUpdateText.setSensor(mSensor);
 		
 		mSensorNameText.setText(mSensor.getTitle());
 		mSensorNameText.setOnEditorActionListener(new OnEditorActionListener() {
@@ -144,8 +147,8 @@ public abstract class SensorFragment extends PageFragment implements PropertyCha
 		if (mSensor != null) {
 			mSensor.addChangeListener(this, Sensor.SENSOR_FIELD_STATE, true);
 			mSensor.addChangeListener(this, Sensor.SENSOR_FIELD_DL_STATE);
-			mSensor.addChangeListener(this, Sensor.SENSOR_FIELD_BATTERY_LEVEL);
 			mSensor.addChangeListener(this, Sensor.SENSOR_FIELD_RSSI);
+			mSensor.addChangeListener(this, Sensor.SENSOR_FIELD_BATTERY_LEVEL);
 
 			mSensor.setDataReadingListener(this);
 		}
@@ -158,7 +161,7 @@ public abstract class SensorFragment extends PageFragment implements PropertyCha
 		return TAG_SENSOR + mSensor.getId();
 	}
 
-	private void updateBateryLevel(int batteryLevel) {
+	private void updateBatteryLevel(int batteryLevel) {
 		int resId = R.drawable.battery_low;
         if (batteryLevel > 75) {
         	resId = R.drawable.battery_full;
@@ -203,7 +206,7 @@ public abstract class SensorFragment extends PageFragment implements PropertyCha
 						mSensorFooterView.showConnectionSensitiveButtons(false);
 					}
 				} else if (Sensor.SENSOR_FIELD_BATTERY_LEVEL.equals(propertyName)) {
-					updateBateryLevel((Integer)newValue);
+					updateBatteryLevel((Integer)newValue);
 				} else if (Sensor.SENSOR_FIELD_RSSI.equals(propertyName)) {
 					mRssiTextView.setText((Integer)newValue + "dB");
 				} else if (Sensor.SENSOR_FIELD_DL_STATE.equals(propertyName)) {

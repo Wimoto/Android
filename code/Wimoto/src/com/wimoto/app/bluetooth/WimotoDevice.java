@@ -1,6 +1,8 @@
 package com.wimoto.app.bluetooth;
 
 import java.util.LinkedList;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.UUID;
 
 import android.bluetooth.BluetoothDevice;
@@ -11,11 +13,12 @@ import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothGattService;
 import android.util.Log;
 
+import com.mobitexoft.utils.propertyobserver.PropertyObservable;
 import com.wimoto.app.AppContext;
 import com.wimoto.app.model.demosensors.ClimateDemoSensor;
 import com.wimoto.app.model.demosensors.ThermoDemoSensor;
 
-public class WimotoDevice {
+public class WimotoDevice extends PropertyObservable {
 
 	public enum Profile {
 		CLIMATE(0),
@@ -59,7 +62,11 @@ public class WimotoDevice {
 		
 		void onCharacteristicChanged(BluetoothGattCharacteristic characteristic);
 		void onCharacteristicWritten(BluetoothGattCharacteristic characteristic, int status);
+		
+		void onReadRemoteRssi(int rssi);
 	}
+	
+	public static final String WIMOTO_DEVICE_FIELD_RSSI			= "mRssi";
 	
 	private final static String BLE_CLIMATE_AD_SERVICE_UUID 	= "EC484ED09F3B5419C00A94FD";
 	private final static String BLE_GROW_AD_SERVICE_UUID 		= "BFB04DD8929362AF5F545E31";
@@ -79,6 +86,9 @@ public class WimotoDevice {
 	private Profile mProfile;
 	
 	private LinkedList<CharacteristicRequest> mRequests;
+	
+	private int mRssi;
+	private Timer mRssiTimer;
 	
 	public static WimotoDevice getInstance(AppContext context, BluetoothDevice bluetoothDevice) {
 		return new WimotoDevice(context, bluetoothDevice);
@@ -158,6 +168,12 @@ public class WimotoDevice {
 		return mProfile;
 	}
 	
+	public void setRssi(int rssi) {
+		notifyObservers(WIMOTO_DEVICE_FIELD_RSSI, mRssi, rssi);
+		
+		mRssi = rssi;
+	}
+	
 	public void connect(WimotoDeviceCallback wimotoDeviceCallback) {
 		mWimotoDeviceCallback = wimotoDeviceCallback;
 		
@@ -170,12 +186,15 @@ public class WimotoDevice {
 	        @Override
 	        public void onConnectionStateChange(final BluetoothGatt gatt, int status, int newState) {
 	        	Log.e("", "BluetoothGattCallback " + newState + " ___status " + status);
+	        	
 	        	switch (newState) {
 				case 0:
 					mRequests = new LinkedList<WimotoDevice.CharacteristicRequest>();
 					if (mWimotoDeviceCallback != null) {
 						mWimotoDeviceCallback.onConnectionStateChange(State.DISCONNECTED);
 					}
+					
+					mRssiTimer.cancel();
 					mBluetoothGatt.close();
 					
 					break;
@@ -187,7 +206,19 @@ public class WimotoDevice {
 					break;
 
 				case 2:
-					gatt.discoverServices();						
+					gatt.discoverServices();	
+					
+					TimerTask task = new TimerTask()
+			         {
+			            @Override
+			            public void run()
+			            {
+			               mBluetoothGatt.readRemoteRssi();
+			            }
+			         };
+			         mRssiTimer = new Timer();
+			         mRssiTimer.schedule(task, 0, 2000);
+					
 					break;
 
 				case 3:
@@ -259,10 +290,11 @@ public class WimotoDevice {
 
 			@Override
 			public void onReadRemoteRssi(BluetoothGatt gatt, int rssi, int status) {
-				Log.e("", "onReadRemoteRssi " + rssi);
+				//Log.e("", "onReadRemoteRssi " + rssi);
+				mWimotoDeviceCallback.onReadRemoteRssi(rssi);
 			}
 		});
-		mBluetoothGatt.readRemoteRssi();
+		//mBluetoothGatt.readRemoteRssi();
 	}
 	
 	public void disconnect() {

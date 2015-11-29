@@ -18,8 +18,8 @@ import android.widget.TextView;
 
 import com.wimoto.app.R;
 import com.wimoto.app.model.sensors.GrowSensor;
-import com.wimoto.app.model.sensors.Sensor;
 import com.wimoto.app.model.sensors.GrowSensor.GrowCalibrationState;
+import com.wimoto.app.model.sensors.Sensor;
 import com.wimoto.app.screens.sensor.SensorFragment;
 import com.wimoto.app.widgets.AnimationSwitch;
 import com.wimoto.app.widgets.AnimationSwitch.OnCheckedChangeListener;
@@ -293,10 +293,10 @@ public class GrowSensorFragment extends SensorFragment {
 	        			
 	        			mMoistureTextView.setMoistureCalibration(sensor.getMoisture(), sensor.getHumidityLowCalibration(), sensor.getHumidityHighCalibration());
 	        			if ((sensor.getHumidityLowCalibration() != null) && (sensor.getHumidityHighCalibration() != null)) {
-	        				mMoisturePercentageTextView.setVisibility(View.INVISIBLE);
+	        				//mMoisturePercentageTextView.setVisibility(View.INVISIBLE);
 	        				mReCalibrateTextView.setVisibility(View.VISIBLE);
 	        			} else {
-	        				mMoisturePercentageTextView.setVisibility(View.VISIBLE);
+	        				//mMoisturePercentageTextView.setVisibility(View.VISIBLE);
 	        				mReCalibrateTextView.setVisibility(View.INVISIBLE);
 	        				
 	        				reCalibrateAction();
@@ -305,7 +305,7 @@ public class GrowSensorFragment extends SensorFragment {
 	        			mLightTextView.setText(String.format(Locale.US, "%.01f", sensor.getLight()));
 					} else {
 						mLightTextView.setText(getString(R.string.sensor_two_hyphens));
-						mMoistureTextView.setText(getString(R.string.sensor_two_hyphens));
+						//mMoistureTextView.setText(getString(R.string.sensor_two_hyphens));
 						mTemperatureTextView.setText(getString(R.string.sensor_two_hyphens));
 	        			
 						mLightAlarmLayout.setVisibility(View.INVISIBLE);
@@ -313,6 +313,7 @@ public class GrowSensorFragment extends SensorFragment {
 	        			mTemperatureAlarmLayout.setVisibility(View.INVISIBLE);
 					}
 				} else if (GrowSensor.SENSOR_FIELD_GROW_LIGHT.equals(propertyName)) {
+					mLastUpdateText.refresh();
 					mLightTextView.setText(String.format(Locale.US, "%.01f", event.getNewValue()));
 					mLightSparkView.invalidate();
 //					if(sensor.isLightAlarmSet() && outOfRange((Float)event.getNewValue(), 
@@ -320,12 +321,14 @@ public class GrowSensorFragment extends SensorFragment {
 //						showAlert(getString(R.string.sensor_grow_alert_light));
 //					}
 				} else if (GrowSensor.SENSOR_FIELD_GROW_MOISTURE.equals(propertyName)) {
+					mLastUpdateText.refresh();
 					mMoistureTextView.setMoistureCalibration((Float)event.getNewValue(), sensor.getHumidityLowCalibration(), sensor.getHumidityHighCalibration());
 //					if(sensor.isMoistureAlarmSet() && outOfRange((Float)event.getNewValue(), 
 //							sensor.getMoistureAlarmHigh(), sensor.getMoistureAlarmLow())) {
 //						showAlert(getString(R.string.sensor_grow_alert_moisture));
 //					}
 				} else if (GrowSensor.SENSOR_FIELD_GROW_TEMPERATURE.equals(propertyName)) {
+					mLastUpdateText.refresh();
 					mTemperatureTextView.setText(String.format(Locale.US, "%.01f", event.getNewValue()));
 //					if(sensor.isTemperatureAlarmSet() && outOfRange((Float)event.getNewValue(), 
 //							sensor.getTemperatureAlarmHigh(), sensor.getTemperatureAlarmLow())) {
@@ -356,10 +359,10 @@ public class GrowSensorFragment extends SensorFragment {
 					} else if (sensor.getCalibrationState() == GrowCalibrationState.LOW_VALUE_FINISHED) {
 						mMoistureTextView.setMoistureCalibration(sensor.getMoisture(), sensor.getHumidityLowCalibration(), sensor.getHumidityHighCalibration());
 						if ((sensor.getHumidityLowCalibration() != null) && (sensor.getHumidityHighCalibration() != null)) {
-	        				mMoisturePercentageTextView.setVisibility(View.INVISIBLE);
+	        				//mMoisturePercentageTextView.setVisibility(View.INVISIBLE);
 	        				mReCalibrateTextView.setVisibility(View.VISIBLE);
 	        			} else {
-	        				mMoisturePercentageTextView.setVisibility(View.VISIBLE);
+	        				//mMoisturePercentageTextView.setVisibility(View.VISIBLE);
 	        				mReCalibrateTextView.setVisibility(View.INVISIBLE);
 	        			}
 						

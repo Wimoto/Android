@@ -47,6 +47,6 @@ public class SearchSensorFragment extends PageFragment {
 
 	private void registerDevice(WimotoDevice device) {
 		MainActivity mainActivity = (MainActivity) getActivity();
-		mainActivity.getSensorsManager().registerDevice(device);		
+		mainActivity.getSensorsManager().registerDevice(device);	
 	}
 }

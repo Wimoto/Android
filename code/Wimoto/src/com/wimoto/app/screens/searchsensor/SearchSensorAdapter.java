@@ -70,12 +70,11 @@ public class SearchSensorAdapter extends BaseAdapter implements DiscoveryListene
 	}
 
 	@Override
-	public void onWimotoDeviceDiscovered(WimotoDevice wimotoDevice) {
-		mDevices.add(wimotoDevice);
-		
+	public void onWimotoDeviceDiscovered(final WimotoDevice wimotoDevice) {
 		mContext.runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
+				mDevices.add(wimotoDevice);
 				notifyDataSetChanged();
 			}
 		});

@@ -210,6 +210,7 @@ public class ThermoSensorFragment extends SensorFragment {
 	        			mProbeAlarmLayout.setVisibility(View.INVISIBLE);
 					}
 				} else if (ThermoSensor.SENSOR_FIELD_THERMO_TEMPERATURE.equals(propertyName)) {
+					mLastUpdateText.refresh();
 					mTemperatureTextView.setTemperature((Float)newValue);
 					mTemperatureSparkView.invalidate();
 					if(sensor.isTemperatureAlarmSet() && outOfRange((Float)newValue,
@@ -217,6 +218,7 @@ public class ThermoSensorFragment extends SensorFragment {
 						showAlert(getString(R.string.sensor_thermo_alert_temperature));
 					}
 				} else if (ThermoSensor.SENSOR_FIELD_THERMO_PROBE.equals(propertyName)) {
+					mLastUpdateText.refresh();
 					mProbeTextView.setTemperature((Float)newValue);
 					mProbeSparkView.invalidate();
 					if(sensor.isProbeAlarmSet() && outOfRange((Float)newValue, 

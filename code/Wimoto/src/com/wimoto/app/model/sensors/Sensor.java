@@ -2,14 +2,12 @@ package com.wimoto.app.model.sensors;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Observable;
-import java.util.Observer;
 import java.util.Set;
-import java.util.Timer;
 
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.util.Log;
@@ -32,7 +30,7 @@ import com.wimoto.app.model.datalog.DataLog;
 import com.wimoto.app.model.demosensors.ClimateDemoSensor;
 import com.wimoto.app.model.demosensors.ThermoDemoSensor;
 
-public abstract class Sensor extends PropertyObservable implements Observer, WimotoDevice.WimotoDeviceCallback {
+public abstract class Sensor extends PropertyObservable implements WimotoDevice.WimotoDeviceCallback {
 			
 	public interface DataReadingListener {
 		void didReadSensorDataLogger(ArrayList<DataLog> data);
@@ -44,12 +42,44 @@ public abstract class Sensor extends PropertyObservable implements Observer, Wim
 	public static final String SENSOR_FIELD_STATE						= "mState";
 	public static final String SENSOR_FIELD_CONNECTION					= "mConnection";
 	public static final String SENSOR_FIELD_DEVICE						= "mWimotoDevice";
-	public static final String SENSOR_FIELD_BATTERY_LEVEL				= "batteryLevel";
-	public static final String SENSOR_FIELD_RSSI						= "rssi";
+	public static final String SENSOR_FIELD_BATTERY_LEVEL				= "mBatteryLevel";
+	public static final String SENSOR_FIELD_RSSI						= "mRssi";
 	public static final String SENSOR_FIELD_DL_STATE					= "mDataLoggerState";
 	
-	private static final String BLE_GENERIC_SERVICE_UUID_BATTERY		 	= "0000180F-0000-1000-8000-00805F9B34FB";
-	private static final String BLE_GENERIC_CHAR_UUID_BATTERY_LEVEL			= "00002A19-0000-1000-8000-00805F9B34FB";
+	private static final String BLE_GENERIC_SERVICE_UUID_BATTERY		= "0000180F-0000-1000-8000-00805F9B34FB";
+	private static final String BLE_GENERIC_CHAR_UUID_BATTERY_LEVEL		= "00002A19-0000-1000-8000-00805F9B34FB";
+	
+	public enum AlarmState {
+		UNKNOWN(0),
+		DISABLED(1),
+		ENABLED(2);
+		
+		private int value;
+		
+		private AlarmState(int value) {
+			this.value = value;
+		}
+		
+		public int getValue() {
+			return value;
+		}
+	}
+	
+	public enum AlarmType {
+		UNKNOWN(0),
+		LOW(1),
+		HIGH(2);
+		
+		private int value;
+		
+		private AlarmType(int value) {
+			this.value = value;
+		}
+		
+		public int getValue() {
+			return value;
+		}
+	}
 	
 	public enum DataLoggerState {
 		NONE(0),
@@ -78,6 +108,8 @@ public abstract class Sensor extends PropertyObservable implements Observer, Wim
 	protected String mTitle;
 	protected State mState;
 	
+	private Date mLastActivityDate;
+	
 	private DataReadingListener mDataReadingListener;
 	private DataLoggerState mDataLoggerState;
 	private ArrayList<DataLog> mSensorDataLogs;
@@ -89,8 +121,6 @@ public abstract class Sensor extends PropertyObservable implements Observer, Wim
 	
 	private int mBatteryLevel;
 	private int mRssi;
-	
-	private Timer mRssiTimer;
 	
 	protected Map<String, LinkedList<Float>> mSensorValues;
 	
@@ -126,6 +156,8 @@ public abstract class Sensor extends PropertyObservable implements Observer, Wim
 		mSensorValues = new HashMap<String, LinkedList<Float>>();
 		
 		setDataLoggerState(DataLoggerState.NONE);
+		
+		mLastActivityDate = new Date();
 	}
 	
 	public abstract WimotoDevice.Profile getProfile();
@@ -231,6 +263,10 @@ public abstract class Sensor extends PropertyObservable implements Observer, Wim
 		notifyObservers(SENSOR_FIELD_RSSI, mRssi, rssi);
 		
 		mRssi = rssi;
+	}
+	
+	public Date getLastActivityDate() {
+		return mLastActivityDate;
 	}
 	
 	public void setDataReadingListener(DataReadingListener listener) {
@@ -402,6 +438,28 @@ public abstract class Sensor extends PropertyObservable implements Observer, Wim
 //		}
 	}
 	
+	
+	protected AlarmState getAlarmStateForCharacteristic(BluetoothGattCharacteristic characteristic) {
+		byte[] bytes = characteristic.getValue();
+		return ((bytes[0] & 0xff) == 1) ? AlarmState.ENABLED : AlarmState.DISABLED;
+	}
+	
+	protected float getAlarmValueForCharacteristic(BluetoothGattCharacteristic characteristic) {
+		byte[] bytes = characteristic.getValue();
+		return (bytes[0] & 0xff);
+	}
+	
+	protected AlarmType getAlarmTypeForCharacteristic(BluetoothGattCharacteristic characteristic) {
+		byte[] bytes = characteristic.getValue();
+		if ((bytes[0] & 0xff) == 2) {
+			return AlarmType.HIGH;
+		} else if ((bytes[0] & 0xff) == 1) {
+			return AlarmType.LOW;
+		}
+		
+		return AlarmType.UNKNOWN;
+	}
+	
 	protected void enableAlarm(boolean doEnable, String serviceUuidString, String characteristicUuidString) {
 		if (mWimotoDevice != null) {
 			if (doEnable) {
@@ -426,23 +484,6 @@ public abstract class Sensor extends PropertyObservable implements Observer, Wim
 		return mDocument;
 	}
 	
-	@Override
-	public void update(Observable observable, Object data) {
-		Log.e("", "Sensor update");
-		if (data instanceof BluetoothGattCharacteristic) {
-			BluetoothGattCharacteristic characteristic = (BluetoothGattCharacteristic) data;
-			
-			String uuid = characteristic.getUuid().toString().toUpperCase();
-			
-			BigInteger bi = new BigInteger(characteristic.getValue());
-			if (uuid.equals(BLE_GENERIC_CHAR_UUID_BATTERY_LEVEL)) {
-				setBatteryLevel(Float.valueOf(bi.floatValue()).intValue());
-			}
-		} else {
-			setRssi((Integer)data);
-		}
-	}
-	
 	protected void addValue(String type, float value) {
 		SensorValue sensorValue = new SensorValue(mDocument.getDatabase().createDocument());
 		sensorValue.setSensorId(mId);
@@ -450,6 +491,8 @@ public abstract class Sensor extends PropertyObservable implements Observer, Wim
 		sensorValue.setValue(value);
 		
 		sensorValue.save();
+		
+		mLastActivityDate = new Date();
 		
 		LinkedList<Float> list = (LinkedList<Float>) mSensorValues.get(type);
 		list.addLast(Float.valueOf(value));
@@ -495,11 +538,23 @@ public abstract class Sensor extends PropertyObservable implements Observer, Wim
 		Log.e("", "Sensor onConnectionStateChange " + state);
 		
 		setState(state);
+		
+		if (state == State.CONNECTED) {
+			mWimotoDevice.readCharacteristic(BLE_GENERIC_SERVICE_UUID_BATTERY, BLE_GENERIC_CHAR_UUID_BATTERY_LEVEL);
+			mWimotoDevice.enableChangesNotification(BLE_GENERIC_SERVICE_UUID_BATTERY, BLE_GENERIC_CHAR_UUID_BATTERY_LEVEL);
+		}
 	}
 	
 	@Override
 	public void onCharacteristicChanged(BluetoothGattCharacteristic characteristic) {
-		// TODO Auto-generated method stub
+		String uuid = characteristic.getUuid().toString().toUpperCase();
+
+		if (uuid.equals(BLE_GENERIC_CHAR_UUID_BATTERY_LEVEL)) {
+			byte[] bytes = characteristic.getValue();
+			
+			int batteryLevel = bytes[0] & 0xff;
+			setBatteryLevel(batteryLevel);
+		}
 	}	
 	
 	@Override
@@ -514,6 +569,11 @@ public abstract class Sensor extends PropertyObservable implements Observer, Wim
 			}
 		} else if (uuid.equals(mDataLoggerReadEnableCharacteristicString)) {
 			setDataLoggerState(DataLoggerState.DISABLED);
-		}
+		} 
+	}
+
+	@Override
+	public void onReadRemoteRssi(int rssi) {
+		setRssi(rssi);
 	}
 }

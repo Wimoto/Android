@@ -24,15 +24,15 @@ public class SentrySensor extends Sensor {
 	public static final String SENSOR_FIELD_SENTRY_ACCELEROMETER_ALARM_ENABLED		= "mAccelerometerAlarmEnabledDate";
 	public static final String SENSOR_FIELD_SENTRY_ACCELEROMETER_ALARM_DISABLED		= "mAccelerometerAlarmDisabledDate";
 	
-	public static final String SENSOR_FIELD_SENTRY_ACCELEROMETER_ALARM_SET			= "SentryAccelerometerAlarmSet";
-	public static final String SENSOR_FIELD_SENTRY_ACCELEROMETER_ALARM_CLEAR		= "SentryAccelerometerAlarmClear";
+	public static final String SENSOR_FIELD_SENTRY_ACCELEROMETER_ALARM_SET			= "mAccelerometerAlarmSet";
+	public static final String SENSOR_FIELD_SENTRY_ACCELEROMETER_ALARM_CLEAR		= "mAccelerometerAlarmClear";
 	
 	public static final String SENSOR_FIELD_SENTRY_PASSIVE_INFRARED_ALARM_ENABLED	= "mInfraredAlarmEnabledDate";
 	public static final String SENSOR_FIELD_SENTRY_PASSIVE_INFRARED_ALARM_DISABLED	= "mInfraredAlarmDisabledDate";
 	
-	public static final String SENSOR_FIELD_SENTRY_PASSIVE_INFRARED					= "SentryInfrared";
-	public static final String SENSOR_FIELD_SENTRY_PASSIVE_INFRARED_ALARM_SET		= "SentryInfraredAlarmSet";
-
+	public static final String SENSOR_FIELD_SENTRY_PASSIVE_INFRARED					= "mInfrared";
+	public static final String SENSOR_FIELD_SENTRY_PASSIVE_INFRARED_ALARM_SET		= "mInfraredAlarmSet";
+	
 	public static final String BLE_SENTRY_AD_SERVICE_UUID_ACCELEROMETER 			= "0000DC68-0000-1000-8000-00805F9B34FB";
 	
 	private static final String BLE_SENTRY_SERVICE_UUID_ACCELEROMETER 				= "4209DC68-E433-4420-83D8-CDAACCD2E312";
@@ -53,7 +53,6 @@ public class SentrySensor extends Sensor {
 	private float mAccelerationX;
 	private float mAccelerationY;
 	private float mAccelerationZ;
-	private float mInfrared;
 	
 	private Date mAccelerometerAlarmEnabledDate;
 	private Date mAccelerometerAlarmDisabledDate;
@@ -64,6 +63,7 @@ public class SentrySensor extends Sensor {
 	private Date mInfraredAlarmEnabledDate;
 	private Date mInfraredAlarmDisabledDate;
 	
+	private float mInfrared;
 	private boolean mInfraredAlarmSet;
 	
 	private long mAccelerometerAlarmTimeshot;
@@ -287,13 +287,15 @@ public class SentrySensor extends Sensor {
 			mWimotoDevice.readCharacteristic(BLE_SENTRY_SERVICE_UUID_ACCELEROMETER, BLE_SENTRY_CHAR_UUID_ACCELEROMETER_CURRENT);
 			mWimotoDevice.readCharacteristic(BLE_SENTRY_SERVICE_UUID_ACCELEROMETER, BLE_SENTRY_CHAR_UUID_ACCELEROMETER_ALARM_SET);
 			mWimotoDevice.readCharacteristic(BLE_SENTRY_SERVICE_UUID_ACCELEROMETER, BLE_SENTRY_CHAR_UUID_ACCELEROMETER_ALARM_CLEAR);
-			mWimotoDevice.enableChangesNotification(BLE_SENTRY_SERVICE_UUID_ACCELEROMETER, BLE_SENTRY_CHAR_UUID_ACCELEROMETER_ALARM);
+			//mWimotoDevice.readCharacteristic(BLE_SENTRY_SERVICE_UUID_ACCELEROMETER, BLE_SENTRY_CHAR_UUID_ACCELEROMETER_ALARM);
 			mWimotoDevice.enableChangesNotification(BLE_SENTRY_SERVICE_UUID_ACCELEROMETER, BLE_SENTRY_CHAR_UUID_ACCELEROMETER_CURRENT);
+			mWimotoDevice.enableChangesNotification(BLE_SENTRY_SERVICE_UUID_ACCELEROMETER, BLE_SENTRY_CHAR_UUID_ACCELEROMETER_ALARM);
 			
 			mWimotoDevice.readCharacteristic(BLE_SENTRY_SERVICE_UUID_PASSIVE_INFRARED, BLE_SENTRY_CHAR_UUID_PASSIVE_INFRARED_CURRENT);
 			mWimotoDevice.readCharacteristic(BLE_SENTRY_SERVICE_UUID_PASSIVE_INFRARED, BLE_SENTRY_CHAR_UUID_PASSIVE_INFRARED_ALARM_SET);
+			//mWimotoDevice.readCharacteristic(BLE_SENTRY_SERVICE_UUID_PASSIVE_INFRARED, BLE_SENTRY_CHAR_UUID_PASSIVE_INFRARED_ALARM);
+			mWimotoDevice.enableChangesNotification(BLE_SENTRY_SERVICE_UUID_PASSIVE_INFRARED, BLE_SENTRY_CHAR_UUID_PASSIVE_INFRARED_CURRENT);	
 			mWimotoDevice.enableChangesNotification(BLE_SENTRY_SERVICE_UUID_PASSIVE_INFRARED, BLE_SENTRY_CHAR_UUID_PASSIVE_INFRARED_ALARM);
-			mWimotoDevice.enableChangesNotification(BLE_SENTRY_SERVICE_UUID_PASSIVE_INFRARED, BLE_SENTRY_CHAR_UUID_PASSIVE_INFRARED_CURRENT);			
 		}
 	}
 
@@ -302,8 +304,7 @@ public class SentrySensor extends Sensor {
 		super.onCharacteristicChanged(characteristic);
 		
 		String uuid = characteristic.getUuid().toString().toUpperCase();
-		//Log.e("uuid", uuid);
-		
+
 		BigInteger bi = new BigInteger(characteristic.getValue());
 		if (uuid.equals(BLE_SENTRY_CHAR_UUID_ACCELEROMETER_CURRENT)) {
 			//setAccelerometer(bi.floatValue());
@@ -331,8 +332,14 @@ public class SentrySensor extends Sensor {
 			setInfraredAlarmSet((bi.floatValue() == 0) ? false:true);
 		} else if (uuid.equals(BLE_SENTRY_CHAR_UUID_ACCELEROMETER_ALARM)) {
 			Log.e("accelerometer", "alarm");
+			if (checkAccelerometerAlarm()) {
+				Log.e("accelerometer", "show alarm");
+			}
 		} else if (uuid.equals(BLE_SENTRY_CHAR_UUID_PASSIVE_INFRARED_ALARM)) {
 			Log.e("infrared", "alarm");
+			if (checkInfraredAlarm()) {
+				Log.e("infrared", "show alarm");
+			}
 		}
 	}
 

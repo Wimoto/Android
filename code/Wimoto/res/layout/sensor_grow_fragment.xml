@@ -174,7 +174,6 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:gravity="center_vertical|right"
-                            android:text="@string/sensor_two_hyphens"
                             android:textColor="@color/color_white"
                             android:textSize="25sp" />
 
@@ -186,7 +185,9 @@
                             android:layout_marginLeft="5dp"
                             android:text="@string/sensor_percent"
                             android:textColor="@color/color_white"
-                            android:textSize="24sp" />
+                            android:textSize="24sp"
+                            android:visibility="invisible" />
+
                     </LinearLayout>
                 </LinearLayout>
 

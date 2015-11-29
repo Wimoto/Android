@@ -170,12 +170,14 @@ public class WaterSensorFragment extends SensorFragment {
 	        			mLevelAlarmLayout.setVisibility(View.INVISIBLE);
 					}
 				} else if (WaterSensor.SENSOR_FIELD_WATER_CONTACT.equals(propertyName)) {
+					mLastUpdateText.refresh();
 					mContactTextView.setText(String.format(Locale.US, "%.01f", newValue));
 					mContactSparkView.invalidate();
 					if(sensor.isContactAlarmSet()) {
 						showAlert(getString(R.string.sensor_water_alert_contact));
 					}
 				} else if (WaterSensor.SENSOR_FIELD_WATER_LEVEL.equals(propertyName)) {
+					mLastUpdateText.refresh();
 					mLevelTextView.setText(String.format(Locale.US, "%.01f", newValue));
 					if(sensor.isLevelAlarmSet() && outOfRange((Float)newValue, 
 							sensor.getLevelAlarmHigh(), sensor.getLevelAlarmLow())) {
